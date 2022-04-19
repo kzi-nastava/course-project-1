@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "D:\\FTN\\IV semestar\\USI\\Projekat\\course-project-1\\HealthCare\\HealthCare\\HealthCareAPI.csproj": {}
+    "C:\\Users\\Suncica\\Documents\\Tina\\faks\\4. semestar\\USI\\course-project-1\\HealthCare\\HealthCare\\HealthCareAPI.csproj": {}
   },
   "projects": {
-    "D:\\FTN\\IV semestar\\USI\\Projekat\\course-project-1\\HealthCare\\HealthCare\\HealthCareAPI.csproj": {
+    "C:\\Users\\Suncica\\Documents\\Tina\\faks\\4. semestar\\USI\\course-project-1\\HealthCare\\HealthCare\\HealthCareAPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\FTN\\IV semestar\\USI\\Projekat\\course-project-1\\HealthCare\\HealthCare\\HealthCareAPI.csproj",
+        "projectUniqueName": "C:\\Users\\Suncica\\Documents\\Tina\\faks\\4. semestar\\USI\\course-project-1\\HealthCare\\HealthCare\\HealthCareAPI.csproj",
         "projectName": "HealthCareAPI",
-        "projectPath": "D:\\FTN\\IV semestar\\USI\\Projekat\\course-project-1\\HealthCare\\HealthCare\\HealthCareAPI.csproj",
-        "packagesPath": "C:\\Users\\Boki\\.nuget\\packages\\",
-        "outputPath": "D:\\FTN\\IV semestar\\USI\\Projekat\\course-project-1\\HealthCare\\HealthCare\\obj\\",
+        "projectPath": "C:\\Users\\Suncica\\Documents\\Tina\\faks\\4. semestar\\USI\\course-project-1\\HealthCare\\HealthCare\\HealthCareAPI.csproj",
+        "packagesPath": "C:\\Users\\Suncica\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Suncica\\Documents\\Tina\\faks\\4. semestar\\USI\\course-project-1\\HealthCare\\HealthCare\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\Boki\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Suncica\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
