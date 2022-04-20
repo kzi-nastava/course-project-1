@@ -14,6 +14,7 @@ namespace HealthCareAPI.Controllers {
             _credentialsService = credentialsService;
         }
 
+        // https://localhost:7195/api/credentials
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CredentialsDomainModel>>> GetAll()
         {
@@ -25,6 +26,7 @@ namespace HealthCareAPI.Controllers {
             return Ok(credentials);
         }
 
+        // https://localhost:7195/api/credentials/login/someuser/somepass
         [HttpGet]
         [Route("login/{username}/{password}")]
         public async Task<ActionResult<CredentialsDomainModel>> GetLoggedUser(string username, string password)
