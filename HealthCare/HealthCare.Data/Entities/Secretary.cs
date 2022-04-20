@@ -11,7 +11,7 @@ namespace HealthCare.Data.Entities
     public class Secretary
     {
         [Column("id")]
-        public int Id { get; set; }
+        public decimal Id { get; set; }
 
         [Column("name")]
         public string Name { get; set; }
@@ -30,5 +30,7 @@ namespace HealthCare.Data.Entities
 
         [Column("deleted")]
         public bool isDeleted { get; set; }
+
+        public Credentials Credentials { get; set; }
     }
 }

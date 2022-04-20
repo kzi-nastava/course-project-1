@@ -11,13 +11,15 @@ namespace HealthCare.Data.Entities
     public class EquipmentType
     {
         [Column("id")]
-        public int Id { get; set; }
+        public decimal Id { get; set; }
 
         [Column("name")]
         public string Name { get; set; }
 
         [Column("deleted")]
         public bool IsDeleted { get; set; }
+
+        public List<Equipment> Equipments { get; set; }
 
     }
 

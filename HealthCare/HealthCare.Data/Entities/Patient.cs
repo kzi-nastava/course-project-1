@@ -11,7 +11,7 @@ namespace HealthCare.Data.Entities
     public class Patient
     {
         [Column("id")]
-        public int Id { get; set; }
+        public decimal Id { get; set; }
 
         [Column("name")]
         public string Name { get; set; }
@@ -32,9 +32,17 @@ namespace HealthCare.Data.Entities
         public string blockedBy { get; set; }
 
         [Column("blocking_counter")]
-        public int blockingCounter { get; set; }
+        public decimal blockingCounter { get; set; }
         
         [Column("deleted")]
         public bool isDeleted { get; set; }
+
+        public List<Operation> Operations { get; set; }
+
+        public List<Examination> Examinations { get; set; }
+
+        public MedicalRecord MedicalRecord { get; set; }
+        public Credentials Credentials { get; set; }
+
     }
 }

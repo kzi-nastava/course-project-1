@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Common;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,7 +13,7 @@ namespace HealthCare.Data.Entities
     public class Credentials
     {
         [Column("id")]
-        public int Id { get; set; }
+        public decimal Id { get; set; }
 
         [Column("username")]
         public string Username { get; set; }
@@ -20,18 +22,25 @@ namespace HealthCare.Data.Entities
         public string Password { get; set; }
 
         [Column("Doctor_id")]
-        public int doctorId { get; set; }
+        public decimal? doctorId { get; set; }
 
         [Column("Secretary_Id")]
-        public int secretaryId { get; set; }
+        public decimal? secretaryId { get; set; }
 
         [Column("Manager_id")] 
-        public int managerId { get; set; }
+        public decimal? managerId { get; set; }
         
         [Column("Patient_id")]
-        public int patientId { get; set; }
+        public decimal? patientId { get; set; }
 
         [Column("User_role_id")]
-        public int userRoleId { get; set; }
+        public decimal userRoleId { get; set; }
+
+        public UserRole UserRole { get; set; }
+
+        public Manager Manager { get; set; }
+        public Doctor Doctor { get; set; }
+        public Patient Patient { get; set; }
+        public Secretary Secretary { get; set; }
     }
 }

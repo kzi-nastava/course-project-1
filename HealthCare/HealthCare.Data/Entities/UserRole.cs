@@ -11,12 +11,14 @@ namespace HealthCare.Data.Entities
     public class UserRole
     {
         [Column("id")]
-        private int Id { get; set; }  
+        public decimal Id { get; set; }  
 
         [Column("name")]
-        private string RoleName { get; set; }
+        public string RoleName { get; set; }
 
         [Column("deleted")]
-        private bool isDeleted { get; set; }    
+        public bool isDeleted { get; set; }
+
+        public List<Credentials> Credentials { get; set; }
     }
 }

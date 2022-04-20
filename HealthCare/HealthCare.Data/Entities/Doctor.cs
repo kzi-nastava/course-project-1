@@ -11,7 +11,7 @@ namespace HealthCare.Data.Entities
     public class Doctor
     {
         [Column("id")]
-        public int Id { get; set; }
+        public decimal Id { get; set; }
 
         [Column("name")]
         public string Name { get; set; }
@@ -30,6 +30,13 @@ namespace HealthCare.Data.Entities
 
         [Column("deleted")]
         public bool isDeleted { get; set; }
+
+        public List<Operation> Operations { get; set; }
+
+        public List<Examination> Examinations { get; set; }
+
+        public Credentials Credentials { get; set; }
+
 
     }
 }

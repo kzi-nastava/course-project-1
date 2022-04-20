@@ -8,18 +8,25 @@ using System.Threading.Tasks;
 namespace HealthCare.Data.Entities
 {
     [Table("room")]
-    internal class Room
+    public class Room
     {
         [Column("id")]
-        private int Id { get; set; }
+        public decimal Id { get; set; }
 
         [Column("name")]
-        private string RoleName { get; set; }
+        public string RoleName { get; set; }
 
         [Column("Room_type_id")]
-        private int RoomTypeId  { get; set; }
+        public decimal RoomTypeId  { get; set; }
 
         [Column("deleted")]
-        private bool isDeleted { get; set; }
+        public bool isDeleted { get; set; }
+
+        public List<Inventory> Inventories { get; set; }
+        public List<Transfer> TransfersFrom { get; set; }
+        public List<Transfer> TransfersTo { get; set; }
+        public RoomType RoomType { get; set; }
+        public List<Operation> Operations { get; set; }
+
     }
 }

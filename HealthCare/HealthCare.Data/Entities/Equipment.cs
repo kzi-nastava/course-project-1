@@ -11,16 +11,26 @@ namespace HealthCare.Data.Entities
     public class Equipment
     {
         [Column("id")]
-        public int Id { get; set; }
+        public decimal Id { get; set; }
 
         [Column("name")]
         public string Name { get; set; }
 
-        [Column("Equimpent_type")]
-        public int equipmentTypeId { get; set; }
+        [Column("Equipment_type_id")]
+        public decimal equipmentTypeId { get; set; }
 
         [Column("deleted")]
         public bool IsDeleted { get; set; }
+
+        public EquipmentType EquipmentType { get; set; }
+
+        public List<Transfer> Transfers { get; set; }
+
+        public List<Inventory> Inventories { get; set; }
+
+
+
+
 
     }
 }
