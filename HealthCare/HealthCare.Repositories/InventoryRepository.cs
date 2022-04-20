@@ -8,10 +8,10 @@ using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthCare.Repositories {
-    public interface IInventioryRepository : IRepository<Inventory> {
+    public interface IInventoryRepository : IRepository<Inventory> {
 
     }
-    public class InventioryRepository : IInventioryRepository {
+    public class InventioryRepository : IInventoryRepository {
         private readonly HealthCareContext _healthCareContext;
 
         public InventioryRepository(HealthCareContext healthCareContext) {
