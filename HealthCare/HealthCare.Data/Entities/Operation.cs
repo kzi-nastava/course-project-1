@@ -8,21 +8,26 @@ using System.Threading.Tasks;
 namespace HealthCare.Data.Entities
 {
     [Table("operation")]
-    internal class Operation
+    public class Operation
     {
         [Column("time_held")]
-        private DateTime Duration { get; set; }
+        public DateTime Duration { get; set; }
 
         [Column("room_id")]
-        private int RoomId  { get; set; }   
+        public decimal RoomId  { get; set; }   
 
         [Column("doctor_id")]
-        private int DoctorId { get; set; }
+        public decimal DoctorId { get; set; }
 
         [Column("patient_id")]
-        private int PatientId { get; set; }
+        public decimal PatientId { get; set; }
 
         [Column("deleted")]
-        private bool isDeleted { get; set; }
+        public bool isDeleted { get; set; }
+
+        public Room Room { get; set; }
+
+        public Patient Patient { get; set; }
+        public Doctor Doctor { get; set; }
     }
 }

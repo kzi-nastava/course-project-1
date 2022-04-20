@@ -8,24 +8,26 @@ using System.Threading.Tasks;
 namespace HealthCare.Data.Entities
 {
     [Table("medical_record")]
-    internal class MedicalRecord
+    public class MedicalRecord
     {
         [Column("height")]
-        private double Height { get; set; }
+        public decimal Height { get; set; }
 
         [Column("weight")]
-        private double Weight { get; set; }
+        public decimal Weight { get; set; }
 
         [Column("bedridden_diseases")]
-        private string BedriddenDiseases { get; set; }
+        public string BedriddenDiseases { get; set; }
 
         [Column("alergies")]
-        private string Allergies { get; set; }
+        public string Allergies { get; set; }
 
         [Column("Patient_id")]
-        private int PatientId { get; set; }
+        public decimal PatientId { get; set; }
 
         [Column("deleted")]
-        private bool isDeleted { get; set; }
+        public bool isDeleted { get; set; }
+
+        public Patient Patient { get; set; }
     }
 }

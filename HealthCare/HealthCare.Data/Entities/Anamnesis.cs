@@ -14,18 +14,21 @@ namespace HealthCare.Data.Entities
         public string Description { get; set; }
 
         [Column("Examination_Doctor_id")]
-        public int doctorId { get; set; }
+        public decimal doctorId { get; set; }
 
         [Column("Examination_Room_id")]
-        public int roomId { get; set; }
+        public decimal roomId { get; set; }
 
         [Column("Examination_Patient_id")]
-        public int patientId { get; set; }
+        public decimal patientId { get; set; }
 
         [Column("Examination_examination_started")]
         public DateTime StartTime { get; set; }
 
         [Column("deleted")]
         public bool isDeleted { get; set; }
+
+        public Examination Examination { get; set; }
+
     }
 }

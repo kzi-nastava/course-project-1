@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,24 +9,29 @@ using System.Threading.Tasks;
 namespace HealthCare.Data.Entities
 {
     [Table("transfer")]
-    internal class Transfer
+    public class Transfer
     {
         [Column("room_id1")]
-        private int RoomFromId { get; set; }
+        public decimal RoomFromId { get; set; }
 
         [Column("equipment_id")]
-        private int EquipmentId { get; set; }
+        public decimal EquipmentId { get; set; }
 
         [Column("room_id")]
-        private int RoomToId { get; set; }
+        public decimal RoomToId { get; set; }
 
         [Column("amount")]
-        private int Amount { get; set; }
+        public decimal Amount { get; set; }
 
         [Column("time_transfered")]
-        private DateTime TransferTime { get; set; }
+        public DateTime TransferTime { get; set; }
 
         [Column("deleted")]
-        private bool isDeleted { get; set; }
+        public bool isDeleted { get; set; }
+
+        public Equipment Equipment { get; set; }
+
+        public Room RoomFrom { get; set; }
+        public Room RoomTo { get; set; }      
     }
 }

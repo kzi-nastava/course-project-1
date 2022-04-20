@@ -11,16 +11,21 @@ namespace HealthCare.Data.Entities
     public class Inventory
     {
         [Column("amount")]
-        public int Amount { get; set; }
+        public decimal Amount { get; set; }
 
         [Column("room_id")]
-        public int roomId { get; set; }
+        public decimal roomId { get; set; }
 
         [Column("equipment_id")]
-        public int equipmentId { get; set; }
+        public decimal equipmentId { get; set; }
 
         [Column("deleted")]
         public bool IsDeleted { get; set; }
+
+        public Equipment Equipment { get; set; }
+
+        public Room Room { get; set; }
+
 
     }
 }
