@@ -3,9 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31919.166
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCareAPI", "HealthCare\HealthCareAPI.csproj", "{9BACAE7B-E2B1-4330-AE15-39B09330A17B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthCareAPI", "HealthCare\HealthCareAPI.csproj", "{9BACAE7B-E2B1-4330-AE15-39B09330A17B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare.Data", "HealthCare.Data\HealthCare.Data.csproj", "{EB229FA6-5CC3-4D6D-924D-7C6CFB07DE33}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HealthCare.Data", "HealthCare.Data\HealthCare.Data.csproj", "{EB229FA6-5CC3-4D6D-924D-7C6CFB07DE33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare.Repositories", "HealthCare.Repositories\HealthCare.Repositories.csproj", "{B0F6D42F-E1DA-4FFD-AA09-8E48B093DEE4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthCare.Domain", "HealthCare.Domain\HealthCare.Domain.csproj", "{F40E840B-D2EF-422B-A96A-843B1D8E17F1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +25,14 @@ Global
 		{EB229FA6-5CC3-4D6D-924D-7C6CFB07DE33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB229FA6-5CC3-4D6D-924D-7C6CFB07DE33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB229FA6-5CC3-4D6D-924D-7C6CFB07DE33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B0F6D42F-E1DA-4FFD-AA09-8E48B093DEE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0F6D42F-E1DA-4FFD-AA09-8E48B093DEE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0F6D42F-E1DA-4FFD-AA09-8E48B093DEE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0F6D42F-E1DA-4FFD-AA09-8E48B093DEE4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F40E840B-D2EF-422B-A96A-843B1D8E17F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F40E840B-D2EF-422B-A96A-843B1D8E17F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F40E840B-D2EF-422B-A96A-843B1D8E17F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F40E840B-D2EF-422B-A96A-843B1D8E17F1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

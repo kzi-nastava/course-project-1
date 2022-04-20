@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HealthCare.Data\HealthCare.Data.csproj" />
+    <ProjectReference Include="..\HealthCare.Domain\HealthCare.Domain.csproj" />
+    <ProjectReference Include="..\HealthCare.Repositories\HealthCare.Repositories.csproj" />
   </ItemGroup>
 
 </Project>

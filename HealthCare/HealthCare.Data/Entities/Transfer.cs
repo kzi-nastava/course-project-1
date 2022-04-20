@@ -32,6 +32,6 @@ namespace HealthCare.Data.Entities
         public Equipment Equipment { get; set; }
 
         public Room RoomFrom { get; set; }
-        public Room RoomTo { get; set; }      
+        public Room RoomTo { get; set; }
     }
 }
