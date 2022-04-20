@@ -1,4 +1,7 @@
 using HealthCare.Data.Context;
+using HealthCare.Domain.Interfaces;
+using HealthCare.Domain.Services;
+using HealthCare.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +11,13 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+//Repositories
+builder.Services.AddTransient<ICredentialsRepository, CredentialsRepository>();
+
+//Domain
+builder.Services.AddTransient<ICredentialsService, CredentialsService>();
+
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");
 builder.Services.AddDbContext<HealthCareContext>(x => x.UseSqlServer(connectionString));
@@ -36,6 +46,8 @@ app.UseRouting();
 
 app.UseAuthorization();
 
-app.MapRazorPages();
+app.UseEndpoints(endpoints => endpoints.MapControllers());
+
+//app.MapRazorPages();
 
 app.Run();
