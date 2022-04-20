@@ -15,7 +15,7 @@ namespace HealthCare.Repositories
     }
     public class CredentialsRepository : ICredentialsRepository
     {
-        private HealthCareContext _healthCareContext;
+        private readonly HealthCareContext _healthCareContext;
 
         public CredentialsRepository(HealthCareContext healthCareContext)
         {
