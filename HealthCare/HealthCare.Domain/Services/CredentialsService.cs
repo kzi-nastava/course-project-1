@@ -12,6 +12,11 @@ namespace HealthCare.Domain.Services {
     public class CredentialsService : ICredentialsService{
 
         private ICredentialsRepository _credentialsRepository;
+        private IUserRoleRepository _userRoleRepository;
+        private IManagerRepository _managerRepository;
+        private IPatientRepository _patientRepository;
+        private ISecretaryRepository _secretaryRepository;
+        private IDoctorRepository _doctorRepository;
 
         public CredentialsService(ICredentialsRepository credentialsRepository) {
             _credentialsRepository = credentialsRepository;
@@ -29,11 +34,20 @@ namespace HealthCare.Domain.Services {
             CredentialsDomainModel credentialsModel;
             foreach (var item in data)
             {
-                credentialsModel = new CredentialsDomainModel
-                {
-                    Password = item.Password,
+                credentialsModel = new CredentialsDomainModel {
+                    Id = item.Id,
                     Username = item.Username,
-                    userRoleId = item.userRoleId
+                    Password = item.Password,
+                    doctorId = item.doctorId,
+                    secretaryId = item.secretaryId,
+                    managerId = item.managerId,
+                    patientId = item.patientId,
+                    userRoleId = item.userRoleId,
+                    UserRole = item.UserRole,
+                    Manager = item.Manager,
+                    Patient = item.Patient,
+                    Doctor = item.Doctor,
+                    Secretary = item.Secretary
                 };
                 results.Add(credentialsModel);
             }
