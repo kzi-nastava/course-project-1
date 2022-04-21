@@ -13,10 +13,42 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
 //Repositories
+builder.Services.AddTransient<IAnamnesisRepository, AnamnesisRepository>();
 builder.Services.AddTransient<ICredentialsRepository, CredentialsRepository>();
+builder.Services.AddTransient<IDoctorRepository, DoctorRepository>();
+builder.Services.AddTransient<IEquipmentRepository, EquipmentRepository>();
+builder.Services.AddTransient<IEquipmentTypeRepository, EquipmentTypeRepository>();
+builder.Services.AddTransient<IExaminationRepository, ExaminationRepository>();
+builder.Services.AddTransient<IExaminationApprovalRepository, ExaminationApprovalRepository>();
+builder.Services.AddTransient<IInventoryRepository, InventioryRepository>();
+builder.Services.AddTransient<IManagerRepository, ManagerRepository>();
+builder.Services.AddTransient<IMedicalRecordRepository, MedicalRecordRepository>();
+builder.Services.AddTransient<IOperationRepository, OperationRepository>();
+builder.Services.AddTransient<IPatientRepository, PatientRepository>();
+builder.Services.AddTransient<IRoomRepository, RoomRepository>();
+builder.Services.AddTransient<IRoomTypeRepository, RoomTypeRepository>();
+builder.Services.AddTransient<ISecretaryRepository, SecretaryRepository>();
+builder.Services.AddTransient<ITransferRepository, TransferRepository>();
+builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
 
 //Domain
+builder.Services.AddTransient<IAnamnesisService, AnamnesisService>();
 builder.Services.AddTransient<ICredentialsService, CredentialsService>();
+builder.Services.AddTransient<IDoctorService, DoctorService>();
+builder.Services.AddTransient<IEquipmentService, EquipmentService>();
+builder.Services.AddTransient<IEquipmentTypeService, EquipmentTypeService>();
+builder.Services.AddTransient<IExaminationApprovalService, ExaminationApprovalService>();
+builder.Services.AddTransient<IExaminationService, ExaminationService>();
+builder.Services.AddTransient<IInventoryService, InventoryService>();
+builder.Services.AddTransient<IManagerService, ManagerService>();
+builder.Services.AddTransient<IMedicalRecordService, MedicalRecordService>();
+builder.Services.AddTransient<IOperationService, OperationService>();
+builder.Services.AddTransient<IPatientService, PatientService>();
+builder.Services.AddTransient<IRoomService, RoomService>();
+builder.Services.AddTransient<IRoomTypeService, RoomTypeService>();
+builder.Services.AddTransient<ISecretaryService, SecretaryService>();
+builder.Services.AddTransient<ITransferService, TransferService>();
+builder.Services.AddTransient<IUserRoleService, UserRoleService>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");
