@@ -37,7 +37,7 @@ namespace HealthCare.Domain.Services {
                 };
                 results.Add(credentialsModel);
             }
-
+            
             return results;
         }
 
