@@ -11,8 +11,32 @@ public class ManagerService : IManagerService{
         _managerRepository = managerRepository;
     }
 
-    public Task<IEnumerable<ManagerDomainModel>> GetAll()
+    // Async awaits info from database
+    // GetAll is the equivalent of SELECT *
+    public async Task<IEnumerable<ManagerDomainModel>> GetAll()
     {
-        throw new NotImplementedException();
+        var data = await _managerRepository.GetAll();
+        if (data == null)
+            return null;
+
+        List<ManagerDomainModel> results = new List<ManagerDomainModel>();
+        ManagerDomainModel managerModel;
+        foreach (var item in data)
+        {
+            managerModel = new ManagerDomainModel
+            {
+                isDeleted = item.isDeleted,
+                BirthDate = item.BirthDate,
+                Credentials = item.Credentials,
+                Email = item.Email,
+                Id = item.Id,
+                Name = item.Name,
+                Phone = item.Phone,
+                Surname = item.Surname
+            };
+            results.Add(managerModel);
+        }
+
+        return results;
     } 
 }

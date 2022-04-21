@@ -11,8 +11,30 @@ public class InventoryService : IInventoryService {
         _inventoryRepository = inventoryRepository;
     }
 
-    public Task<IEnumerable<InventoryDomainModel>> GetAll()
+    // Async awaits info from database
+    // GetAll is the equivalent of SELECT *
+    public async Task<IEnumerable<InventoryDomainModel>> GetAll()
     {
-        throw new NotImplementedException();
+        var data = await _inventoryRepository.GetAll();
+        if (data == null)
+            return null;
+
+        List<InventoryDomainModel> results = new List<InventoryDomainModel>();
+        InventoryDomainModel inventoryModel;
+        foreach (var item in data)
+        {
+            inventoryModel = new InventoryDomainModel
+            {
+                IsDeleted = item.IsDeleted,
+                roomId = item.roomId,
+                Amount = item.Amount,
+                equipmentId = item.equipmentId,
+                Equipment = item.Equipment,
+                Room = item.Room
+            };
+            results.Add(inventoryModel);
+        }
+
+        return results;
     }    
 }
