@@ -22,5 +22,32 @@ namespace HealthCareAPI.Controllers {
             }
             return Ok(credentials);
         }
+        
+        // https://localhost:7195/api/patient/create
+        [HttpPost]
+        [Route("create")]
+        public async Task<ActionResult<PatientDomainModel>> CreatePatient([FromBody] PatientDomainModel patientModel)
+        {
+            var insertedPatientModel = await _patientService.Add(patientModel);
+            return Ok(insertedPatientModel);
+        }
+        
+        // https://localhost:7195/api/patient/update
+        [HttpPut]
+        [Route("update")]
+        public async Task<ActionResult<PatientDomainModel>> UpdatePatient([FromBody] PatientDomainModel patientModel)
+        {
+            var updatedPatientModel = await _patientService.Update(patientModel);
+            return Ok(updatedPatientModel);
+        }
+        
+        // https://localhost:7195/api/patient/delete
+        [HttpPut]
+        [Route("delete")]
+        public async Task<ActionResult<PatientDomainModel>> DeletePatient([FromBody] PatientDomainModel patientModel)
+        {
+            var deletedPatientModel = await _patientService.Delete(patientModel);
+            return Ok(deletedPatientModel);
+        }
     }
 }

@@ -1,3 +1,4 @@
+using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -43,5 +44,77 @@ public class PatientService : IPatientService{
         }
 
         return results;
-    } 
+    }
+
+    public async Task<PatientDomainModel> Add(PatientDomainModel patientModel)
+    {
+        Patient patient = new Patient();
+        patient.blockedBy = patientModel.blockedBy;
+        patient.isDeleted = patientModel.isDeleted;
+        patient.Name = patientModel.Name;
+        patient.Surname = patientModel.Surname;
+        patient.blockingCounter = patientModel.blockingCounter;
+        patient.Credentials = patientModel.Credentials;
+        patient.Email = patientModel.Email;
+        patient.Examinations = patientModel.Examinations;
+        patient.Id = patientModel.Id;
+        patient.Operations = patientModel.Operations;
+        patient.MedicalRecord = patientModel.MedicalRecord;
+        patient.BirthDate = patientModel.BirthDate;
+        patient.Phone = patientModel.Phone;
+
+        Patient insertedPatient = _patientRepository.Post(patient);
+        _patientRepository.Save();
+
+        return patientModel;
+    }
+
+    public async Task<PatientDomainModel> Update(PatientDomainModel patientModel)
+    {
+        Patient patient = await _patientRepository.GetPatientById(patientModel.Id);
+
+        patient.blockedBy = patientModel.blockedBy;
+        patient.isDeleted = patientModel.isDeleted;
+        patient.Name = patientModel.Name;
+        patient.Surname = patientModel.Surname;
+        patient.blockingCounter = patientModel.blockingCounter;
+        patient.Credentials = patientModel.Credentials;
+        patient.Email = patientModel.Email;
+        patient.Examinations = patientModel.Examinations;
+        patient.Id = patientModel.Id;
+        patient.Operations = patientModel.Operations;
+        patient.MedicalRecord = patientModel.MedicalRecord;
+        patient.BirthDate = patientModel.BirthDate;
+        patient.Phone = patientModel.Phone;
+
+        Patient insertedPatient = _patientRepository.Update(patient);
+        _patientRepository.Save();
+
+        return patientModel;
+    }
+
+    public async Task<PatientDomainModel> Delete(PatientDomainModel patientModel)
+    {
+        Patient patient = await _patientRepository.GetPatientById(patientModel.Id);
+
+        patient.blockedBy = patientModel.blockedBy;
+        patient.isDeleted = patientModel.isDeleted;
+        patient.Name = patientModel.Name;
+        patient.Surname = patientModel.Surname;
+        patient.blockingCounter = patientModel.blockingCounter;
+        patient.Credentials = patientModel.Credentials;
+        patient.Email = patientModel.Email;
+        patient.Examinations = patientModel.Examinations;
+        patient.Id = patientModel.Id;
+        patient.Operations = patientModel.Operations;
+        patient.MedicalRecord = patientModel.MedicalRecord;
+        patient.BirthDate = patientModel.BirthDate;
+        patient.Phone = patientModel.Phone;
+
+        Patient deletedPatient = _patientRepository.Delete(patient);
+        _patientRepository.Save();
+
+        return patientModel;
+        
+    }
 }

@@ -25,5 +25,10 @@ namespace HealthCare.Repositories
         {
             return await _healthCareContext.Credentials.Include(x=> x.Doctor).Include(x => x.Secretary).Include(x => x.Patient).Include(x => x.Manager).ToListAsync();
         }
+
+        public void Save()
+        {
+            _healthCareContext.SaveChanges();
+        }
     }
 }
