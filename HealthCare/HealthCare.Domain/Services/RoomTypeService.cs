@@ -11,8 +11,28 @@ public class RoomTypeService : IRoomTypeService{
         _roomTypeRepository = roomTypeRepository;
     }
 
-    public Task<IEnumerable<RoomTypeDomainModel>> GetAll()
+    // Async awaits info from database
+    // GetAll is the equivalent of SELECT *
+    public async Task<IEnumerable<RoomTypeDomainModel>> GetAll()
     {
-        throw new NotImplementedException();
+        var data = await _roomTypeRepository.GetAll();
+        if (data == null)
+            return null;
+
+        List<RoomTypeDomainModel> results = new List<RoomTypeDomainModel>();
+        RoomTypeDomainModel roomTypeModel;
+        foreach (var item in data)
+        {
+            roomTypeModel = new RoomTypeDomainModel
+            {
+                isDeleted = item.isDeleted,
+                Id = item.Id,
+                RoleName = item.RoleName,
+                Rooms = item.Rooms
+            };
+            results.Add(roomTypeModel);
+        }
+
+        return results;
     } 
 }

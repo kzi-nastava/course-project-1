@@ -16,6 +16,9 @@ namespace HealthCare.Domain.Services {
         public CredentialsService(ICredentialsRepository credentialsRepository) {
             _credentialsRepository = credentialsRepository;
         }
+        
+        // Async awaits info from database
+        // GetAll is the equivalent of SELECT *
         public async Task<IEnumerable<CredentialsDomainModel>> GetAll()
         {
             var data = await _credentialsRepository.GetAll();
@@ -38,6 +41,7 @@ namespace HealthCare.Domain.Services {
             return results;
         }
 
+        // TODO: Fix this method in the future
         public async Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(string username, string password)
         {
             var data = await GetAll();

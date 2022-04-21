@@ -11,8 +11,28 @@ public class UserRoleService : IUserRoleService{
         _userRoleRepository = userRoleRepository;
     }
 
-    public Task<IEnumerable<UserRoleDomainModel>> GetAll()
+    // Async awaits info from database
+    // GetAll is the equivalent of SELECT *
+    public async Task<IEnumerable<UserRoleDomainModel>> GetAll()
     {
-        throw new NotImplementedException();
+        var data = await _userRoleRepository.GetAll();
+        if (data == null)
+            return null;
+
+        List<UserRoleDomainModel> results = new List<UserRoleDomainModel>();
+        UserRoleDomainModel userRoleModel;
+        foreach (var item in data)
+        {
+            userRoleModel = new UserRoleDomainModel
+            {
+                isDeleted = item.isDeleted,
+                Credentials = item.Credentials,
+                Id = item.Id,
+                RoleName = item.RoleName
+            };
+            results.Add(userRoleModel);
+        }
+
+        return results;
     }
 }
