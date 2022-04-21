@@ -16,11 +16,11 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/anamnsesis
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AnamnesisDomainModel>>> GetAll() {
-            IEnumerable<AnamnesisDomainModel> credentials = await _anamnesisService.GetAll();
-            if (credentials == null) {
-                credentials = new List<AnamnesisDomainModel>();
+            IEnumerable<AnamnesisDomainModel> anamnesis =  await _anamnesisService.GetAll();
+            if (anamnesis == null) {
+                anamnesis = new List<AnamnesisDomainModel>();
             }
-            return Ok(credentials);
+            return Ok(anamnesis);
         }
     }
 }

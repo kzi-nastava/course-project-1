@@ -16,11 +16,11 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/inventory
         [HttpGet]
         public async Task<ActionResult<IEnumerable<InventoryDomainModel>>> GetAll() {
-            IEnumerable<InventoryDomainModel> credentials = await _inventoryService.GetAll();
-            if (credentials == null) {
-                credentials = new List<InventoryDomainModel>();
+            IEnumerable<InventoryDomainModel> inventories = await _inventoryService.GetAll();
+            if (inventories == null) {
+                inventories = new List<InventoryDomainModel>();
             }
-            return Ok(credentials);
+            return Ok(inventories);
         }
     }
 }

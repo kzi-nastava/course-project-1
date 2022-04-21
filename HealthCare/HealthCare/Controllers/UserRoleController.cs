@@ -16,11 +16,11 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/userRole
         [HttpGet]
         public async Task<ActionResult<IEnumerable<UserRoleDomainModel>>> GetAll() {
-            IEnumerable<UserRoleDomainModel> credentials = await _userRoleService.GetAll();
-            if (credentials == null) {
-                credentials = new List<UserRoleDomainModel>();
+            IEnumerable<UserRoleDomainModel> userRoles = await _userRoleService.GetAll();
+            if (userRoles == null) {
+                userRoles = new List<UserRoleDomainModel>();
             }
-            return Ok(credentials);
+            return Ok(userRoles);
         }
     }
 }
