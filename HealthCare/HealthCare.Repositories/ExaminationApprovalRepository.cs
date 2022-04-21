@@ -20,5 +20,10 @@ namespace HealthCare.Repositories {
         public async Task<IEnumerable<ExaminationApproval>> GetAll() {
             return await _healthCareContext.ExaminationApprovals.ToListAsync();
         }
+
+        public void Save()
+        {
+            _healthCareContext.SaveChanges();
+        }
     }
 }

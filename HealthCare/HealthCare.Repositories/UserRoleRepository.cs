@@ -21,6 +21,11 @@ namespace HealthCare.Repositories {
             return await _healthCareContext.UserRoles.ToListAsync();
         }
 
+        public void Save()
+        {
+            _healthCareContext.SaveChanges();
+        }
+
         public async Task<UserRole> GetById(decimal id) {
             return await _healthCareContext.UserRoles.FirstAsync(x => x.Id == id);
         }

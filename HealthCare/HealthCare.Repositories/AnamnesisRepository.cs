@@ -20,5 +20,10 @@ namespace HealthCare.Repositories {
         public async Task<IEnumerable<Anamnesis>> GetAll() {
             return await _healthCareContext.Anamneses.ToListAsync();
         }
+
+        public void Save()
+        {
+            _healthCareContext.SaveChanges();
+        }
     }
 }

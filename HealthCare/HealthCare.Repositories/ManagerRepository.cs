@@ -20,5 +20,10 @@ namespace HealthCare.Repositories {
         public async Task<IEnumerable<Manager>> GetAll() {
             return await _healthCareContext.Managers.ToListAsync();
         }
+
+        public void Save()
+        {
+            _healthCareContext.SaveChanges();
+        }
     }
 }
