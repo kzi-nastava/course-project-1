@@ -27,7 +27,7 @@ public class DoctorService : IDoctorService{
             {
                 isDeleted = item.isDeleted,
                 BirthDate = item.BirthDate,
-                Credentials = item.Credentials,
+                //Credentials = item.Credentials,
                 Email = item.Email,
                 Examinations = item.Examinations,
                 Id = item.Id,

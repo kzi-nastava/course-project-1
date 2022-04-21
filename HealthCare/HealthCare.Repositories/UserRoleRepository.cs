@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthCare.Repositories {
     public interface IUserRoleRepository : IRepository<UserRole> {
-
+        public Task<UserRole> GetById(decimal id);
     }
     public class UserRoleRepository : IUserRoleRepository {
         private readonly HealthCareContext _healthCareContext;
@@ -19,6 +19,10 @@ namespace HealthCare.Repositories {
         }
         public async Task<IEnumerable<UserRole>> GetAll() {
             return await _healthCareContext.UserRoles.ToListAsync();
+        }
+
+        public async Task<UserRole> GetById(decimal id) {
+            return await _healthCareContext.UserRoles.FirstAsync(x => x.Id == id);
         }
     }
 }

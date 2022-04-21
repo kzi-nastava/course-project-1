@@ -3,6 +3,7 @@ using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Services;
 using HealthCare.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,10 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
 
 //Repositories
 builder.Services.AddTransient<IAnamnesisRepository, AnamnesisRepository>();

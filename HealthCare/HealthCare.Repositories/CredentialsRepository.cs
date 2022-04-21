@@ -23,7 +23,7 @@ namespace HealthCare.Repositories
         }
         public async Task<IEnumerable<Credentials>> GetAll()
         {
-            return await _healthCareContext.Credentials.ToListAsync();
+            return await _healthCareContext.Credentials.Include(x=> x.Doctor).Include(x => x.Secretary).Include(x => x.Patient).Include(x => x.Manager).ToListAsync();
         }
     }
 }
