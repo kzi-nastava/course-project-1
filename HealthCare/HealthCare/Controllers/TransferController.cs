@@ -16,11 +16,11 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/transfer
         [HttpGet]
         public async Task<ActionResult<IEnumerable<TransferDomainModel>>> GetAll() {
-            IEnumerable<TransferDomainModel> credentials = await _transferService.GetAll();
-            if (credentials == null) {
-                credentials = new List<TransferDomainModel>();
+            IEnumerable<TransferDomainModel> transfers = await _transferService.GetAll();
+            if (transfers == null) {
+                transfers = new List<TransferDomainModel>();
             }
-            return Ok(credentials);
+            return Ok(transfers);
         }
     }
 }

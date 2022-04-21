@@ -16,11 +16,11 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/secretary
         [HttpGet]
         public async Task<ActionResult<IEnumerable<SecretaryDomainModel>>> GetAll() {
-            IEnumerable<SecretaryDomainModel> credentials = await _secretaryService.GetAll();
-            if (credentials == null) {
-                credentials = new List<SecretaryDomainModel>();
+            IEnumerable<SecretaryDomainModel> secretaries = await _secretaryService.GetAll();
+            if (secretaries == null) {
+                secretaries = new List<SecretaryDomainModel>();
             }
-            return Ok(credentials);
+            return Ok(secretaries);
         }
     }
 }

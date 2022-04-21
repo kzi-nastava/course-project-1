@@ -16,11 +16,11 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/manager
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ManagerDomainModel>>> GetAll() {
-            IEnumerable<ManagerDomainModel> credentials = await _managerService.GetAll();
-            if (credentials == null) {
-                credentials = new List<ManagerDomainModel>();
+            IEnumerable<ManagerDomainModel> managers = await _managerService.GetAll();
+            if (managers == null) {
+                managers = new List<ManagerDomainModel>();
             }
-            return Ok(credentials);
+            return Ok(managers);
         }
     }
 }

@@ -16,11 +16,11 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/examinationApproval
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ExaminationApprovalDomainModel>>> GetAll() {
-            IEnumerable<ExaminationApprovalDomainModel> credentials = await _examinationApprovalService.GetAll();
-            if (credentials == null) {
-                credentials = new List<ExaminationApprovalDomainModel>();
+            IEnumerable<ExaminationApprovalDomainModel> examinationApprovals = await _examinationApprovalService.GetAll();
+            if (examinationApprovals == null) {
+                examinationApprovals = new List<ExaminationApprovalDomainModel>();
             }
-            return Ok(credentials);
+            return Ok(examinationApprovals);
         }
     }
 }
