@@ -11,7 +11,9 @@ namespace HealthCare.Data.Entities
     public class Operation
     {
         [Column("time_held")]
-        public DateTime Duration { get; set; }
+        public DateTime StartTime { get; set; }
+
+        public decimal Duration { get; set; }
 
         [Column("room_id")]
         public decimal RoomId  { get; set; }   

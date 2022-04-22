@@ -10,5 +10,7 @@ public class RoomTypeDomainModel
 
     public bool isDeleted { get; set; }
 
+    public string Purpose { get; set; }
+
    // public List<RoomDomainModel> Rooms { get; set; }
 }

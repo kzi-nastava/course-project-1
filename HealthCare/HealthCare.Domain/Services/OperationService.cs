@@ -30,6 +30,7 @@ public class OperationService : IOperationService{
                 //Doctor = item.Doctor,
                 DoctorId = item.DoctorId,
                 Duration = item.Duration,
+                StartTime = item.StartTime,
                 //Room = item.Room,
                 RoomId = item.RoomId
             };

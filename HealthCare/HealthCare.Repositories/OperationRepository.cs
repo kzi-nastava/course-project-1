@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthCare.Repositories {
     public interface IOperationRepository : IRepository<Operation> {
-
+        public Task<IEnumerable<Operation>> GetAllByDoctorId(decimal id);
     }
     public class OperationRepository : IOperationRepository {
         private readonly HealthCareContext _healthCareContext;
@@ -19,6 +19,13 @@ namespace HealthCare.Repositories {
         }
         public async Task<IEnumerable<Operation>> GetAll() {
             return await _healthCareContext.Operations.ToListAsync();
+        }
+
+        public async Task<IEnumerable<Operation>> GetAllByDoctorId(decimal id) {
+            return await _healthCareContext.Operations
+                .Where(x => x.DoctorId == id)
+                .Where(x => x.isDeleted == false)
+                .ToListAsync();
         }
 
         public void Save()
