@@ -18,9 +18,9 @@ public class DoctorDomainModel
 
     public bool isDeleted { get; set; }
 
-    public List<Operation> Operations { get; set; }
+    public List<OperationDomainModel> Operations { get; set; }
 
-    public List<Examination> Examinations { get; set; }
+    public List<ExaminationDomainModel> Examinations { get; set; }
 
-    public Credentials Credentials { get; set; }
+    public CredentialsDomainModel Credentials { get; set; }
 }

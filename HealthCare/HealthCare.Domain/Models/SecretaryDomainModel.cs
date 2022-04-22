@@ -18,5 +18,5 @@ public class SecretaryDomainModel
 
     public bool isDeleted { get; set; }
 
-    public Credentials Credentials { get; set; }
+    public CredentialsDomainModel Credentials { get; set; }
 }

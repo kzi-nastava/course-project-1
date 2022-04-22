@@ -25,9 +25,9 @@ namespace HealthCare.Data.Entities
         [Column("deleted")]
         public bool isDeleted { get; set; }
 
-        public Room Room { get; set; }
+        //public Room Room { get; set; }
 
-        public Patient Patient { get; set; }
-        public Doctor Doctor { get; set; }
+        //public Patient Patient { get; set; }
+        //public Doctor Doctor { get; set; }
     }
 }

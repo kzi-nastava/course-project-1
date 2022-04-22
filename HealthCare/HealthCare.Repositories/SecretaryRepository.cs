@@ -18,7 +18,9 @@ namespace HealthCare.Repositories {
             _healthCareContext = healthCareContext;
         }
         public async Task<IEnumerable<Secretary>> GetAll() {
-            return await _healthCareContext.Secretaries.ToListAsync();
+            return await _healthCareContext.Secretaries
+                .Include(x => x.Credentials)
+                .ToListAsync();
         }
 
         public void Save()

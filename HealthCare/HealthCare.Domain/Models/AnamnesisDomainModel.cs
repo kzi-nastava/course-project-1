@@ -16,5 +16,5 @@ public class AnamnesisDomainModel {
 
     public bool isDeleted { get; set; }
 
-    public Examination Examination { get; set; } 
+    //public ExaminationDomainModel Examination { get; set; } 
 }

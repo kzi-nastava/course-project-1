@@ -23,12 +23,12 @@ namespace HealthCare.Domain.Models {
 
         public decimal userRoleId { get; set; }
 
-        public UserRole UserRole { get; set; }
+        public UserRoleDomainModel UserRole { get; set; }
 
-        public Manager Manager { get; set; }
-        public Doctor Doctor { get; set; }
-        public Patient Patient { get; set; }
-        public Secretary Secretary { get; set; }
+        //public Manager Manager { get; set; }
+        //public Doctor Doctor { get; set; }
+        //public Patient Patient { get; set; }
+        //public Secretary Secretary { get; set; }
 
     }
 }

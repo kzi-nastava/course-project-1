@@ -1,6 +1,9 @@
 ﻿using System.Diagnostics.Eventing.Reader;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
+using HealthCare.Domain.Models.ModelsForCreate;
+using HealthCare.Domain.Models.ModelsForUpdate;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareAPI.Controllers {
@@ -26,7 +29,7 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/patient/create
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<PatientDomainModel>> CreatePatient([FromBody] PatientDomainModel patientModel)
+        public async Task<ActionResult<CreatePatientDomainModel>> CreatePatient([FromBody] CreatePatientDomainModel patientModel)
         {
             var insertedPatientModel = await _patientService.Add(patientModel);
             return Ok(insertedPatientModel);
@@ -34,19 +37,19 @@ namespace HealthCareAPI.Controllers {
         
         // https://localhost:7195/api/patient/update
         [HttpPut]
-        [Route("update")]
-        public async Task<ActionResult<PatientDomainModel>> UpdatePatient([FromBody] PatientDomainModel patientModel)
+        [Route("update/{id}")]
+        public async Task<ActionResult<PatientDomainModel>> UpdatePatient(decimal id, UpdatePatientDomainModel patientModel)
         {
-            var updatedPatientModel = await _patientService.Update(patientModel);
+            var updatedPatientModel = await _patientService.Update(patientModel, id);
             return Ok(updatedPatientModel);
         }
         
         // https://localhost:7195/api/patient/delete
         [HttpPut]
-        [Route("delete")]
-        public async Task<ActionResult<PatientDomainModel>> DeletePatient([FromBody] PatientDomainModel patientModel)
+        [Route("delete/{id}")]
+        public async Task<ActionResult<PatientDomainModel>> DeletePatient(decimal id)
         {
-            var deletedPatientModel = await _patientService.Delete(patientModel);
+            var deletedPatientModel = await _patientService.Delete(id);
             return Ok(deletedPatientModel);
         }
     }

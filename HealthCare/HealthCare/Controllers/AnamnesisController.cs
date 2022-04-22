@@ -6,10 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 namespace HealthCareAPI.Controllers {
     [ApiController]
     [Route("api/[controller]")]
-    public class AnamnsesisController : ControllerBase {
+    public class AnamnesisController : ControllerBase {
         private IAnamnesisService _anamnesisService;
 
-        public AnamnsesisController(IAnamnesisService anamnesisService) {
+        public AnamnesisController(IAnamnesisService anamnesisService) {
             _anamnesisService = anamnesisService;
         }
 

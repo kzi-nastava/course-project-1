@@ -29,7 +29,7 @@ namespace HealthCare.Data.Entities
         public string Phone { get; set; }
 
         [Column("blocked")]
-        public string blockedBy { get; set; }
+        public string? blockedBy { get; set; }
 
         [Column("blocking_counter")]
         public decimal blockingCounter { get; set; }

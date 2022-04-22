@@ -26,7 +26,7 @@ public class UserRoleService : IUserRoleService{
             userRoleModel = new UserRoleDomainModel
             {
                 isDeleted = item.isDeleted,
-                Credentials = item.Credentials,
+                //Credentials = item.Credentials,
                 Id = item.Id,
                 RoleName = item.RoleName
             };

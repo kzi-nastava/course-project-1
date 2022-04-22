@@ -28,7 +28,6 @@ public class RoomTypeService : IRoomTypeService{
                 isDeleted = item.isDeleted,
                 Id = item.Id,
                 RoleName = item.RoleName,
-                Rooms = item.Rooms
             };
             results.Add(roomTypeModel);
         }

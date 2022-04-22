@@ -43,12 +43,14 @@ namespace HealthCare.Domain.Services {
                     managerId = item.managerId,
                     patientId = item.patientId,
                     userRoleId = item.userRoleId,
-                    UserRole = item.UserRole,
-                    Manager = item.Manager,
-                    Patient = item.Patient,
-                    Doctor = item.Doctor,
-                    Secretary = item.Secretary
                 };
+                if (item.UserRole != null) {
+                    credentialsModel.UserRole = new UserRoleDomainModel {
+                        Id = item.UserRole.Id,
+                        RoleName = item.UserRole.RoleName,
+                        isDeleted = item.UserRole.isDeleted
+                    };
+                }
                 results.Add(credentialsModel);
             }
             

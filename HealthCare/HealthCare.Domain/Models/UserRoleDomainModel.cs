@@ -10,5 +10,5 @@ public class UserRoleDomainModel
 
     public bool isDeleted { get; set; }
 
-    public List<Credentials> Credentials { get; set; }
+    //public List<Credentials> Credentials { get; set; }
 }

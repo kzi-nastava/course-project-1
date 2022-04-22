@@ -25,12 +25,12 @@ public class OperationService : IOperationService{
             operationModel = new OperationDomainModel
             {
                 isDeleted = item.isDeleted,
-                Patient = item.Patient,
+                //Patient = item.Patient,
                 PatientId = item.PatientId,
-                Doctor = item.Doctor,
+                //Doctor = item.Doctor,
                 DoctorId = item.DoctorId,
                 Duration = item.Duration,
-                Room = item.Room,
+                //Room = item.Room,
                 RoomId = item.RoomId
             };
             results.Add(operationModel);

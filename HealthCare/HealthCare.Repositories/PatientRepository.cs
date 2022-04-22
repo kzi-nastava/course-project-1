@@ -21,7 +21,13 @@ namespace HealthCare.Repositories {
             _healthCareContext = healthCareContext;
         }
         public async Task<IEnumerable<Patient>> GetAll() {
-            return await _healthCareContext.Patients.ToListAsync();
+            return await _healthCareContext.Patients
+                .Include(x => x.Credentials)
+                .Include(x => x.MedicalRecord)
+                .Include(x => x.Operations)
+                .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
+                .Include(x => x.Examinations).ThenInclude(x => x.ExaminationApproval)
+                .ToListAsync();
         }
 
         public Patient Delete(Patient patient)

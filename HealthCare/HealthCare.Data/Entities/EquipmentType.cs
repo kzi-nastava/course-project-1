@@ -19,7 +19,7 @@ namespace HealthCare.Data.Entities
         [Column("deleted")]
         public bool IsDeleted { get; set; }
 
-        public List<Equipment> Equipments { get; set; }
+        //public List<Equipment> Equipments { get; set; }
 
     }
 

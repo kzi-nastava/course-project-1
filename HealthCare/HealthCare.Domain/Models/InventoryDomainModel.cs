@@ -12,8 +12,8 @@ public class InventoryDomainModel
 
     public bool IsDeleted { get; set; }
 
-    public Equipment Equipment { get; set; }
+    public EquipmentDomainModel Equipment { get; set; }
 
-    public Room Room { get; set; }
+    //public RoomDomainModel Room { get; set; }
 
 }

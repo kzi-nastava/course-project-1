@@ -29,7 +29,6 @@ public class AnamnesisService : IAnamnesisService
             {
                 Description = item.Description,
                 doctorId = item.doctorId,
-                Examination = item.Examination,
                 isDeleted = item.isDeleted,
                 patientId = item.patientId,
                 roomId = item.roomId,

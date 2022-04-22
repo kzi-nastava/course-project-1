@@ -19,6 +19,6 @@ namespace HealthCare.Data.Entities
         [Column("deleted")]
         public bool isDeleted { get; set; }
 
-        public List<Credentials> Credentials { get; set; }
+        //public List<Credentials> Credentials { get; set; }
     }
 }
