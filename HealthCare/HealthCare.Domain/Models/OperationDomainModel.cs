@@ -4,7 +4,9 @@ namespace HealthCare.Domain.Models;
 
 public class OperationDomainModel
 {
-    public DateTime Duration { get; set; }
+    public DateTime StartTime { get; set; }
+
+    public decimal Duration { get; set; }
 
     public decimal RoomId  { get; set; }   
 

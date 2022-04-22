@@ -161,16 +161,17 @@ public class PatientService : IPatientService{
                     StartTime = examination.StartTime,
                     IsDeleted = examination.IsDeleted
                 };
-                Anamnesis anamnesisDomainModel = new Anamnesis {
-                    Description = examination.Anamnesis.Description,
-                    doctorId = examination.Anamnesis.doctorId,
-                    roomId = examination.Anamnesis.roomId,
-                    patientId = examination.Anamnesis.patientId,
-                    StartTime = examination.Anamnesis.StartTime,
-                    isDeleted = examination.Anamnesis.isDeleted
-
-                };
-                examinationDomainModel.Anamnesis = anamnesisDomainModel;
+                if(examination.Anamnesis != null) {
+                    Anamnesis anamnesisDomainModel = new Anamnesis {
+                        Description = examination.Anamnesis.Description,
+                        doctorId = examination.Anamnesis.doctorId,
+                        roomId = examination.Anamnesis.roomId,
+                        patientId = examination.Anamnesis.patientId,
+                        StartTime = examination.Anamnesis.StartTime,
+                        isDeleted = examination.Anamnesis.isDeleted
+                    };
+                    examinationDomainModel.Anamnesis = anamnesisDomainModel;
+                }
                 patientModel.Examinations.Add(examinationDomainModel);
             }
         }
