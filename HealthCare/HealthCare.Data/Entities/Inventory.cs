@@ -24,7 +24,7 @@ namespace HealthCare.Data.Entities
 
         public Equipment Equipment { get; set; }
 
-        public Room Room { get; set; }
+        //public Room Room { get; set; }
 
 
     }

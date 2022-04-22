@@ -26,13 +26,16 @@ public class EquipmentService : IEquipmentService{
             equipmentModel = new EquipmentDomainModel
             {
                 Id = item.Id,
-                EquipmentType = item.EquipmentType,
                 equipmentTypeId = item.equipmentTypeId,
-                Inventories = item.Inventories,
                 IsDeleted = item.IsDeleted,
                 Name = item.Name,
-                Transfers = item.Transfers
             };
+            if (item.EquipmentType != null)
+                equipmentModel.EquipmentType = new EquipmentTypeDomainModel {
+                    Id = item.EquipmentType.Id,
+                    Name = item.EquipmentType.Name,
+                    IsDeleted = item.EquipmentType.IsDeleted
+                };
             results.Add(equipmentModel);
         }
 

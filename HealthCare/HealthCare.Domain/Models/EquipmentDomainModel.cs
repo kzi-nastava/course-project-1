@@ -12,9 +12,9 @@ public class EquipmentDomainModel
 
     public bool IsDeleted { get; set; }
 
-    public EquipmentType EquipmentType { get; set; }
+    public EquipmentTypeDomainModel EquipmentType { get; set; }
 
-    public List<Transfer> Transfers { get; set; }
+    //public List<TransferDomainModel> Transfers { get; set; }
 
-    public List<Inventory> Inventories { get; set; }
+    //public List<InventoryDomainModel> Inventories { get; set; }
 }

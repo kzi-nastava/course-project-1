@@ -29,7 +29,6 @@ public class EquipmentTypeService : IEquipmentTypeService {
                 Id = item.Id,
                 IsDeleted = item.IsDeleted,
                 Name = item.Name,
-                Equipments = item.Equipments
             };
             results.Add(equipmentTypeModel);
         }

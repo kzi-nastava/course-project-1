@@ -12,9 +12,9 @@ public class RoomDomainModel
 
     public bool isDeleted { get; set; }
 
-    public List<Inventory> Inventories { get; set; }
-    public List<Transfer> TransfersFrom { get; set; }
-    public List<Transfer> TransfersTo { get; set; }
-    public RoomType RoomType { get; set; }
-    public List<Operation> Operations { get; set; }
+    public List<InventoryDomainModel> Inventories { get; set; }
+    //public List<TransferDomainModel> TransfersFrom { get; set; }
+    //public List<TransferDomainModel> TransfersTo { get; set; }
+    public RoomTypeDomainModel RoomType { get; set; }
+    public List<OperationDomainModel> Operations { get; set; }
 }

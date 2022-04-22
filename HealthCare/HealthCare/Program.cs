@@ -12,9 +12,13 @@ builder.Services.AddRazorPages();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
 
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+//builder.Services.AddControllers().AddJsonOptions(x =>
+//   x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
 
 
 //Repositories
@@ -58,6 +62,9 @@ builder.Services.AddTransient<IUserRoleService, UserRoleService>();
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");
 builder.Services.AddDbContext<HealthCareContext>(x => x.UseSqlServer(connectionString));
+//builder.Services.AddDbContext<HealthCareContext>(x => x.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
+builder.Services.AddDbContext<HealthCareContext>(x => x.EnableSensitiveDataLogging());
+
 
 builder.Services.AddCors(options => {
     options.AddPolicy("CorsPolicy", 
@@ -65,6 +72,7 @@ builder.Services.AddCors(options => {
            .AllowAnyHeader()
             .AllowCredentials());
 });
+
 
 var app = builder.Build();
 
@@ -74,6 +82,11 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+    
+}
+else {
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();

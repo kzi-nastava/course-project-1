@@ -36,11 +36,14 @@ namespace HealthCare.Data.Entities
         [Column("User_role_id")]
         public decimal userRoleId { get; set; }
 
+        [Column("deleted")]
+        public bool isDeleted { get; set; }
+
         public UserRole UserRole { get; set; }
 
-        public Manager Manager { get; set; }
-        public Doctor Doctor { get; set; }
-        public Patient Patient { get; set; }
-        public Secretary Secretary { get; set; }
+        //public Manager Manager { get; set; }
+        //public Doctor Doctor { get; set; }
+        //public Patient Patient { get; set; }
+        //public Secretary Secretary { get; set; }
     }
 }

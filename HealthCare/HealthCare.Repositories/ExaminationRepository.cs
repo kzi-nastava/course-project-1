@@ -18,7 +18,12 @@ namespace HealthCare.Repositories {
             _healthCareContext = healthCareContext;
         }
         public async Task<IEnumerable<Examination>> GetAll() {
-            return await _healthCareContext.Examinations.ToListAsync();
+            return await _healthCareContext.Examinations.Include(x => x.Anamnesis).ToListAsync();
+        }
+
+        public void Save()
+        {
+            _healthCareContext.SaveChanges();
         }
     }
 }

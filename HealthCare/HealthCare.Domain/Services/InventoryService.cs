@@ -29,9 +29,21 @@ public class InventoryService : IInventoryService {
                 roomId = item.roomId,
                 Amount = item.Amount,
                 equipmentId = item.equipmentId,
-                Equipment = item.Equipment,
-                Room = item.Room
             };
+            if (item.Equipment != null) {
+                inventoryModel.Equipment = new EquipmentDomainModel {
+                    Id = item.Equipment.Id,
+                    equipmentTypeId = item.Equipment.equipmentTypeId,
+                    IsDeleted = item.Equipment.IsDeleted,
+                    Name = item.Equipment.Name,
+                };
+                if (inventoryModel.Equipment.EquipmentType != null)
+                    inventoryModel.Equipment.EquipmentType = new EquipmentTypeDomainModel {
+                        Id = item.Equipment.EquipmentType.Id,
+                        Name = item.Equipment.EquipmentType.Name,
+                        IsDeleted = item.Equipment.EquipmentType.IsDeleted
+                    };
+            }
             results.Add(inventoryModel);
         }
 

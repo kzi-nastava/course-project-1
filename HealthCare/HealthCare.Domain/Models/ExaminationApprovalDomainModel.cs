@@ -16,6 +16,6 @@ public class ExaminationApprovalDomainModel
 
     public bool isDeleted { get; set; }
 
-    public Examination Examination { get; set; }
+    public ExaminationDomainModel Examination { get; set; }
 
 }

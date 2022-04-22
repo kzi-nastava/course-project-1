@@ -14,8 +14,8 @@ public class OperationDomainModel
 
     public bool isDeleted { get; set; }
 
-    public Room Room { get; set; }
+    //public RoomDomainModel Room { get; set; }
 
-    public Patient Patient { get; set; }
-    public Doctor Doctor { get; set; }
+    //public PatientDomainModel Patient { get; set; }
+    //public DoctorDomainModel Doctor { get; set; }
 }

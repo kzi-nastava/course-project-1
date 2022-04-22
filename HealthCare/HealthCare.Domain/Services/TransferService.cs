@@ -27,14 +27,27 @@ public class TransferService : ITransferService{
             {
                 isDeleted = item.isDeleted,
                 Amount = item.Amount,
-                Equipment = item.Equipment,
                 EquipmentId = item.EquipmentId,
-                RoomFrom = item.RoomFrom,
+                //RoomFrom = item.RoomFrom,
                 RoomFromId = item.RoomFromId,
-                RoomTo = item.RoomTo,
+                //RoomTo = item.RoomTo,
                 RoomToId = item.RoomToId,
                 TransferTime = item.TransferTime
             };
+            if (item.Equipment != null) {
+                transferModel.Equipment = new EquipmentDomainModel {
+                    Id = item.Equipment.Id,
+                    equipmentTypeId = item.Equipment.equipmentTypeId,
+                    IsDeleted = item.Equipment.IsDeleted,
+                    Name = item.Equipment.Name,
+                };
+                if (transferModel.Equipment.EquipmentType != null)
+                    transferModel.Equipment.EquipmentType = new EquipmentTypeDomainModel {
+                        Id = item.Equipment.EquipmentType.Id,
+                        Name = item.Equipment.EquipmentType.Name,
+                        IsDeleted = item.Equipment.EquipmentType.IsDeleted
+                    };
+            }
             results.Add(transferModel);
         }
 

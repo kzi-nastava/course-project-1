@@ -28,7 +28,6 @@ public class MedicalRecordService : IMedicalRecordService {
                 Allergies = item.Allergies,
                 BedriddenDiseases = item.BedriddenDiseases,
                 Height = item.Height,
-                Patient = item.Patient,
                 PatientId = item.PatientId,
                 Weight = item.Weight
             };

@@ -27,13 +27,32 @@ public class ManagerService : IManagerService{
             {
                 isDeleted = item.isDeleted,
                 BirthDate = item.BirthDate,
-                Credentials = item.Credentials,
                 Email = item.Email,
                 Id = item.Id,
                 Name = item.Name,
                 Phone = item.Phone,
                 Surname = item.Surname
             };
+            if (item.Credentials != null) {
+                managerModel.Credentials = new CredentialsDomainModel {
+                    Id = item.Credentials.Id,
+                    Username = item.Credentials.Username,
+                    Password = item.Credentials.Password,
+                    doctorId = item.Credentials.doctorId,
+                    secretaryId = item.Credentials.secretaryId,
+                    managerId = item.Credentials.managerId,
+                    patientId = item.Credentials.patientId,
+                    userRoleId = item.Credentials.userRoleId
+
+                };
+                if (item.Credentials.UserRole != null) {
+                    managerModel.Credentials.UserRole = new UserRoleDomainModel {
+                        Id = item.Credentials.UserRole.Id,
+                        RoleName = item.Credentials.UserRole.RoleName,
+                        isDeleted = item.Credentials.UserRole.isDeleted
+                    };
+                }
+            }
             results.Add(managerModel);
         }
 

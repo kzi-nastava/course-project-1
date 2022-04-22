@@ -18,7 +18,14 @@ namespace HealthCare.Repositories {
             _healthCareContext = healthCareContext;
         }
         public async Task<IEnumerable<Transfer>> GetAll() {
-            return await _healthCareContext.Transfers.ToListAsync();
+            return await _healthCareContext.Transfers
+                .Include(x => x.Equipment).ThenInclude(x => x.EquipmentType)
+                .ToListAsync();
+        }
+
+        public void Save()
+        {
+            _healthCareContext.SaveChanges();
         }
     }
 }

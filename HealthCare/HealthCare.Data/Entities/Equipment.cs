@@ -24,9 +24,9 @@ namespace HealthCare.Data.Entities
 
         public EquipmentType EquipmentType { get; set; }
 
-        public List<Transfer> Transfers { get; set; }
+        //public List<Transfer> Transfers { get; set; }
 
-        public List<Inventory> Inventories { get; set; }
+        //public List<Inventory> Inventories { get; set; }
 
 
 

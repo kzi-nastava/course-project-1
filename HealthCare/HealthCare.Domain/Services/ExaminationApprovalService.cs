@@ -27,12 +27,19 @@ public class ExaminationApprovalService : IExaminationApprovalService{
             {
                 isDeleted = item.isDeleted,
                 DoctorId = item.DoctorId,
-                Examination = item.Examination,
                 PatientId = item.PatientId,
                 RoomId = item.RoomId,
                 StartTime = item.StartTime,
                 State = item.State
             };
+            if (item.Examination != null)
+                examinationApprovalModel.Examination = new ExaminationDomainModel {
+                    doctorId = item.Examination.doctorId,
+                    roomId = item.Examination.roomId,
+                    patientId = item.Examination.patientId,
+                    StartTime = item.Examination.StartTime,
+                    IsDeleted = item.Examination.IsDeleted
+                };
             results.Add(examinationApprovalModel);
         }
 

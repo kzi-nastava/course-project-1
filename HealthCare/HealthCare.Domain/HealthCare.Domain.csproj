@@ -7,6 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="6.0.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.3.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.3.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\HealthCare.Data\HealthCare.Data.csproj" />
     <ProjectReference Include="..\HealthCare.Repositories\HealthCare.Repositories.csproj" />
   </ItemGroup>

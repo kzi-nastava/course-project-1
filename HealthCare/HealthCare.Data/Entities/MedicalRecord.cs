@@ -28,6 +28,6 @@ namespace HealthCare.Data.Entities
         [Column("deleted")]
         public bool isDeleted { get; set; }
 
-        public Patient Patient { get; set; }
+        //public Patient Patient { get; set; }
     }
 }

@@ -16,8 +16,8 @@ public class TransferDomainModel
 
     public bool isDeleted { get; set; }
 
-    public Equipment Equipment { get; set; }
+    public EquipmentDomainModel Equipment { get; set; }
 
-    public Room RoomFrom { get; set; }
-    public Room RoomTo { get; set; }
+    //public RoomDomainModel RoomFrom { get; set; }
+    //public RoomDomainModel RoomTo { get; set; }
 }
