@@ -66,7 +66,7 @@ namespace HealthCareAPI.Controllers {
 
         [HttpPut]
         [Route("update")]
-        public async Task<ActionResult<UpdateExaminationDomainModel>> UpdateExamination(UpdateExaminationDomainModel examinationModel) {
+        public async Task<ActionResult<UpdateExaminationDomainModel>> UpdateExamination([FromBody] UpdateExaminationDomainModel examinationModel) {
             var updatedExaminationModel = await _examinationService.Update(examinationModel);
             return Ok(updatedExaminationModel);
         }
