@@ -47,7 +47,8 @@ namespace HealthCare.Data.Context
                 .IsRequired();
             modelBuilder.Entity<Examination>()
                 .HasOne(x => x.Anamnesis)
-                .WithOne(x => x.Examination);
+                .WithOne(x => x.Examination)
+                .IsRequired(false);
             modelBuilder.Entity<Anamnesis>().HasKey(x => new {x.patientId, x.roomId, x.doctorId, x.StartTime});
             modelBuilder.Entity<Examination>().HasKey(x => new {x.patientId, x.roomId, x.doctorId, x.StartTime});
 

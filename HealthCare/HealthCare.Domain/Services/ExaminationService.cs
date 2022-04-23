@@ -72,9 +72,25 @@ public class ExaminationService : IExaminationService{
         return results;
     }
 
-    public async Task<ExaminationDomainModel> Delete(DeleteExaminationDomainModel updateExamination) {
-        var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(updateExamination.roomId, updateExamination.doctorId, updateExamination.patientId, updateExamination.StartTime);
-        var daysUntilExamination = (updateExamination.StartTime - DateTime.Now).TotalDays;
+    public async Task<IEnumerable<ExaminationDomainModel>> GetAllForDoctor(decimal id)
+    {
+        var data = await _examinationRepository.GetAllByDoctorId(id);
+        if (data == null)
+            return null;
+
+        List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
+
+        foreach (var item in data)
+        {
+            results.Add(parseToModel(item));
+        }
+
+        return results;
+    }
+
+    public async Task<ExaminationDomainModel> Delete(DeleteExaminationDomainModel deleteExamination) {
+        var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(deleteExamination.roomId, deleteExamination.doctorId, deleteExamination.patientId, deleteExamination.StartTime);
+        var daysUntilExamination = (deleteExamination.StartTime - DateTime.Now).TotalDays;
         if(daysUntilExamination > 1) {
             examination.IsDeleted = true;
             _ = _examinationRepository.Update(examination);
@@ -94,6 +110,34 @@ public class ExaminationService : IExaminationService{
         }
         return null;
        
+    }
+
+    private async Task<bool> IsPatientOnExaminationAsync(CreateExaminationDomainModel examinationModel)
+    {
+        var patientsExaminations = await _examinationRepository.GetAllByPatientId(examinationModel.patientId);
+        foreach (Examination examination in patientsExaminations)
+        {
+            double difference = (examinationModel.StartTime - examination.StartTime).TotalMinutes;
+            if (difference <= 15 && difference >= -15)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private async Task<bool> IsPatientOnOperationAsync(CreateExaminationDomainModel examinationModel)
+    {
+        var patientsOperations = await _operationRepository.GetAllByPatientId(examinationModel.patientId);
+        foreach (Operation operation in patientsOperations)
+        {
+            double difference = (examinationModel.StartTime - operation.StartTime).TotalMinutes;
+            if (difference <= (double)operation.Duration && difference >= -15)
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     private async Task<bool> IsDoctorOnExaminationAsync(CreateExaminationDomainModel examinationModel) {
@@ -137,17 +181,48 @@ public class ExaminationService : IExaminationService{
         return -1;
     }
 
-    public async Task<CreateExaminationDomainModel> Create(CreateExaminationDomainModel examinationModel) {
+
+    public async Task<bool> IsDoctorAvailable(CreateExaminationDomainModel examinationModel)
+    {
         bool isDoctorAvailable = true;
-        if(await IsDoctorOnExaminationAsync(examinationModel))
+        if (await IsDoctorOnExaminationAsync(examinationModel))
             isDoctorAvailable = false;
         if (await IsDoctorOnOperationAsync(examinationModel))
             isDoctorAvailable = false;
 
-        if (!isDoctorAvailable) {
+        if (!isDoctorAvailable)
+        {
+            //TODO: Think about the return value if doctor is not available
+            return false;
+        }
+
+        return true;
+    }
+
+    public async Task<bool> IsPatientAvailable(CreateExaminationDomainModel examinationModel)
+    {
+        bool isPatientAvailable = true;
+        if (await IsPatientOnExaminationAsync(examinationModel))
+            isPatientAvailable = false;
+        if (await IsPatientOnOperationAsync(examinationModel))
+            isPatientAvailable = false;
+
+        if (!isPatientAvailable)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public async Task<CreateExaminationDomainModel> Create(CreateExaminationDomainModel examinationModel) {
+
+        bool doctorAvailable = await IsDoctorAvailable(examinationModel);
+        bool patientAvailable = await IsPatientAvailable(examinationModel);
+        if (!doctorAvailable || !patientAvailable)
             //TODO: Think about the return value if doctor is not available
             return null;
-        }
+
         decimal roomId = await GetAvailableRoomId(examinationModel);
         if (roomId == -1) {
             return null;
@@ -191,6 +266,8 @@ public class ExaminationService : IExaminationService{
         return false;
     }
 
+
+
     private async Task<decimal> GetAvailableRoomId(UpdateExaminationDomainModel examinationModel) {
         var rooms = await _roomRepository.GetAllExaminationRooms();
         foreach (Room room in rooms) {
@@ -210,21 +287,79 @@ public class ExaminationService : IExaminationService{
         return -1;
     }
 
-    public async Task<UpdateExaminationDomainModel> Update(UpdateExaminationDomainModel examinationModel) {
+    public async Task<bool> IsDoctorAvailable(UpdateExaminationDomainModel examinationModel) {
         bool isDoctorAvailable = true;
         if (await IsDoctorOnExaminationAsync(examinationModel))
             isDoctorAvailable = false;
         if (await IsDoctorOnOperationAsync(examinationModel))
             isDoctorAvailable = false;
 
-        if (!isDoctorAvailable) {
+        if (!isDoctorAvailable)
+        {
+            //TODO: Think about the return value if doctor is not available
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task<bool> IsPatientOnExaminationAsync(UpdateExaminationDomainModel examinationModel)
+    {
+        var patientsExaminations = await _examinationRepository.GetAllByPatientId(examinationModel.newPatientId);
+        foreach (Examination examination in patientsExaminations)
+        {
+            double difference = (examinationModel.newStartTime - examination.StartTime).TotalMinutes;
+            if (difference <= 15 && difference >= -15)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private async Task<bool> IsPatientOnOperationAsync(UpdateExaminationDomainModel examinationModel)
+    {
+        var patientsOperations = await _operationRepository.GetAllByPatientId(examinationModel.newPatientId);
+        foreach (Operation operation in patientsOperations)
+        {
+            double difference = (examinationModel.newStartTime - operation.StartTime).TotalMinutes;
+            if (difference <= (double)operation.Duration && difference >= -15)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public async Task<bool> IsPatientAvailable(UpdateExaminationDomainModel examinationModel)
+    {
+        bool isPatientAvailable = true;
+        if (await IsPatientOnExaminationAsync(examinationModel))
+            isPatientAvailable = false;
+        if (await IsPatientOnOperationAsync(examinationModel))
+            isPatientAvailable = false;
+
+        if (!isPatientAvailable)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public async Task<UpdateExaminationDomainModel> Update(UpdateExaminationDomainModel examinationModel) {
+        bool doctorAvailable = await IsDoctorAvailable(examinationModel);
+        bool patientAvailable = await IsPatientAvailable(examinationModel);
+        if (!doctorAvailable || !patientAvailable)
             //TODO: Think about the return value if doctor is not available
             return null;
-        }
+
+
         decimal roomId = await GetAvailableRoomId(examinationModel);
         if (roomId == -1) {
             return null;
         }
+
         var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(examinationModel.oldRoomId, examinationModel.oldDoctorId, examinationModel.oldPatientId, examinationModel.oldStartTime);
         examination.roomId = roomId;
         examination.doctorId = examinationModel.newDoctorId;
