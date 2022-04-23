@@ -36,6 +36,18 @@ namespace HealthCareAPI.Controllers {
             return Ok(examinations);
         }
 
+        [HttpGet]
+        [Route("doctorId={id}")]
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllExaminationsForDoctor(decimal id)
+        {
+            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForDoctor(id);
+            if (examinations == null)
+            {
+                examinations = new List<ExaminationDomainModel>();
+            }
+            return Ok(examinations);
+        }
+
         // https://localhost:7195/api/examination/delete
         [HttpPut]
         [Route("delete")]

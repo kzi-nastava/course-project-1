@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,8 +30,8 @@ namespace HealthCare.Repositories {
 
         public async Task<IEnumerable<Examination>> GetAllByPatientId(decimal id) {
             return await _healthCareContext.Examinations
-                .Include(x => x.Anamnesis)
                 .Where(x => x.patientId == id)
+                .Include(x => x.Anamnesis!)
                 .ToListAsync();
         }
 
