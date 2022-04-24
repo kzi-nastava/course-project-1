@@ -1,3 +1,4 @@
+using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -49,5 +50,21 @@ public class ExaminationApprovalService : IExaminationApprovalService{
         }
 
         return results;
-    }    
+    }
+
+    public async Task<ExaminationApprovalDomainModel> Reject(ExaminationApprovalDomainModel examinationModel)
+    {
+        if (!examinationModel.State.Equals("created")) return null;
+        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationModel.Id);
+        examinationApproval.State = "rejected";
+        _ = _examinationApprovalRepository.Update(examinationApproval);
+        _examinationApprovalRepository.Save();
+        examinationModel.State = "rejected";
+        return examinationModel;
+    }
+
+    public async Task<ExaminationApprovalDomainModel> Approve(ExaminationApprovalDomainModel examinationModel)
+    {
+        throw new NotImplementedException();
+    }
 }

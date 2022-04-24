@@ -22,5 +22,21 @@ namespace HealthCareAPI.Controllers {
             }
             return Ok(examinationApprovals);
         }
+        
+        // https://localhost:7195/api/examinationApproval/reject
+        [HttpPut]
+        [Route("reject")]
+        public async Task<ActionResult<IEnumerable<ExaminationApprovalDomainModel>>> Reject([FromBody] ExaminationApprovalDomainModel examinationModel) {
+            ExaminationApprovalDomainModel examinationApproval = await _examinationApprovalService.Reject(examinationModel);
+            return Ok(examinationApproval);
+        }
+        
+        // https://localhost:7195/api/examinationApproval/approve
+        [HttpPut]
+        [Route("approve")]
+        public async Task<ActionResult<IEnumerable<ExaminationApprovalDomainModel>>> Approve([FromBody] ExaminationApprovalDomainModel examinationModel) {
+            ExaminationApprovalDomainModel examinationApproval = await _examinationApprovalService.Approve(examinationModel);
+            return Ok(examinationApproval);
+        }
     }
 }
