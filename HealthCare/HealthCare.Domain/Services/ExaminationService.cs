@@ -134,6 +134,15 @@ public class ExaminationService : IExaminationService{
             _ = _examinationApprovalRepository.Post(examinationApproval);
             _examinationApprovalRepository.Save();
         }
+
+        AntiTroll antiTrollItem = new AntiTroll {
+            PatientId = examination.patientId,
+            State = "delete",
+            DateCreated = DateTime.Now
+        };
+
+        _ = _antiTrollRepository.Post(antiTrollItem);
+        _antiTrollRepository.Save();
         return null;
        
     }
@@ -268,6 +277,16 @@ public class ExaminationService : IExaminationService{
             //ExaminationApproval = null
         };
 
+        AntiTroll antiTrollItem = new AntiTroll {
+            PatientId = examinationModel.patientId,
+            State = "create",
+            DateCreated = DateTime.Now
+        };
+
+        _ = _antiTrollRepository.Post(antiTrollItem);
+        _antiTrollRepository.Save();
+
+
         _ = _examinationRepository.Post(newExamination);
         _examinationRepository.Save();
 
@@ -296,6 +315,7 @@ public class ExaminationService : IExaminationService{
             };
             _ = _examinationRepository.Post(newExamination);
             _examinationRepository.Save();
+
         } else {
             // Make an approval request
             ExaminationApproval examinationApproval = new ExaminationApproval {
@@ -313,6 +333,15 @@ public class ExaminationService : IExaminationService{
             _ = _examinationApprovalRepository.Post(examinationApproval);
             _examinationApprovalRepository.Save();
         }
+
+        AntiTroll antiTrollItem = new AntiTroll {
+            PatientId = examinationModel.newPatientId,
+            State = "update",
+            DateCreated = DateTime.Now
+        };
+
+        _ = _antiTrollRepository.Post(antiTrollItem);
+        _antiTrollRepository.Save();
 
         return examinationModel;
     }
