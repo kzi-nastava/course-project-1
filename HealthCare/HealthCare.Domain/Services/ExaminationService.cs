@@ -267,25 +267,41 @@ public class ExaminationService : IExaminationService{
     }
 
     public async Task<UpdateExaminationDomainModel> Update(UpdateExaminationDomainModel examinationModel) {
-
-        CreateExaminationDomainModel createExaminationDomainModel = new CreateExaminationDomainModel {
-            doctorId = examinationModel.newDoctorId,
-            patientId = examinationModel.newPatientId,
-            StartTime = examinationModel.newStartTime
-        };
-        var newExamination = await Create(createExaminationDomainModel);
-        if (newExamination != null) {
-            DeleteExaminationDomainModel deleteExaminationDomainModel = new DeleteExaminationDomainModel {
-                patientId = examinationModel.oldPatientId,
-                roomId = examinationModel.oldRoomId,
-                doctorId = examinationModel.oldDoctorId,
-                StartTime = examinationModel.oldStartTime
+        var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(examinationModel.oldRoomId, examinationModel.oldDoctorId, examinationModel.oldPatientId, examinationModel.oldStartTime);
+        var daysUntilExamination = (examinationModel.oldStartTime - DateTime.Now).TotalDays;
+        
+        if(daysUntilExamination > 1) {
+            // Delete existing
+            examination.IsDeleted = true; 
+            _ = _examinationRepository.Update(examination);
+            _examinationRepository.Save();
+            // Create new
+            Examination newExamination = new Examination {
+                patientId = examinationModel.newPatientId,
+                roomId = examinationModel.newRoomId,
+                doctorId = examinationModel.newDoctorId,
+                StartTime = examinationModel.newStartTime,
+                IsDeleted = false,
+                Anamnesis = null,
             };
-            var deletedPatientModel = await Delete(deleteExaminationDomainModel);
-
-        }
-        else {
-            return null;
+            _ = _examinationRepository.Post(newExamination);
+            _examinationRepository.Save();
+        } else {
+            // Make an approval request
+            ExaminationApproval examinationApproval = new ExaminationApproval {
+                State = "created",
+                OldDoctorId = examinationModel.oldDoctorId,
+                OldPatientId = examinationModel.oldPatientId,
+                OldRoomId = examinationModel.oldRoomId,
+                OldStartTime = examinationModel.oldStartTime,
+                NewDoctorId = examinationModel.newDoctorId,
+                NewPatientId = examinationModel.newPatientId,
+                NewRoomId = examinationModel.newRoomId,
+                NewStartTime = examinationModel.newStartTime,
+                isDeleted = false
+            };
+            _ = _examinationApprovalRepository.Post(examinationApproval);
+            _examinationApprovalRepository.Save();
         }
 
         return examinationModel;
