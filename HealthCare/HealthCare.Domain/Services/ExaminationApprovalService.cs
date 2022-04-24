@@ -25,21 +25,26 @@ public class ExaminationApprovalService : IExaminationApprovalService{
         {
             examinationApprovalModel = new ExaminationApprovalDomainModel
             {
+                Id = item.Id,
                 isDeleted = item.isDeleted,
-                DoctorId = item.DoctorId,
-                PatientId = item.PatientId,
-                RoomId = item.RoomId,
-                StartTime = item.StartTime,
+                OldDoctorId = item.OldDoctorId,
+                OldPatientId = item.OldPatientId,
+                OldRoomId = item.OldRoomId,
+                OldStartTime = item.OldStartTime,
+                NewDoctorId = item.NewDoctorId,
+                NewPatientId = item.NewPatientId,
+                NewRoomId = item.NewRoomId,
+                NewStartTime = item.NewStartTime,
                 State = item.State
             };
-            if (item.Examination != null)
-                examinationApprovalModel.Examination = new ExaminationDomainModel {
-                    doctorId = item.Examination.doctorId,
-                    roomId = item.Examination.roomId,
-                    patientId = item.Examination.patientId,
-                    StartTime = item.Examination.StartTime,
-                    IsDeleted = item.Examination.IsDeleted
-                };
+            //if (item.Examination != null)
+            //    examinationApprovalModel.Examination = new ExaminationDomainModel {
+            //        doctorId = item.Examination.doctorId,
+            //        roomId = item.Examination.roomId,
+            //        patientId = item.Examination.patientId,
+            //        StartTime = item.Examination.StartTime,
+            //        IsDeleted = item.Examination.IsDeleted
+            //    };
             results.Add(examinationApprovalModel);
         }
 

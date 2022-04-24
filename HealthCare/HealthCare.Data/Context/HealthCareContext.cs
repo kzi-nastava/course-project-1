@@ -53,14 +53,14 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<Examination>().HasKey(x => new {x.patientId, x.roomId, x.doctorId, x.StartTime});
 
 
-            modelBuilder.Entity<ExaminationApproval>()
-                .HasOne(x => x.Examination)
-                .WithOne(x => x.ExaminationApproval)
-                .HasForeignKey<Examination>(x => new { x.patientId, x.roomId, x.doctorId, x.StartTime });
-            modelBuilder.Entity<Examination>()
-                .HasOne(x => x.ExaminationApproval)
-                .WithOne(x => x.Examination);
-            modelBuilder.Entity<ExaminationApproval>().HasKey(x => new {x.PatientId, x.RoomId, x.DoctorId, x.StartTime});
+            //modelBuilder.Entity<ExaminationApproval>()
+            //    .HasOne(x => x.Examination)
+            //    .WithOne(x => x.ExaminationApproval);
+                //.HasForeignKey<Examination>(x => new { x.patientId, x.roomId, x.doctorId, x.StartTime });
+            //modelBuilder.Entity<Examination>()
+            //    .HasOne(x => x.ExaminationApproval)
+            //    .WithOne(x => x.Examination);
+            modelBuilder.Entity<ExaminationApproval>().HasKey(x => x.Id);
 
 
 
