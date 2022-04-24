@@ -11,4 +11,7 @@ public interface IPatientService : IService<PatientDomainModel>
     public Task<CreatePatientDomainModel> Add(CreatePatientDomainModel patientModel);
     public Task<PatientDomainModel> Update(UpdatePatientDomainModel patientModel, decimal id);
     public Task<PatientDomainModel> Delete(decimal id);
+    public Task<PatientDomainModel> Block(decimal id);
+    public Task<PatientDomainModel> Unblock(decimal id);
+    public Task<IEnumerable<PatientDomainModel>> GetBlockedPatients();
 }

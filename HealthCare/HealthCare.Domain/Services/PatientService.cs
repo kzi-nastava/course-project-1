@@ -1,3 +1,4 @@
+using System.Collections;
 using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
@@ -76,17 +77,18 @@ public class PatientService : IPatientService{
                     StartTime = examination.StartTime,
                     IsDeleted = examination.IsDeleted
                 };
-                AnamnesisDomainModel anamnesisDomainModel = new AnamnesisDomainModel {
-                    Description = examination.Anamnesis.Description,
-                    doctorId = examination.Anamnesis.doctorId,
-                    roomId = examination.Anamnesis.roomId,
-                    patientId = examination.Anamnesis.patientId,
-                    StartTime = examination.Anamnesis.StartTime,
-                    isDeleted = examination.Anamnesis.isDeleted
-
-                };
+                if (examination.Anamnesis != null) {
+                    AnamnesisDomainModel anamnesisDomainModel = new AnamnesisDomainModel {
+                        Description = examination.Anamnesis.Description,
+                        doctorId = examination.Anamnesis.doctorId,
+                        roomId = examination.Anamnesis.roomId,
+                        patientId = examination.Anamnesis.patientId,
+                        StartTime = examination.Anamnesis.StartTime,
+                        isDeleted = examination.Anamnesis.isDeleted
+                    };
                 examinationDomainModel.Anamnesis = anamnesisDomainModel;
                 patientModel.Examinations.Add(examinationDomainModel);
+                }
             }
         }
         if (item.Operations != null) {
@@ -211,9 +213,30 @@ public class PatientService : IPatientService{
         return results;
     }
 
+    public async Task<PatientDomainModel> Block(decimal patientId)
+    {
+        Patient patient = await _patientRepository.GetPatientById(patientId);
+        // TODO: Fix this with a cookie in the future
+        patient.blockedBy = "Secretary";
+        patient.blockingCounter++;
+        _ = _patientRepository.Update(patient);
+        _patientRepository.Save();
+        return parseToDomainModel(patient);
+    }
+    
+    public async Task<PatientDomainModel> Unblock(decimal patientId)
+    {
+        Patient patient = await _patientRepository.GetPatientById(patientId);
+        // TODO: Fix this with a cookie in the future
+        patient.blockedBy = "";
+        _ = _patientRepository.Update(patient);
+        _patientRepository.Save();
+        
+        return parseToDomainModel(patient);
+    }
+
     public async Task<CreatePatientDomainModel> Add(CreatePatientDomainModel patientModel)
     {
-        
         Patient newPatient = new Patient();
         newPatient.blockedBy = null;
         newPatient.isDeleted = false;
@@ -299,5 +322,19 @@ public class PatientService : IPatientService{
         return null;   
     }
 
-    
+    public async Task<IEnumerable<PatientDomainModel>> GetBlockedPatients()
+    {
+        IEnumerable<PatientDomainModel> patients = await GetAll();
+        List<PatientDomainModel> blockedPatients = new List<PatientDomainModel>();
+        foreach (var patient in patients)
+        {
+            if (patient.blockedBy != null && !patient.blockedBy.Equals(""))
+            {
+                blockedPatients.Add(patient);
+            }
+        }
+
+        return blockedPatients;
+    }
+
 }
