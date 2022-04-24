@@ -12,29 +12,34 @@ public class ExaminationService : IExaminationService{
     private IExaminationApprovalRepository _examinationApprovalRepository;
     private IOperationRepository _operationRepository;
     private IRoomRepository _roomRepository;
+    private IAntiTrollRepository _antiTrollRepository;
 
-    public ExaminationService(IExaminationRepository examinationRepository, IExaminationApprovalRepository examinationApprovalRepository, IOperationRepository operationRepository, IRoomRepository roomRepository) {
+    public ExaminationService(IExaminationRepository examinationRepository, IExaminationApprovalRepository examinationApprovalRepository, IOperationRepository operationRepository, IRoomRepository roomRepository, IAntiTrollRepository antiTrollRepository) {
         _examinationRepository = examinationRepository;
         _examinationApprovalRepository = examinationApprovalRepository;
         _operationRepository = operationRepository;
         _roomRepository = roomRepository;
+        _antiTrollRepository = antiTrollRepository;
     }
 
     // Async awaits info from database
     // GetAll is the equivalent of SELECT *
 
 
-    private async Task<bool> AntiTrollCheck(decimal patientId) {
-        var examinations = await _examinationRepository.GetAllByDoctorId(patientId);
-        var examinationApprovals = await _examinationApprovalRepository.GetAllByPatientId(patientId);
-        int examinationsInLastMonth = 0;
-        int updatesInLastMonth = 0;
-
-        foreach(var examination in examinations) {
-
+    private async Task<bool> AntiTrollCheck(decimal patientId, bool isCreate) {
+        var antiTrollHistory = await _antiTrollRepository.GetByPatientId(patientId);
+        int createCounter = 0;
+        int updateCounter = 0;
+        foreach (var item in antiTrollHistory) {
+            double difference = (DateTime.Now - item.DateCreated).TotalDays;
+            if (difference < 30) {
+                if (item.State.Equals("create"))
+                    createCounter++;
+                else
+                    updateCounter++;
+            }
         }
-
-        return false;
+        return isCreate ? createCounter > 8 : updateCounter > 5;
     }
 
     private ExaminationDomainModel parseToModel(Examination examination) {
@@ -103,6 +108,8 @@ public class ExaminationService : IExaminationService{
     }
 
     public async Task<ExaminationDomainModel> Delete(DeleteExaminationDomainModel deleteExamination) {
+        if(await AntiTrollCheck(deleteExamination.patientId, false))
+            return null;
         var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(deleteExamination.roomId, deleteExamination.doctorId, deleteExamination.patientId, deleteExamination.StartTime);
         var daysUntilExamination = (deleteExamination.StartTime - DateTime.Now).TotalDays;
       
@@ -238,7 +245,8 @@ public class ExaminationService : IExaminationService{
     }
 
     public async Task<CreateExaminationDomainModel> Create(CreateExaminationDomainModel examinationModel) {
-
+        if (await AntiTrollCheck(examinationModel.patientId, true))
+            return null;
         bool doctorAvailable = await IsDoctorAvailable(examinationModel);
         bool patientAvailable = await IsPatientAvailable(examinationModel);
         if (!doctorAvailable || !patientAvailable)
@@ -267,6 +275,8 @@ public class ExaminationService : IExaminationService{
     }
 
     public async Task<UpdateExaminationDomainModel> Update(UpdateExaminationDomainModel examinationModel) {
+        if (await AntiTrollCheck(examinationModel.oldPatientId, false))
+            return null;
         var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(examinationModel.oldRoomId, examinationModel.oldDoctorId, examinationModel.oldPatientId, examinationModel.oldStartTime);
         var daysUntilExamination = (examinationModel.oldStartTime - DateTime.Now).TotalDays;
         
