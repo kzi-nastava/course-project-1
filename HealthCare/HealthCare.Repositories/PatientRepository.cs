@@ -30,15 +30,6 @@ namespace HealthCare.Repositories {
                 .ToListAsync();
         }
 
-        public async Task<Patient> GetById(decimal id) {
-            return await _healthCareContext.Patients
-                .Include(x => x.Credentials)
-                .Include(x => x.MedicalRecord)
-                .Include(x => x.Operations)
-                .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
-                .Where(x => x.Id == id).FirstOrDefaultAsync();
-        }
-
         public Patient Delete(Patient patient)
         {
             Patient deletedPatient = Update(patient);
@@ -47,7 +38,12 @@ namespace HealthCare.Repositories {
 
         public async Task<Patient> GetPatientById(decimal id)
         {
-            return await _healthCareContext.Patients.FirstAsync(x => x.Id == id);
+            return await _healthCareContext.Patients
+                .Include(x => x.Credentials)
+                .Include(x => x.MedicalRecord)
+                .Include(x => x.Operations)
+                .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
         public Patient Post(Patient patient)
