@@ -23,6 +23,20 @@ public class ExaminationService : IExaminationService{
     // Async awaits info from database
     // GetAll is the equivalent of SELECT *
 
+
+    private async Task<bool> AntiTrollCheck(decimal patientId) {
+        var examinations = await _examinationRepository.GetAllByDoctorId(patientId);
+        var examinationApprovals = await _examinationApprovalRepository.GetAllByPatientId(patientId);
+        int examinationsInLastMonth = 0;
+        int updatesInLastMonth = 0;
+
+        foreach(var examination in examinations) {
+
+        }
+
+        return false;
+    }
+
     private ExaminationDomainModel parseToModel(Examination examination) {
         ExaminationDomainModel examinationModel = new ExaminationDomainModel {
             StartTime = examination.StartTime,
@@ -99,12 +113,16 @@ public class ExaminationService : IExaminationService{
         } else {
             ExaminationApproval examinationApproval = new ExaminationApproval {
                 State = "created",
-                RoomId = examination.roomId,
-                DoctorId = examination.doctorId,
-                PatientId = examination.patientId,
-                StartTime = examination.StartTime,
+                OldDoctorId = examination.doctorId,
+                OldPatientId = examination.patientId,
+                OldRoomId = examination.roomId,
+                OldStartTime = examination.StartTime,
+                NewDoctorId = examination.doctorId,
+                NewPatientId = examination.patientId,
+                NewRoomId = examination.roomId,
+                NewStartTime = examination.StartTime,
                 isDeleted = false,
-                Examination = examination
+                //Examination = examination
             };
             _ = _examinationApprovalRepository.Post(examinationApproval);
             _examinationApprovalRepository.Save();
@@ -239,7 +257,7 @@ public class ExaminationService : IExaminationService{
             StartTime = examinationModel.StartTime,
             IsDeleted = false,
             Anamnesis = null,
-            ExaminationApproval = null
+            //ExaminationApproval = null
         };
 
         _ = _examinationRepository.Post(newExamination);

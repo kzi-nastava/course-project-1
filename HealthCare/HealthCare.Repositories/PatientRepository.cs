@@ -26,7 +26,7 @@ namespace HealthCare.Repositories {
                 .Include(x => x.MedicalRecord)
                 .Include(x => x.Operations)
                 .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
-                .Include(x => x.Examinations).ThenInclude(x => x.ExaminationApproval)
+                //.Include(x => x.Examinations).ThenInclude(x => x.ExaminationApproval)
                 .ToListAsync();
         }
 

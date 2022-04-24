@@ -26,7 +26,7 @@ namespace HealthCare.Data.Entities
         [Column("deleted")]
         public bool IsDeleted { get; set; }
         public Anamnesis? Anamnesis { get; set; }
-        public ExaminationApproval? ExaminationApproval { get; set; }
+        //public ExaminationApproval? ExaminationApproval { get; set; }
         //public Patient Patient { get; set; }
         //public Doctor Doctor { get; set; }
 
