@@ -13,6 +13,7 @@ namespace HealthCare.Data.Entities
     public class Credentials
     {
         [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public decimal Id { get; set; }
 
         [Column("username")]

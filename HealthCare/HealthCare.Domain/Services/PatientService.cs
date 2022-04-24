@@ -213,31 +213,7 @@ public class PatientService : IPatientService{
 
     public async Task<CreatePatientDomainModel> Add(CreatePatientDomainModel patientModel)
     {
-        Random random =  new Random();
-        bool isUnique = false;
-        decimal id = random.NextInt64(1000000000, 9999999999);
-        decimal credentialsId = random.NextInt64(1000000000, 9999999999);
-        Patient patient;
-        Credentials credentials;
-        while (!isUnique) {
-            try {
-                id = random.NextInt64(1000000000, 9999999999);
-                patient = await _patientRepository.GetPatientById(id);
-            }
-            catch (Exception ex) {
-                isUnique = true;
-            };
-        }
-        isUnique = false;
-        while (!isUnique) {
-            try {
-                credentialsId = random.NextInt64(1000000000, 9999999999);
-                credentials = await _credentialsRepository.GetCredentialsById(id);
-            }
-            catch (Exception ex) {
-                isUnique = true;
-            };
-        }
+        
         Patient newPatient = new Patient();
         newPatient.blockedBy = null;
         newPatient.isDeleted = false;
@@ -245,35 +221,36 @@ public class PatientService : IPatientService{
         newPatient.Surname = patientModel.Surname;
         newPatient.blockingCounter = 0;
         newPatient.Email = patientModel.Email;
-        newPatient.Id = id;
         newPatient.BirthDate = patientModel.BirthDate;
         newPatient.Phone = patientModel.Phone;
-
+        newPatient.Id = 0;
+        
+        Patient insertedPatient =  _patientRepository.Post(newPatient);
+        _patientRepository.Save();
+        
         MedicalRecord medicalRecord = new MedicalRecord();
         medicalRecord.Height = patientModel.MedicalRecord.Height;
         medicalRecord.Weight = patientModel.MedicalRecord.Weight;
         medicalRecord.BedriddenDiseases = patientModel.MedicalRecord.BedriddenDiseases;
         medicalRecord.Allergies = patientModel.MedicalRecord.Allergies;
         medicalRecord.isDeleted = false;
-        medicalRecord.PatientId = newPatient.Id;
+        medicalRecord.PatientId = insertedPatient.Id;
 
+        _ = _medicalRecordRepository.Post(medicalRecord);
+        _medicalRecordRepository.Save();
+        
         Credentials newCredentials = new Credentials();
-        newCredentials.Id = credentialsId;
         newCredentials.Username = patientModel.Credentials.Username;
         newCredentials.Password = patientModel.Credentials.Password;
         newCredentials.doctorId = null;
         newCredentials.secretaryId = null;
         newCredentials.managerId = null;
-        newCredentials.patientId = newPatient.Id;
+        newCredentials.patientId = insertedPatient.Id;
         newCredentials.userRoleId = 726243269;
         newCredentials.isDeleted = false;
+        newCredentials.Id = 0;
         
-
-        Patient insertedPatient = _patientRepository.Post(newPatient);
-        _patientRepository.Save();
-        MedicalRecord insertedMedicalRecord = _medicalRecordRepository.Post(medicalRecord);
-        _medicalRecordRepository.Save();
-        Credentials insertedCredentials = _credentialsRepository.Post(newCredentials);
+        _ = _credentialsRepository.Post(newCredentials);
         _credentialsRepository.Save();
 
         return patientModel;
