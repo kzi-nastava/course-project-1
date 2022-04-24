@@ -12,6 +12,7 @@ namespace HealthCare.Data.Context
 {
     public class HealthCareContext: DbContext
     {
+        public DbSet<AntiTroll> AntiTrolls { get; set; }
         public DbSet<Anamnesis> Anamneses { get; set; }
         public DbSet<Credentials> Credentials { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
