@@ -61,8 +61,8 @@ public class OperationService : IOperationService{
     public async Task<CreateOperationDomainModel> Create(CreateOperationDomainModel operationModel)
     {
 
-        bool doctorAvailable = await IsDoctorAvailable(examinationModel);
-        bool patientAvailable = await IsPatientAvailable(examinationModel);
+        bool doctorAvailable = await IsDoctorAvailable(operationModel);
+        bool patientAvailable = await IsPatientAvailable(operationModel);
         if (!doctorAvailable || !patientAvailable)
             //TODO: Think about the return value if doctor is not available
             return null;
