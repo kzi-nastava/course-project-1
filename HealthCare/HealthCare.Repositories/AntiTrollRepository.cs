@@ -11,6 +11,7 @@ namespace HealthCare.Repositories {
 
     public interface IAntiTrollRepository : IRepository<AntiTroll> {
         public Task<IEnumerable<AntiTroll>> GetByPatientId(decimal patientId);
+        public AntiTroll Post(AntiTroll antiTroll);
     }
     public class AntiTrollRepository : IAntiTrollRepository {
         private readonly HealthCareContext _healthCareContext;
@@ -24,6 +25,11 @@ namespace HealthCare.Repositories {
 
         public async Task<IEnumerable<AntiTroll>> GetByPatientId(decimal patientId) {
             return await _healthCareContext.AntiTrolls.Where(x => x.PatientId == patientId).ToListAsync();
+        }
+
+        public AntiTroll Post(AntiTroll antiTroll) {
+            var result = _healthCareContext.AntiTrolls.Add(antiTroll);
+            return result.Entity;
         }
 
         public void Save() {
