@@ -7,9 +7,11 @@ namespace HealthCare.Domain.Services;
 
 public class ExaminationApprovalService : IExaminationApprovalService{
     private IExaminationApprovalRepository _examinationApprovalRepository;
+    private IExaminationRepository _examinationRepository;
 
-    public ExaminationApprovalService(IExaminationApprovalRepository examinationApprovalRepository) {
+    public ExaminationApprovalService(IExaminationApprovalRepository examinationApprovalRepository, IExaminationRepository examinationRepository) {
         _examinationApprovalRepository = examinationApprovalRepository;
+        _examinationRepository = examinationRepository;
     }
 
     // Async awaits info from database
@@ -65,6 +67,40 @@ public class ExaminationApprovalService : IExaminationApprovalService{
 
     public async Task<ExaminationApprovalDomainModel> Approve(ExaminationApprovalDomainModel examinationModel)
     {
-        throw new NotImplementedException();
+        if (!examinationModel.State.Equals("created")) return null;
+        
+        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationModel.Id);
+        examinationApproval.State = "approved";
+        _ = _examinationApprovalRepository.Update(examinationApproval);
+        _examinationApprovalRepository.Save();
+        examinationModel.State = "approved";
+
+        Examination examination = await _examinationRepository.GetExamination(examinationModel.OldRoomId, 
+            examinationModel.OldDoctorId, examinationModel.OldPatientId, examinationModel.OldStartTime);
+        
+        // If it's a delete request
+        if (examinationModel.OldDoctorId == examinationModel.NewDoctorId &&
+            examinationModel.OldPatientId == examinationModel.NewPatientId &&
+            examinationModel.OldRoomId == examinationModel.NewRoomId &&
+            examinationModel.OldStartTime == examinationModel.NewStartTime) { }
+        else {
+            Anamnesis? anamnesis = examination.Anamnesis;
+
+            Examination newExamination = new Examination
+            {
+                doctorId = examinationModel.NewDoctorId,
+                patientId = examinationModel.NewPatientId,
+                roomId = examinationModel.NewRoomId,
+                StartTime = examinationModel.NewStartTime,
+                IsDeleted = false,
+                Anamnesis = anamnesis
+            };
+            _ = _examinationRepository.Post(newExamination);
+        }
+        examination.IsDeleted = true;
+        _ = _examinationRepository.Update(examination);
+        _examinationRepository.Save();
+        
+        return examinationModel;
     }
 }
