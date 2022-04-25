@@ -167,7 +167,7 @@ public class ExaminationService : IExaminationService{
     }
 
     private async Task<decimal> GetAvailableRoomId(CreateExaminationDomainModel examinationModel) {
-        var rooms = await _roomRepository.GetAllExaminationRooms();
+        var rooms = await _roomRepository.GetAllAppointmentRooms("examination");
         foreach (Room room in rooms) {
             bool isRoomAvailable = true;
             var examinations = await _examinationRepository.GetAllByRoomId(room.Id);

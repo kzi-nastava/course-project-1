@@ -7,7 +7,7 @@ namespace HealthCare.Domain.Interfaces;
 
 public interface IOperationService : IService<OperationDomainModel> {
     public Task<IEnumerable<OperationDomainModel>> GetAllForDoctor(decimal id);
-    public Task<IEnumerable<OperationDomainModel>> Create(CreateOperationDomainModel operationModel);
-    public Task<IEnumerable<OperationDomainModel>> Update(UpdateOperationDomainModel operationModel);
-    public Task<IEnumerable<OperationDomainModel>> Delete(DeleteOperationDomainModel operationModel);
+    public Task<CreateOperationDomainModel> Create(CreateOperationDomainModel operationModel);
+    public Task<UpdateOperationDomainModel> Update(UpdateOperationDomainModel operationModel);
+    public Task<DeleteOperationDomainModel> Delete(DeleteOperationDomainModel operationModel);
 }

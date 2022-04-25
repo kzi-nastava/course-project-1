@@ -136,7 +136,7 @@ namespace HealthCare.Data.Context
             //    .HasOne(x => x.Room)
             //    .WithMany(x => x.Operations)
             //    .IsRequired();
-            modelBuilder.Entity<Operation>().HasKey(x => new {x.RoomId, x.DoctorId, x.PatientId, x.Duration});
+            modelBuilder.Entity<Operation>().HasKey(x => new {x.RoomId, x.DoctorId, x.PatientId, x.StartTime});
 
 
             //modelBuilder.Entity<Operation>()
