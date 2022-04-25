@@ -6,7 +6,7 @@ public class RoomDomainModel
 {
     public decimal Id { get; set; }
 
-    public string RoleName { get; set; }
+    public string RoomName { get; set; }
 
     public decimal RoomTypeId  { get; set; }
 

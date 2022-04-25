@@ -11,10 +11,11 @@ namespace HealthCare.Data.Entities
     public class Room
     {
         [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public decimal Id { get; set; }
 
         [Column("name")]
-        public string RoleName { get; set; }
+        public string RoomName { get; set; }
 
         [Column("Room_type_id")]
         public decimal RoomTypeId  { get; set; }
