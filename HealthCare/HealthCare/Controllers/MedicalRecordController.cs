@@ -22,5 +22,14 @@ namespace HealthCareAPI.Controllers {
             }
             return Ok(medicalRecords);
         }
+
+        [HttpGet]
+        [Route("patientId={id}")]
+        public async Task<ActionResult<MedicalRecordDomainModel>> GetForPatient(decimal id)
+        {
+            MedicalRecordDomainModel medicalRecord = await _medicalRecordService.GetForPatient(id);
+
+            return medicalRecord;
+        }
     }
 }

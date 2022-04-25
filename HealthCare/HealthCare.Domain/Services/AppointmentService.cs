@@ -26,9 +26,9 @@ namespace HealthCare.Domain.Services
             throw new NotImplementedException();
         }
 
-        public async Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(decimal id)
+        public async Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(decimal id, DateTime date)
         {
-            var examinationData = await _examinationRepository.GetAllByDoctorId(id);
+            var examinationData = await _examinationRepository.GetAllByDoctorId(id, date);
 
             List<AppointmentDomainModel> results = new List<AppointmentDomainModel>();
 
@@ -37,7 +37,7 @@ namespace HealthCare.Domain.Services
                 results.Add(parseToModel(item));
             }
 
-            var operationData = await _operationRepository.GetAllByDoctorId(id);
+            var operationData = await _operationRepository.GetAllByDoctorId(id, date);
 
             foreach (var item in operationData)
             {

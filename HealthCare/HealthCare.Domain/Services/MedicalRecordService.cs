@@ -36,4 +36,30 @@ public class MedicalRecordService : IMedicalRecordService {
 
         return results;
     } 
+
+    public async Task<MedicalRecordDomainModel> GetForPatient(decimal id)
+    {
+        var data =  await _medicalRecordRepository.GetByPatientId(id);
+
+        if (data != null)
+        {
+            MedicalRecordDomainModel medicalRecordModel = new MedicalRecordDomainModel
+            {
+                isDeleted = data.isDeleted,
+                Allergies = data.Allergies,
+                BedriddenDiseases = data.BedriddenDiseases,
+                Height = data.Height,
+                PatientId = data.PatientId,
+                Weight = data.Weight
+            };
+            return medicalRecordModel;
+        } else
+        {
+            return null; 
+        }
+
+        
+
+        
+    }
 }

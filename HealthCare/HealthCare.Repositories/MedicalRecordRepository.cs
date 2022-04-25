@@ -25,7 +25,9 @@ namespace HealthCare.Repositories {
         }
 
         public async Task<MedicalRecord> GetByPatientId(decimal patientId) {
-            return await _healthCareContext.MedicalRecords.FirstOrDefaultAsync(x => x.PatientId == patientId);
+            return await _healthCareContext.MedicalRecords
+                .Where(x => x.PatientId == patientId)
+                .FirstOrDefaultAsync();
         }
 
         public MedicalRecord Post(MedicalRecord medicalRecord) {

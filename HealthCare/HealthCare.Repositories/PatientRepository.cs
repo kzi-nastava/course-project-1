@@ -13,6 +13,7 @@ namespace HealthCare.Repositories {
         public Patient Update(Patient patient);
         public Patient Delete(Patient patient);
         public Task<Patient> GetPatientById(decimal id);
+        public Task<Patient> GetWithMedicalRecord(decimal id);
     }
     public class PatientRepository : IPatientRepository {
         private readonly HealthCareContext _healthCareContext;
@@ -44,6 +45,14 @@ namespace HealthCare.Repositories {
                 .Include(x => x.Operations)
                 .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
                 .Where(x => x.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<Patient> GetWithMedicalRecord(decimal id)
+        {
+            return await _healthCareContext.Patients
+                .Where(x => x.Id == id)
+                .Include(x => x.MedicalRecord)
+                .FirstOrDefaultAsync();
         }
 
         public Patient Post(Patient patient)

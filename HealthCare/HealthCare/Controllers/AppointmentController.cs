@@ -20,10 +20,10 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpGet]
-        [Route("schedule/{doctorId}/{date}")]
+        [Route("schedule/doctorId={id}/{date}")]
         public async Task<ActionResult<IEnumerable<AppointmentDomainModel>>> GetDoctorsSchedule(decimal id, DateTime date)
         {
-            IEnumerable<AppointmentDomainModel> appointments = await _appointmentService.GetAllForDoctor(id);
+            IEnumerable<AppointmentDomainModel> appointments = await _appointmentService.GetAllForDoctor(id, date);
             if (appointments == null)
             {
                 appointments = new List<AppointmentDomainModel>();

@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.JsonPatch;
 
 namespace HealthCare.Domain.Services;
 
-public class PatientService : IPatientService{
+public class PatientService : IPatientService {
     private IPatientRepository _patientRepository;
     private ICredentialsRepository _credentialsRepository;
     private IMedicalRecordRepository _medicalRecordRepository;
@@ -86,8 +86,8 @@ public class PatientService : IPatientService{
                         StartTime = examination.Anamnesis.StartTime,
                         isDeleted = examination.Anamnesis.isDeleted
                     };
-                examinationDomainModel.Anamnesis = anamnesisDomainModel;
-                patientModel.Examinations.Add(examinationDomainModel);
+                    examinationDomainModel.Anamnesis = anamnesisDomainModel;
+                    patientModel.Examinations.Add(examinationDomainModel);
                 }
             }
         }
@@ -106,7 +106,7 @@ public class PatientService : IPatientService{
         return patientModel;
     }
 
-    private Patient parseToModel(PatientDomainModel item) {
+    private Patient parseFromModel(PatientDomainModel item) {
         Patient patientModel = new Patient {
             isDeleted = item.isDeleted,
             BirthDate = item.BirthDate,
@@ -163,7 +163,7 @@ public class PatientService : IPatientService{
                     StartTime = examination.StartTime,
                     IsDeleted = examination.IsDeleted
                 };
-                if(examination.Anamnesis != null) {
+                if (examination.Anamnesis != null) {
                     Anamnesis anamnesisDomainModel = new Anamnesis {
                         Description = examination.Anamnesis.Description,
                         doctorId = examination.Anamnesis.doctorId,
@@ -179,7 +179,7 @@ public class PatientService : IPatientService{
         }
         if (item.Operations != null) {
             foreach (var operation in item.Operations) {
-                Operation operationDomainModel = new Operation{
+                Operation operationDomainModel = new Operation {
                     DoctorId = operation.DoctorId,
                     RoomId = operation.DoctorId,
                     PatientId = operation.DoctorId,
@@ -223,7 +223,7 @@ public class PatientService : IPatientService{
         _patientRepository.Save();
         return parseToDomainModel(patient);
     }
-    
+
     public async Task<PatientDomainModel> Unblock(decimal patientId)
     {
         Patient patient = await _patientRepository.GetPatientById(patientId);
@@ -231,7 +231,7 @@ public class PatientService : IPatientService{
         patient.blockedBy = "";
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
-        
+
         return parseToDomainModel(patient);
     }
 
@@ -247,10 +247,10 @@ public class PatientService : IPatientService{
         newPatient.BirthDate = patientModel.BirthDate;
         newPatient.Phone = patientModel.Phone;
         newPatient.Id = 0;
-        
-        Patient insertedPatient =  _patientRepository.Post(newPatient);
+
+        Patient insertedPatient = _patientRepository.Post(newPatient);
         _patientRepository.Save();
-        
+
         MedicalRecord medicalRecord = new MedicalRecord();
         medicalRecord.Height = patientModel.MedicalRecord.Height;
         medicalRecord.Weight = patientModel.MedicalRecord.Weight;
@@ -261,7 +261,7 @@ public class PatientService : IPatientService{
 
         _ = _medicalRecordRepository.Post(medicalRecord);
         _medicalRecordRepository.Save();
-        
+
         Credentials newCredentials = new Credentials();
         newCredentials.Username = patientModel.Credentials.Username;
         newCredentials.Password = patientModel.Credentials.Password;
@@ -272,7 +272,7 @@ public class PatientService : IPatientService{
         newCredentials.userRoleId = 726243269;
         newCredentials.isDeleted = false;
         newCredentials.Id = 0;
-        
+
         _ = _credentialsRepository.Post(newCredentials);
         _credentialsRepository.Save();
 
@@ -281,7 +281,7 @@ public class PatientService : IPatientService{
 
     public async Task<PatientDomainModel> Update(UpdatePatientDomainModel patientModel, decimal id)
     {
-        
+
         Patient patient = await _patientRepository.GetPatientById(id);
         patient.Name = patientModel.Name;
         patient.Surname = patientModel.Surname;
@@ -311,7 +311,7 @@ public class PatientService : IPatientService{
         _credentialsRepository.Save();
         return null;
     }
-   
+
 
     public async Task<PatientDomainModel> Delete(decimal id)
     {
@@ -319,7 +319,7 @@ public class PatientService : IPatientService{
         patient.isDeleted = true;
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
-        return null;   
+        return null;
     }
 
     public async Task<IEnumerable<PatientDomainModel>> GetBlockedPatients()
@@ -337,4 +337,45 @@ public class PatientService : IPatientService{
         return blockedPatients;
     }
 
+
+    public async Task<PatientDomainModel> GetWithMedicalRecord(decimal id)
+    {
+        Patient patient = await _patientRepository.GetWithMedicalRecord(id);
+
+        if (patient != null)
+        {
+            PatientDomainModel patientModel = new PatientDomainModel
+            {
+                isDeleted = patient.isDeleted,
+                BirthDate = patient.BirthDate,
+                blockedBy = patient.blockedBy,
+                blockingCounter = patient.blockingCounter,
+                Email = patient.Email,
+                Id = patient.Id,
+                Name = patient.Name,
+                Surname = patient.Surname,
+                Phone = patient.Phone
+            };
+
+
+            if (patient.MedicalRecord != null)
+            {
+                patientModel.MedicalRecord = new MedicalRecordDomainModel
+                {
+                    isDeleted = patient.MedicalRecord.isDeleted,
+                    Allergies = patient.MedicalRecord.Allergies,
+                    BedriddenDiseases = patient.MedicalRecord.BedriddenDiseases,
+                    Height = patient.MedicalRecord.Height,
+                    PatientId = patient.MedicalRecord.PatientId,
+                    Weight = patient.MedicalRecord.Weight
+                };
+            }
+
+            return patientModel;
+        } else
+        {
+            return null; 
+        }
+        
+    }
 }

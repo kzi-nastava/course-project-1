@@ -9,6 +9,6 @@ namespace HealthCare.Domain.Interfaces
 {
     public interface IAppointmentService : IService<AppointmentDomainModel>
     { 
-        public Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(decimal id);
+        public Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(decimal id, DateTime date);
     }
 }
