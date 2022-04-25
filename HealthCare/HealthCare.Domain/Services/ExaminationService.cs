@@ -107,8 +107,8 @@ public class ExaminationService : IExaminationService{
         return results;
     }
 
-    public async Task<ExaminationDomainModel> Delete(DeleteExaminationDomainModel deleteExamination) {
-        if(await AntiTrollCheck(deleteExamination.patientId, false))
+    public async Task<ExaminationDomainModel> Delete(DeleteExaminationDomainModel deleteExamination, bool writeToAntiTroll) {
+        if(deleteExamination.isPatient && await AntiTrollCheck(deleteExamination.patientId, false))
             return null;
         var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(deleteExamination.roomId, deleteExamination.doctorId, deleteExamination.patientId, deleteExamination.StartTime);
         var daysUntilExamination = (deleteExamination.StartTime - DateTime.Now).TotalDays;
@@ -135,14 +135,16 @@ public class ExaminationService : IExaminationService{
             _examinationApprovalRepository.Save();
         }
 
-        AntiTroll antiTrollItem = new AntiTroll {
-            PatientId = examination.patientId,
-            State = "delete",
-            DateCreated = DateTime.Now
-        };
+        if (deleteExamination.isPatient && writeToAntiTroll) {
+            AntiTroll antiTrollItem = new AntiTroll {
+                PatientId = examination.patientId,
+                State = "delete",
+                DateCreated = DateTime.Now
+            };
 
-        _ = _antiTrollRepository.Post(antiTrollItem);
-        _antiTrollRepository.Save();
+            _ = _antiTrollRepository.Post(antiTrollItem);
+            _antiTrollRepository.Save();
+        }
         return null;
        
     }
@@ -253,8 +255,8 @@ public class ExaminationService : IExaminationService{
         return true;
     }
 
-    public async Task<CreateExaminationDomainModel> Create(CreateExaminationDomainModel examinationModel) {
-        if (await AntiTrollCheck(examinationModel.patientId, true))
+    public async Task<CreateExaminationDomainModel> Create(CreateExaminationDomainModel examinationModel, bool writeToAntiTroll) {
+        if (examinationModel.isPatient && await AntiTrollCheck(examinationModel.patientId, true))
             return null;
         bool doctorAvailable = await IsDoctorAvailable(examinationModel);
         bool patientAvailable = await IsPatientAvailable(examinationModel);
@@ -277,15 +279,16 @@ public class ExaminationService : IExaminationService{
             //ExaminationApproval = null
         };
 
-        AntiTroll antiTrollItem = new AntiTroll {
-            PatientId = examinationModel.patientId,
-            State = "create",
-            DateCreated = DateTime.Now
-        };
+        if (examinationModel.isPatient && writeToAntiTroll) {
+            AntiTroll antiTrollItem = new AntiTroll {
+                PatientId = examinationModel.patientId,
+                State = "create",
+                DateCreated = DateTime.Now
+            };
 
-        _ = _antiTrollRepository.Post(antiTrollItem);
-        _antiTrollRepository.Save();
-
+            _ = _antiTrollRepository.Post(antiTrollItem);
+            _antiTrollRepository.Save();
+        }
 
         _ = _examinationRepository.Post(newExamination);
         _examinationRepository.Save();
@@ -294,28 +297,32 @@ public class ExaminationService : IExaminationService{
     }
 
     public async Task<UpdateExaminationDomainModel> Update(UpdateExaminationDomainModel examinationModel) {
-        if (await AntiTrollCheck(examinationModel.oldPatientId, false))
+        if (examinationModel.isPatient && await AntiTrollCheck(examinationModel.oldPatientId, false))
             return null;
         var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(examinationModel.oldRoomId, examinationModel.oldDoctorId, examinationModel.oldPatientId, examinationModel.oldStartTime);
         var daysUntilExamination = (examinationModel.oldStartTime - DateTime.Now).TotalDays;
         
         if(daysUntilExamination > 1) {
-            // Delete existing
-            examination.IsDeleted = true; 
-            _ = _examinationRepository.Update(examination);
-            _examinationRepository.Save();
-            // Create new
-            Examination newExamination = new Examination {
-                patientId = examinationModel.newPatientId,
-                roomId = examinationModel.newRoomId,
+            CreateExaminationDomainModel createExaminationDomainModel = new CreateExaminationDomainModel {
                 doctorId = examinationModel.newDoctorId,
+                patientId = examinationModel.newPatientId,
                 StartTime = examinationModel.newStartTime,
-                IsDeleted = false,
-                Anamnesis = null,
+                isPatient = examinationModel.isPatient,
             };
-            _ = _examinationRepository.Post(newExamination);
-            _examinationRepository.Save();
-
+            var newExamination = await Create(createExaminationDomainModel, false);
+            if (newExamination != null) {
+                DeleteExaminationDomainModel deleteExaminationDomainModel = new DeleteExaminationDomainModel {
+                    patientId = examinationModel.oldPatientId,
+                    roomId = examinationModel.oldRoomId,
+                    doctorId = examinationModel.oldDoctorId,
+                    StartTime = examinationModel.oldStartTime,
+                    isPatient = examinationModel.isPatient,
+                };
+                var deletedPatientModel = await Delete(deleteExaminationDomainModel, false);
+            }
+            else {
+                return null;
+            }
         } else {
             // Make an approval request
             ExaminationApproval examinationApproval = new ExaminationApproval {
@@ -334,14 +341,16 @@ public class ExaminationService : IExaminationService{
             _examinationApprovalRepository.Save();
         }
 
-        AntiTroll antiTrollItem = new AntiTroll {
-            PatientId = examinationModel.newPatientId,
-            State = "update",
-            DateCreated = DateTime.Now
-        };
+        if (examinationModel.isPatient) {
+            AntiTroll antiTrollItem = new AntiTroll {
+                PatientId = examinationModel.newPatientId,
+                State = "update",
+                DateCreated = DateTime.Now
+            };
 
-        _ = _antiTrollRepository.Post(antiTrollItem);
-        _antiTrollRepository.Save();
+            _ = _antiTrollRepository.Post(antiTrollItem);
+            _antiTrollRepository.Save();
+        }
 
         return examinationModel;
     }

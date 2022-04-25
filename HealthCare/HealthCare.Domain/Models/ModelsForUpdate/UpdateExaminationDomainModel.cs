@@ -21,5 +21,8 @@ namespace HealthCare.Domain.Models.ModelsForUpdate {
         public decimal newPatientId { get; set; }
 
         public DateTime newStartTime { get; set; }
+
+        public bool isPatient { get; set; }
     }
 }
+        

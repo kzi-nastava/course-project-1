@@ -13,5 +13,7 @@ namespace HealthCare.Domain.Models.ModelsForUpdate {
         public decimal patientId { get; set; }
 
         public DateTime StartTime { get; set; }
+
+        public bool isPatient { get; set; }
     }
 }
