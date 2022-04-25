@@ -14,4 +14,5 @@ public interface IPatientService : IService<PatientDomainModel>
     public Task<PatientDomainModel> Block(decimal id);
     public Task<PatientDomainModel> Unblock(decimal id);
     public Task<IEnumerable<PatientDomainModel>> GetBlockedPatients();
+    public Task<PatientDomainModel> GetWithMedicalRecord(decimal id);
 }

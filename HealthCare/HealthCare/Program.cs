@@ -44,6 +44,7 @@ builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
 //Domain
 builder.Services.AddTransient<IAntiTrollService, AntiTrollService>();
 builder.Services.AddTransient<IAnamnesisService, AnamnesisService>();
+builder.Services.AddTransient<IAppointmentService, AppointmentService>();
 builder.Services.AddTransient<ICredentialsService, CredentialsService>();
 builder.Services.AddTransient<IDoctorService, DoctorService>();
 builder.Services.AddTransient<IEquipmentService, EquipmentService>();

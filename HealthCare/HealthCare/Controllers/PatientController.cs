@@ -25,7 +25,15 @@ namespace HealthCareAPI.Controllers {
             }
             return Ok(patients);
         }
-        
+
+        [HttpGet]
+        [Route("medical_record/patientId={id}")]
+        public async Task<ActionResult<PatientDomainModel>> GetWithMedicalRecord(decimal id)
+        {
+            PatientDomainModel patient = await _patientService.GetWithMedicalRecord(id);
+            return Ok(patient);
+        }
+
         // https://localhost:7195/api/patient/create
         [HttpPost]
         [Route("create")]
