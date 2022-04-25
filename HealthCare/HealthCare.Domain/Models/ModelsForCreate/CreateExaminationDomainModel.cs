@@ -12,5 +12,7 @@ namespace HealthCare.Domain.Models.ModelsForCreate {
 
         public DateTime StartTime { get; set; }
 
+        public bool isPatient { get; set; }
+
     }
 }

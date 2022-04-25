@@ -52,7 +52,7 @@ namespace HealthCareAPI.Controllers {
         [HttpPut]
         [Route("delete")]
         public async Task<ActionResult<PatientDomainModel>> DeleteExamination([FromBody] DeleteExaminationDomainModel id) {
-            var deletedPatientModel = await _examinationService.Delete(id);
+            var deletedPatientModel = await _examinationService.Delete(id, true);
             return Ok(deletedPatientModel);
         }
 
@@ -60,7 +60,7 @@ namespace HealthCareAPI.Controllers {
         [HttpPost]
         [Route("create")]
         public async Task<ActionResult<CreateExaminationDomainModel>> CreateExamination([FromBody] CreateExaminationDomainModel examinationModel) {
-            var createdExaminationModel = await _examinationService.Create(examinationModel);
+            var createdExaminationModel = await _examinationService.Create(examinationModel, true);
             return Ok(createdExaminationModel);
         }
 
