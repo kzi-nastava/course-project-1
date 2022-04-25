@@ -114,7 +114,7 @@ public class RoomService : IRoomService{
         _ = _roomRepository.Update(r);
         _roomRepository.Save();
 
-        return r;
+        return room;
 
 
     }
