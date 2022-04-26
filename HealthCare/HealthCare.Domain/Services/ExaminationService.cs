@@ -303,6 +303,15 @@ public class ExaminationService : IExaminationService{
         var daysUntilExamination = (examinationModel.oldStartTime - DateTime.Now).TotalDays;
         
         if(daysUntilExamination > 1) {
+            DeleteExaminationDomainModel deleteExaminationDomainModel = new DeleteExaminationDomainModel {
+                patientId = examinationModel.oldPatientId,
+                roomId = examinationModel.oldRoomId,
+                doctorId = examinationModel.oldDoctorId,
+                StartTime = examinationModel.oldStartTime,
+                isPatient = examinationModel.isPatient,
+            };
+            var deletedPatientModel = await Delete(deleteExaminationDomainModel, false);
+
             CreateExaminationDomainModel createExaminationDomainModel = new CreateExaminationDomainModel {
                 doctorId = examinationModel.newDoctorId,
                 patientId = examinationModel.newPatientId,
@@ -310,15 +319,11 @@ public class ExaminationService : IExaminationService{
                 isPatient = examinationModel.isPatient,
             };
             var newExamination = await Create(createExaminationDomainModel, false);
-            if (newExamination != null) {
-                DeleteExaminationDomainModel deleteExaminationDomainModel = new DeleteExaminationDomainModel {
-                    patientId = examinationModel.oldPatientId,
-                    roomId = examinationModel.oldRoomId,
-                    doctorId = examinationModel.oldDoctorId,
-                    StartTime = examinationModel.oldStartTime,
-                    isPatient = examinationModel.isPatient,
-                };
-                var deletedPatientModel = await Delete(deleteExaminationDomainModel, false);
+            if (newExamination == null) {
+                //undo delete
+                examination.IsDeleted = false;
+                _ = _examinationRepository.Update(examination);
+                _examinationRepository.Save();
             }
             else {
                 return null;

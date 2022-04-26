@@ -39,6 +39,8 @@ namespace HealthCare.Repositories
             return await _healthCareContext.Examinations
                 .Where(x => x.patientId == id)
                 .Include(x => x.Anamnesis!)
+                .Where(x => x.IsDeleted == false)
+
                 .ToListAsync();
         }
 
@@ -64,6 +66,7 @@ namespace HealthCare.Repositories
         {
             return await _healthCareContext.Examinations
                 .Where(x => x.roomId == id)
+                .Where(x => x.IsDeleted == false)
                 .ToListAsync();
         }
 
