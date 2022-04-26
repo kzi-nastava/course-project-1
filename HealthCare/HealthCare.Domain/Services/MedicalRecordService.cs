@@ -1,5 +1,6 @@
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
+using HealthCare.Data.Entities;
 
 namespace HealthCare.Domain.Interfaces;
 
@@ -61,5 +62,45 @@ public class MedicalRecordService : IMedicalRecordService {
         
 
         
+    }
+
+    public async Task<MedicalRecordDomainModel> Update(MedicalRecordDomainModel model)
+    {
+        MedicalRecord medicalRecord = _medicalRecordRepository.Update(parseFromModel(model));
+        _medicalRecordRepository.Save();
+
+        if (medicalRecord != null)
+        {
+            return parseToModel(medicalRecord);
+        } else
+        {
+            return null;
+        }
+    }
+
+    private MedicalRecordDomainModel parseToModel(MedicalRecord medicalRecord)
+    {
+        return new MedicalRecordDomainModel
+        {
+            Height = medicalRecord.Height,
+            Weight = medicalRecord.Weight,
+            BedriddenDiseases = medicalRecord.BedriddenDiseases,
+            PatientId = medicalRecord.PatientId,
+            Allergies = medicalRecord.Allergies,
+            isDeleted = medicalRecord.isDeleted
+        };
+    }
+
+    private MedicalRecord parseFromModel(MedicalRecordDomainModel domainModel)
+    {
+        return new MedicalRecord
+        {
+            Height = domainModel.Height,
+            Weight = domainModel.Weight,
+            BedriddenDiseases =domainModel.BedriddenDiseases,
+            PatientId = domainModel.PatientId,
+            Allergies = domainModel.Allergies,
+            isDeleted = domainModel.isDeleted
+        };
     }
 }

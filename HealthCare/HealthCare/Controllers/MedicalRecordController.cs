@@ -31,5 +31,13 @@ namespace HealthCareAPI.Controllers {
 
             return medicalRecord;
         }
+
+        [HttpPut]
+        [Route("update")]
+        public async Task<ActionResult<MedicalRecordDomainModel>> Update([FromBody] MedicalRecordDomainModel medicalRecord)
+        {
+            MedicalRecordDomainModel updatedRecord = await _medicalRecordService.Update(medicalRecord);
+            return Ok(updatedRecord);
+        }
     }
 }
