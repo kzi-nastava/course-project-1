@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HealthCare.Repositories {
     public interface IOperationRepository : IRepository<Operation> {
         public Task<IEnumerable<Operation>> GetAllByDoctorId(decimal id);
+        public Task<IEnumerable<Operation>> GetAllByDoctorId(decimal id, DateTime date);
         public Task<IEnumerable<Operation>> GetAllByPatientId(decimal id);
         public Task<IEnumerable<Operation>> GetAllByRoomId(decimal id);
         public Operation Post(Operation operation);
@@ -30,6 +31,15 @@ namespace HealthCare.Repositories {
             return await _healthCareContext.Operations
                 .Where(x => x.DoctorId == id)
                 .Where(x => x.isDeleted == false)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Operation>> GetAllByDoctorId(decimal id, DateTime date)
+        {
+            return await _healthCareContext.Operations
+                .Where(x => x.DoctorId == id)
+                .Where(x => x.isDeleted == false)
+                .Where(x => x.StartTime.Date >= date.Date && x.StartTime.Date <= date.Date.AddDays(3))
                 .ToListAsync();
         }
 

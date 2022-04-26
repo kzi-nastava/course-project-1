@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthCare.Repositories {
     public interface IAnamnesisRepository : IRepository<Anamnesis> {
-
+        public Anamnesis Post(Anamnesis anamensis);
     }
     public class AnamnesisRepository : IAnamnesisRepository {
         private readonly HealthCareContext _healthCareContext;
@@ -21,9 +21,16 @@ namespace HealthCare.Repositories {
             return await _healthCareContext.Anamneses.ToListAsync();
         }
 
+        public Anamnesis Post(Anamnesis anamensis)
+        {
+            var result = _healthCareContext.Anamneses.Add(anamensis);
+            return result.Entity;
+        }
+
         public void Save()
         {
             _healthCareContext.SaveChanges();
         }
     }
+
 }

@@ -8,8 +8,9 @@ using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthCare.Repositories {
-    public interface IRoomTypeRepository : IRepository<RoomType> {
-
+    public interface IRoomTypeRepository : IRepository<RoomType>
+    {
+        public Task<RoomType> GetById(decimal roomTypeId);
     }
     public class RoomTypeRepository : IRoomTypeRepository {
         private readonly HealthCareContext _healthCareContext;
@@ -24,6 +25,10 @@ namespace HealthCare.Repositories {
         public void Save()
         {
             _healthCareContext.SaveChanges();
+        }
+        public async Task<RoomType> GetById(decimal roomTypeId)
+        {
+            return await _healthCareContext.RoomTypes.FirstOrDefaultAsync(x => x.Id == roomTypeId);
         }
     }
 }

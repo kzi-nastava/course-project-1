@@ -4,18 +4,12 @@ namespace HealthCare.Domain.Models;
 
 public class ExaminationApprovalDomainModel
 {
+    public decimal Id { get; set; }
     public string State { get; set; }
-
-    public decimal RoomId { get; set; }
-
-    public decimal DoctorId { get; set; }
-
-    public DateTime StartTime { get; set; }
-
-    public decimal PatientId { get; set; }
-
+    public decimal OldExaminationId { get; set; }
+    public decimal NewExaminationId { get; set; }
     public bool isDeleted { get; set; }
 
-    public ExaminationDomainModel Examination { get; set; }
+    //public ExaminationDomainModel Examination { get; set; }
 
 }

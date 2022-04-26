@@ -1,6 +1,6 @@
 ﻿using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
-using HealthCare.Domain.Models.ModelsForCreate;
+using HealthCare.Domain.Models;
 using HealthCare.Repositories;
 using System;
 using System.Collections.Generic;
@@ -12,37 +12,83 @@ namespace HealthCare.Domain.Services
 {
     public class AppointmentService : IAppointmentService
     {
-        private IRoomRepository _roomRepository;
         private IExaminationRepository _examinationRepository;
+        private IOperationRepository _operationRepository;
 
-        public AppointmentService(IRoomRepository roomRepository, IExaminationRepository examinationRepository) {
-            _roomRepository = roomRepository;
-            _examinationRepository = examinationRepository;
-        }
-
-        private async Task<decimal> GetAvailableRoomId(CreateExaminationDomainModel examinationModel)
+        public AppointmentService(IExaminationRepository examinationRepository, IOperationRepository operationRepoaitory)
         {
-            var rooms = await _roomRepository.GetAllAppointmentRooms("examination");
-            foreach (Room room in rooms)
-            {
-                bool isRoomAvailable = true;
-                var examinations = await _examinationRepository.GetAllByRoomId(room.Id);
-                foreach (Examination examination in examinations)
-                {
-                    double difference = (examinationModel.StartTime - examination.StartTime).TotalMinutes;
-                    if (difference <= 15 && difference >= -15)
-                    {
-                        isRoomAvailable = false;
-                        break;
-                    }
-                }
-                if (isRoomAvailable)
-                {
-                    return room.Id;
-                }
-            }
-            return -1;
+            _examinationRepository = examinationRepository;
+            _operationRepository = operationRepoaitory;
         }
+
+        public Task<IEnumerable<AppointmentDomainModel>> GetAll()
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(decimal id, DateTime date)
+        {
+            var examinationData = await _examinationRepository.GetAllByDoctorId(id, date);
+
+            List<AppointmentDomainModel> results = new List<AppointmentDomainModel>();
+
+            foreach (var item in examinationData)
+            {
+                results.Add(parseToModel(item));
+            }
+
+            var operationData = await _operationRepository.GetAllByDoctorId(id, date);
+
+            foreach (var item in operationData)
+            {
+                results.Add(parseToModel(item));
+            }
+
+            return results;
+        }
+
+        private AppointmentDomainModel parseToModel(Examination examination)
+        {
+            AppointmentDomainModel appointmentModel = new AppointmentDomainModel
+            {
+                StartTime = examination.StartTime,
+                Duration = 15,
+                doctorId = examination.doctorId,
+                IsDeleted = examination.IsDeleted,
+                patientId = examination.patientId,
+                roomId = examination.roomId,
+                type = Appointment.Examination
+            };
+            if (examination.Anamnesis != null)
+            {
+                appointmentModel.Anamnesis = new AnamnesisDomainModel
+                {
+                    Id = examination.Anamnesis.Id,
+                    Description = examination.Anamnesis.Description,
+                    ExaminationId = examination.Anamnesis.ExaminationId,
+                    isDeleted = examination.Anamnesis.isDeleted
+                };
+            }
+            return appointmentModel;
+        }
+
+        private AppointmentDomainModel parseToModel(Operation operation)
+        {
+            AppointmentDomainModel appointmentModel = new AppointmentDomainModel
+            {
+                StartTime = operation.StartTime,
+                Duration = operation.Duration,
+                doctorId = operation.DoctorId,
+                IsDeleted = operation.isDeleted,
+                patientId = operation.PatientId,
+                roomId = operation.RoomId,
+                Anamnesis = null,
+                type = Appointment.Operation
+            };
+
+            return appointmentModel;
+        }
+
 
     }
 }

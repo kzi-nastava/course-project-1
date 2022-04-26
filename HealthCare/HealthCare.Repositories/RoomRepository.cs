@@ -9,7 +9,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthCare.Repositories {
     public interface IRoomRepository : IRepository<Room> {
-        public Task<IEnumerable<Room>> GetAllAppointmentRooms(string roomPurpose);
+        public Task<IEnumerable<Room>> GetAllExaminationRooms();
+        public Room Post(Room r);
+        public Task<Room> GetRoomById(decimal id);
+        public Room Update(Room r);
     }
 
     public class RoomRepository : IRoomRepository {
@@ -34,9 +37,27 @@ namespace HealthCare.Repositories {
                 .ToListAsync();
         }
 
+        public Room Post(Room r)
+        {
+            var result = _healthCareContext.Add(r);
+            return result.Entity;
+        }
+
         public void Save()
         {
             _healthCareContext.SaveChanges();
+        }
+
+        public async Task<Room> GetRoomById(decimal id)
+        {
+            return await _healthCareContext.Rooms.FirstOrDefaultAsync(x => x.Id == id);
+        }
+
+        public Room Update(Room r)
+        {
+            var updatedEntry = _healthCareContext.Attach(r);
+            _healthCareContext.Entry(r).State = EntityState.Modified;
+            return updatedEntry.Entity;
         }
     }
 }

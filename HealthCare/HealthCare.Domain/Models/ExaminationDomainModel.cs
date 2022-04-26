@@ -4,9 +4,14 @@ namespace HealthCare.Domain.Models;
 
 public class ExaminationDomainModel
 {
+
+    public decimal Id { get; set; }
+
     public decimal doctorId { get; set; }
 
+
     public decimal roomId { get; set; }
+
 
     public decimal patientId { get; set; }
 

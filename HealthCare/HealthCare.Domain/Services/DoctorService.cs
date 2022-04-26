@@ -63,17 +63,20 @@ public class DoctorService : IDoctorService{
                         StartTime = examination.StartTime,
                         IsDeleted = examination.IsDeleted
                     };
-                    AnamnesisDomainModel anamnesisDomainModel = new AnamnesisDomainModel {
-                        Description = examination.Anamnesis.Description,
-                        doctorId = examination.Anamnesis.doctorId,
-                        roomId = examination.Anamnesis.roomId,
-                        patientId = examination.Anamnesis.patientId,
-                        StartTime = examination.Anamnesis.StartTime,
-                        isDeleted = examination.Anamnesis.isDeleted
+                    if (examination.Anamnesis != null)
+                    {
+                        AnamnesisDomainModel anamnesisDomainModel = new AnamnesisDomainModel
+                        {
+                            Id = examination.Anamnesis.Id,
+                            Description = examination.Anamnesis.Description,
+                            ExaminationId = examination.Anamnesis.ExaminationId,
+                            isDeleted = examination.Anamnesis.isDeleted
 
-                    };
+                        };
                     examinationDomainModel.Anamnesis = anamnesisDomainModel;
                     doctorModel.Examinations.Add(examinationDomainModel);
+                    }
+
                 }
             }
             if(item.Operations != null) {

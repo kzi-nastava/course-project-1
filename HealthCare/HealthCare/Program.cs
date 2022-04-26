@@ -22,6 +22,7 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 
 
 //Repositories
+builder.Services.AddTransient<IAntiTrollRepository, AntiTrollRepository>();
 builder.Services.AddTransient<IAnamnesisRepository, AnamnesisRepository>();
 builder.Services.AddTransient<ICredentialsRepository, CredentialsRepository>();
 builder.Services.AddTransient<IDoctorRepository, DoctorRepository>();
@@ -41,7 +42,9 @@ builder.Services.AddTransient<ITransferRepository, TransferRepository>();
 builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
 
 //Domain
+builder.Services.AddTransient<IAntiTrollService, AntiTrollService>();
 builder.Services.AddTransient<IAnamnesisService, AnamnesisService>();
+builder.Services.AddTransient<IAppointmentService, AppointmentService>();
 builder.Services.AddTransient<ICredentialsService, CredentialsService>();
 builder.Services.AddTransient<IDoctorService, DoctorService>();
 builder.Services.AddTransient<IEquipmentService, EquipmentService>();

@@ -25,7 +25,15 @@ namespace HealthCareAPI.Controllers {
             }
             return Ok(patients);
         }
-        
+
+        [HttpGet]
+        [Route("medical_record/patientId={id}")]
+        public async Task<ActionResult<PatientDomainModel>> GetWithMedicalRecord(decimal id)
+        {
+            PatientDomainModel patient = await _patientService.GetWithMedicalRecord(id);
+            return Ok(patient);
+        }
+
         // https://localhost:7195/api/patient/create
         [HttpPost]
         [Route("create")]
@@ -51,6 +59,32 @@ namespace HealthCareAPI.Controllers {
         {
             var deletedPatientModel = await _patientService.Delete(id);
             return Ok(deletedPatientModel);
+        }
+        
+        // https://localhost:7195/api/patient/block
+        [HttpPut]
+        [Route("block/{id}")]
+        public async Task<ActionResult<PatientDomainModel>> BlockPatient(decimal id)
+        {
+            var blockedPatient = await _patientService.Block(id);
+            return Ok(blockedPatient);
+        }
+        
+        [HttpGet]
+        [Route("block")]
+        public async Task<ActionResult<IEnumerable<PatientDomainModel>>> GetBlockedPatients()
+        {
+            IEnumerable<PatientDomainModel> blockedPatients = await _patientService.GetBlockedPatients();
+            return Ok(blockedPatients);
+        }
+        
+        // https://localhost:7195/api/patient/unblock
+        [HttpPut]
+        [Route("unblock/{id}")]
+        public async Task<ActionResult<PatientDomainModel>> UnblockPatient(decimal id)
+        {
+            var blockedPatient = await _patientService.Unblock(id);
+            return Ok(blockedPatient);
         }
     }
 }

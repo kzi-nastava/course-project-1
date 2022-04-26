@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Domain.Models.ModelsForUpdate {
     public class DeleteExaminationDomainModel {
-        public decimal doctorId { get; set; }
 
-        public decimal roomId { get; set; }
+        public decimal ExaminationId { get; set; }
 
-        public decimal patientId { get; set; }
+        public decimal PatientId { get; set; }
 
-        public DateTime StartTime { get; set; }
+        public bool isPatient { get; set; }
     }
 }

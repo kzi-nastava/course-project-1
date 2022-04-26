@@ -11,6 +11,11 @@ namespace HealthCare.Data.Entities
     [Table("examination")]
     public class Examination
     {
+        [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+
+        public decimal Id { get; set; }
+
         [Column("doctor_id")]
         public decimal doctorId { get; set; }
 
@@ -26,7 +31,7 @@ namespace HealthCare.Data.Entities
         [Column("deleted")]
         public bool IsDeleted { get; set; }
         public Anamnesis? Anamnesis { get; set; }
-        public ExaminationApproval? ExaminationApproval { get; set; }
+        //public ExaminationApproval? ExaminationApproval { get; set; }
         //public Patient Patient { get; set; }
         //public Doctor Doctor { get; set; }
 

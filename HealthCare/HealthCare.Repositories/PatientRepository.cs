@@ -13,6 +13,7 @@ namespace HealthCare.Repositories {
         public Patient Update(Patient patient);
         public Patient Delete(Patient patient);
         public Task<Patient> GetPatientById(decimal id);
+        public Task<Patient> GetWithMedicalRecord(decimal id);
     }
     public class PatientRepository : IPatientRepository {
         private readonly HealthCareContext _healthCareContext;
@@ -26,17 +27,8 @@ namespace HealthCare.Repositories {
                 .Include(x => x.MedicalRecord)
                 .Include(x => x.Operations)
                 .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
-                .Include(x => x.Examinations).ThenInclude(x => x.ExaminationApproval)
+                //.Include(x => x.Examinations).ThenInclude(x => x.ExaminationApproval)
                 .ToListAsync();
-        }
-
-        public async Task<Patient> GetById(decimal id) {
-            return await _healthCareContext.Patients
-                .Include(x => x.Credentials)
-                .Include(x => x.MedicalRecord)
-                .Include(x => x.Operations)
-                .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
-                .Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
         public Patient Delete(Patient patient)
@@ -47,7 +39,20 @@ namespace HealthCare.Repositories {
 
         public async Task<Patient> GetPatientById(decimal id)
         {
-            return await _healthCareContext.Patients.FirstAsync(x => x.Id == id);
+            return await _healthCareContext.Patients
+                .Include(x => x.Credentials)
+                .Include(x => x.MedicalRecord)
+                .Include(x => x.Operations)
+                .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
+                .Where(x => x.Id == id).FirstOrDefaultAsync();
+        }
+
+        public async Task<Patient> GetWithMedicalRecord(decimal id)
+        {
+            return await _healthCareContext.Patients
+                .Where(x => x.Id == id)
+                .Include(x => x.MedicalRecord)
+                .FirstOrDefaultAsync();
         }
 
         public Patient Post(Patient patient)
