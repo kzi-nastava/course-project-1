@@ -11,8 +11,10 @@ namespace HealthCare.Domain.Models
         Operation, 
         Examination
     }
+
     public class AppointmentDomainModel
     {
+        public decimal Id { get; set; }
         public decimal doctorId { get; set; }
 
         public decimal roomId { get; set; }
