@@ -63,10 +63,9 @@ namespace HealthCare.Domain.Services
             {
                 appointmentModel.Anamnesis = new AnamnesisDomainModel
                 {
+                    Id = examination.Anamnesis.Id,
                     Description = examination.Anamnesis.Description,
-                    roomId = examination.Anamnesis.roomId,
-                    doctorId = examination.Anamnesis.doctorId,
-                    StartTime = examination.Anamnesis.StartTime,
+                    ExaminationId = examination.Anamnesis.ExaminationId,
                     isDeleted = examination.Anamnesis.isDeleted
                 };
             }

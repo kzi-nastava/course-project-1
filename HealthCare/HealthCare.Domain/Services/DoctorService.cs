@@ -67,11 +67,9 @@ public class DoctorService : IDoctorService{
                     {
                         AnamnesisDomainModel anamnesisDomainModel = new AnamnesisDomainModel
                         {
+                            Id = examination.Anamnesis.Id,
                             Description = examination.Anamnesis.Description,
-                            doctorId = examination.Anamnesis.doctorId,
-                            roomId = examination.Anamnesis.roomId,
-                            patientId = examination.Anamnesis.patientId,
-                            StartTime = examination.Anamnesis.StartTime,
+                            ExaminationId = examination.Anamnesis.ExaminationId,
                             isDeleted = examination.Anamnesis.isDeleted
 
                         };
