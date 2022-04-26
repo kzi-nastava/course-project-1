@@ -4,6 +4,9 @@ namespace HealthCare.Domain.Models;
 
 public class EquipmentDomainModel
 {
+    private Equipment item;
+
+
     public decimal Id { get; set; }
 
     public string Name { get; set; }
