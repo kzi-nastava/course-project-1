@@ -17,9 +17,10 @@ namespace HealthCare.Repositories
         public Task<IEnumerable<Examination>> GetAllByDoctorId(decimal id);
         public Task<IEnumerable<Examination>> GetAllByDoctorId(decimal id, DateTime date);
         public Task<IEnumerable<Examination>> GetAllByRoomId(decimal id);
+        public Task<Examination> GetByParams(decimal doctorId, decimal roomId, decimal patientId, DateTime startTime);
         public Examination Update(Examination examination);
-        public Task<Examination> GetExamination(decimal roomId, decimal doctorId, decimal patientId, DateTime StartTime);
-        public Task<Examination> GetExaminationWithoutAnamnesis(decimal roomId, decimal doctorId, decimal patientId, DateTime StartTime);
+        public Task<Examination> GetExamination(decimal id);
+        public Task<Examination> GetExaminationWithoutAnamnesis(decimal id);
     }
     public class ExaminationRepository : IExaminationRepository
     {
@@ -70,30 +71,33 @@ namespace HealthCare.Repositories
                 .ToListAsync();
         }
 
+        public async Task<Examination> GetByParams(decimal doctorId, decimal roomId, decimal patientId, DateTime startTime) {
+            return await _healthCareContext.Examinations
+                .Where(x => x.roomId == roomId)
+                .Where(x => x.doctorId == doctorId)
+                .Where(x => x.patientId == patientId)
+                .Where(x => x.StartTime == startTime)
+                .FirstOrDefaultAsync();
+        }
+
         public Examination Update(Examination examination)
         {
             var updatedEntry = _healthCareContext.Examinations.Attach(examination);
             _healthCareContext.Entry(examination).State = EntityState.Modified;
             return updatedEntry.Entity;
         }
-        public async Task<Examination> GetExamination(decimal roomId, decimal doctorId, decimal patientId, DateTime StartTime)
+        public async Task<Examination> GetExamination(decimal id)
         {
             return await _healthCareContext.Examinations
                 .Include(x => x.Anamnesis)
-                .Where(x => x.roomId == roomId)
-                .Where(x => x.patientId == patientId)
-                .Where(x => x.doctorId == doctorId)
-                .Where(x => x.StartTime == StartTime)
+                .Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<Examination> GetExaminationWithoutAnamnesis(decimal roomId, decimal doctorId, decimal patientId, DateTime StartTime)
+        public async Task<Examination> GetExaminationWithoutAnamnesis(decimal id)
         {
             return await _healthCareContext.Examinations
-                .Where(x => x.roomId == roomId)
-                .Where(x => x.patientId == patientId)
-                .Where(x => x.doctorId == doctorId)
-                .Where(x => x.StartTime == StartTime)
+                .Where(x => x.Id == id)
                 .FirstOrDefaultAsync();
         }
 
@@ -102,6 +106,8 @@ namespace HealthCare.Repositories
             var result = _healthCareContext.Examinations.Add(examination);
             return result.Entity;
         }
+
+        
 
         public void Save()
         {

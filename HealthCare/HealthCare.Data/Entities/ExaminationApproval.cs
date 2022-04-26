@@ -17,29 +17,11 @@ namespace HealthCare.Data.Entities
         [Column("state")]
         public string State { get; set; }
 
-        [Column("old_room_id")]
-        public decimal OldRoomId { get; set; }
+        [Column("old_examination_id")]
+        public decimal OldExaminationId { get; set; }
 
-        [Column("old_doctor_id")]
-        public decimal OldDoctorId { get; set; }
-
-        [Column("old_date")]
-        public DateTime OldStartTime { get; set; }
-
-        [Column("old_patient_id")]
-        public decimal OldPatientId { get; set; }
-
-        [Column("new_room_id")]
-        public decimal NewRoomId { get; set; }
-
-        [Column("new_doctor_id")]
-        public decimal NewDoctorId { get; set; }
-
-        [Column("new_date")]
-        public DateTime NewStartTime { get; set; }
-
-        [Column("new_patient_id")]
-        public decimal NewPatientId { get; set; }
+        [Column("new_examination_id")]
+        public decimal NewExaminationId { get; set; }
 
         [Column("deleted")]
         public bool isDeleted { get; set; }

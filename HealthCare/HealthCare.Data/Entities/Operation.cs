@@ -10,9 +10,13 @@ namespace HealthCare.Data.Entities
     [Table("operation")]
     public class Operation
     {
+        [Column("id")]
+        public decimal Id { get; set; }
+
         [Column("time_held")]
         public DateTime StartTime { get; set; }
 
+        [Column("duration")]
         public decimal Duration { get; set; }
 
         [Column("room_id")]

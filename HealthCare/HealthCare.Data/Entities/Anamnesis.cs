@@ -10,20 +10,16 @@ namespace HealthCare.Data.Entities
     [Table("anamnesis")]
     public class Anamnesis
     {
+        [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+
+        public decimal Id { get; set; }
+
         [Column("description")]
         public string Description { get; set; }
 
-        [Column("Examination_Doctor_id")]
-        public decimal doctorId { get; set; }
-
-        [Column("Examination_Room_id")]
-        public decimal roomId { get; set; }
-
-        [Column("Examination_Patient_id")]
-        public decimal patientId { get; set; }
-
-        [Column("Examination_examination_started")]
-        public DateTime StartTime { get; set; }
+        [Column("examination_id")]
+        public decimal ExaminationId { get; set; }
 
         [Column("deleted")]
         public bool isDeleted { get; set; }

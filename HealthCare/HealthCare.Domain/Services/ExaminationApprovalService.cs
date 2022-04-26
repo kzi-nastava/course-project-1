@@ -30,15 +30,9 @@ public class ExaminationApprovalService : IExaminationApprovalService{
             {
                 Id = item.Id,
                 isDeleted = item.isDeleted,
-                OldDoctorId = item.OldDoctorId,
-                OldPatientId = item.OldPatientId,
-                OldRoomId = item.OldRoomId,
-                OldStartTime = item.OldStartTime,
-                NewDoctorId = item.NewDoctorId,
-                NewPatientId = item.NewPatientId,
-                NewRoomId = item.NewRoomId,
-                NewStartTime = item.NewStartTime,
-                State = item.State
+                State = item.State,
+                NewExaminationId = item.NewExaminationId,
+                OldExaminationId = item.OldExaminationId
             };
             //if (item.Examination != null)
             //    examinationApprovalModel.Examination = new ExaminationDomainModel {
@@ -67,39 +61,35 @@ public class ExaminationApprovalService : IExaminationApprovalService{
 
     public async Task<ExaminationApprovalDomainModel> Approve(ExaminationApprovalDomainModel examinationModel)
     {
-        if (!examinationModel.State.Equals("created")) return null;
+        //if (!examinationModel.State.Equals("created")) return null;
         
-        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationModel.Id);
-        examinationApproval.State = "approved";
-        _ = _examinationApprovalRepository.Update(examinationApproval);
-        _examinationApprovalRepository.Save();
-        examinationModel.State = "approved";
+        //ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationModel.Id);
+        //examinationApproval.State = "approved";
+        //_ = _examinationApprovalRepository.Update(examinationApproval);
+        //_examinationApprovalRepository.Save();
+        //examinationModel.State = "approved";
 
-        Examination examination = await _examinationRepository.GetExamination(examinationModel.OldRoomId, 
-            examinationModel.OldDoctorId, examinationModel.OldPatientId, examinationModel.OldStartTime);
+        //Examination examination = await _examinationRepository.GetExamination(examinationModel.OldExaminationId);
         
-        // If it's a delete request
-        if (examinationModel.OldDoctorId == examinationModel.NewDoctorId &&
-            examinationModel.OldPatientId == examinationModel.NewPatientId &&
-            examinationModel.OldRoomId == examinationModel.NewRoomId &&
-            examinationModel.OldStartTime == examinationModel.NewStartTime) { }
-        else {
-            Anamnesis? anamnesis = examination.Anamnesis;
+        //// If it's a delete request
+        //if (examinationModel.NewExaminationId != examinationModel.OldExaminationId)
+        //{
+        //    Anamnesis? anamnesis = examination.Anamnesis;
 
-            Examination newExamination = new Examination
-            {
-                doctorId = examinationModel.NewDoctorId,
-                patientId = examinationModel.NewPatientId,
-                roomId = examinationModel.NewRoomId,
-                StartTime = examinationModel.NewStartTime,
-                IsDeleted = false,
-                Anamnesis = anamnesis
-            };
-            _ = _examinationRepository.Post(newExamination);
-        }
-        examination.IsDeleted = true;
-        _ = _examinationRepository.Update(examination);
-        _examinationRepository.Save();
+        //    Examination newExamination = new Examination
+        //    {
+        //        doctorId = examinationModel.NewDoctorId,
+        //        patientId = examinationModel.NewPatientId,
+        //        roomId = examinationModel.NewRoomId,
+        //        StartTime = examinationModel.NewStartTime,
+        //        IsDeleted = false,
+        //        Anamnesis = anamnesis
+        //    };
+        //    _ = _examinationRepository.Post(newExamination);
+        //}
+        //examination.IsDeleted = true;
+        //_ = _examinationRepository.Update(examination);
+        //_examinationRepository.Save();
         
         return examinationModel;
     }

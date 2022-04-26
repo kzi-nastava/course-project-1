@@ -44,6 +44,7 @@ public class ExaminationService : IExaminationService{
 
     private ExaminationDomainModel parseToModel(Examination examination) {
         ExaminationDomainModel examinationModel = new ExaminationDomainModel {
+            Id = examination.Id,
             StartTime = examination.StartTime,
             doctorId = examination.doctorId,
             IsDeleted = examination.IsDeleted,
@@ -52,10 +53,29 @@ public class ExaminationService : IExaminationService{
         };
         if (examination.Anamnesis != null) {
             examinationModel.Anamnesis = new AnamnesisDomainModel {
+                Id = examination.Anamnesis.Id,
                 Description = examination.Anamnesis.Description,
-                roomId = examination.Anamnesis.roomId,
-                doctorId = examination.Anamnesis.doctorId,
-                StartTime = examination.Anamnesis.StartTime,
+                ExaminationId = examination.Anamnesis.ExaminationId,
+                isDeleted = examination.Anamnesis.isDeleted
+            };
+        }
+        return examinationModel;
+    }
+
+    private Examination parseFromModel(ExaminationDomainModel examination) {
+        Examination examinationModel = new Examination {
+            Id = examination.Id,
+            StartTime = examination.StartTime,
+            doctorId = examination.doctorId,
+            IsDeleted = examination.IsDeleted,
+            patientId = examination.patientId,
+            roomId = examination.roomId
+        };
+        if (examination.Anamnesis != null) {
+            examinationModel.Anamnesis = new Anamnesis {
+                Id = examination.Anamnesis.Id,
+                Description = examination.Anamnesis.Description,
+                ExaminationId = examination.Anamnesis.ExaminationId,
                 isDeleted = examination.Anamnesis.isDeleted
             };
         }
@@ -108,10 +128,10 @@ public class ExaminationService : IExaminationService{
     }
 
     public async Task<ExaminationDomainModel> Delete(DeleteExaminationDomainModel deleteExamination, bool writeToAntiTroll) {
-        if(deleteExamination.isPatient && await AntiTrollCheck(deleteExamination.patientId, false))
+        if(deleteExamination.isPatient && await AntiTrollCheck(deleteExamination.PatientId, false))
             return null;
-        var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(deleteExamination.roomId, deleteExamination.doctorId, deleteExamination.patientId, deleteExamination.StartTime);
-        var daysUntilExamination = (deleteExamination.StartTime - DateTime.Now).TotalDays;
+        var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(deleteExamination.ExaminationId);
+        var daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
       
         if(daysUntilExamination > 1) {
             examination.IsDeleted = true;
@@ -120,15 +140,9 @@ public class ExaminationService : IExaminationService{
         } else {
             ExaminationApproval examinationApproval = new ExaminationApproval {
                 State = "created",
-                OldDoctorId = examination.doctorId,
-                OldPatientId = examination.patientId,
-                OldRoomId = examination.roomId,
-                OldStartTime = examination.StartTime,
-                NewDoctorId = examination.doctorId,
-                NewPatientId = examination.patientId,
-                NewRoomId = examination.roomId,
-                NewStartTime = examination.StartTime,
                 isDeleted = false,
+                NewExaminationId = examination.Id,
+                OldExaminationId = examination.Id
                 //Examination = examination
             };
             _ = _examinationApprovalRepository.Post(examinationApproval);
@@ -297,58 +311,69 @@ public class ExaminationService : IExaminationService{
     }
 
     public async Task<UpdateExaminationDomainModel> Update(UpdateExaminationDomainModel examinationModel) {
-        if (examinationModel.isPatient && await AntiTrollCheck(examinationModel.oldPatientId, false))
+        if (examinationModel.isPatient && await AntiTrollCheck(examinationModel.NewPatientId, false))
             return null;
-        var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(examinationModel.oldRoomId, examinationModel.oldDoctorId, examinationModel.oldPatientId, examinationModel.oldStartTime);
-        var daysUntilExamination = (examinationModel.oldStartTime - DateTime.Now).TotalDays;
-        
-        if(daysUntilExamination > 1) {
-            DeleteExaminationDomainModel deleteExaminationDomainModel = new DeleteExaminationDomainModel {
-                patientId = examinationModel.oldPatientId,
-                roomId = examinationModel.oldRoomId,
-                doctorId = examinationModel.oldDoctorId,
-                StartTime = examinationModel.oldStartTime,
-                isPatient = examinationModel.isPatient,
-            };
-            var deletedPatientModel = await Delete(deleteExaminationDomainModel, false);
+        var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(examinationModel.OldExaminationId);
+        var daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
 
-            CreateExaminationDomainModel createExaminationDomainModel = new CreateExaminationDomainModel {
-                doctorId = examinationModel.newDoctorId,
-                patientId = examinationModel.newPatientId,
-                StartTime = examinationModel.newStartTime,
-                isPatient = examinationModel.isPatient,
-            };
-            var newExamination = await Create(createExaminationDomainModel, false);
-            if (newExamination == null) {
-                //undo delete
-                examination.IsDeleted = false;
-                _ = _examinationRepository.Update(examination);
-                _examinationRepository.Save();
-            }
-            else {
-                return null;
-            }
+        CreateExaminationDomainModel createExaminationDomainModel = new CreateExaminationDomainModel {
+            doctorId = examinationModel.NewDoctorId,
+            patientId = examinationModel.NewPatientId,
+            StartTime = examinationModel.NewStartTime,
+            isPatient = examinationModel.isPatient
+        };
+        bool doctorAvailable = await IsDoctorAvailable(createExaminationDomainModel);
+        bool patientAvailable = await IsPatientAvailable(createExaminationDomainModel);
+        if (!doctorAvailable || !patientAvailable)
+            //TODO: Think about the return value if doctor is not available
+            return null;
+
+        decimal roomId = await GetAvailableRoomId(createExaminationDomainModel);
+        if (roomId == -1) {
+            return null;
+        }
+
+        if (daysUntilExamination > 1 || !examinationModel.isPatient) { 
+            
+            examination.roomId = roomId;
+            examination.doctorId = examinationModel.NewDoctorId;
+            examination.patientId = examinationModel.NewPatientId;
+            examination.StartTime = examinationModel.NewStartTime;
+            //update
+            Examination updatedExamination = _examinationRepository.Update(examination);
+            _examinationRepository.Save();
+
         } else {
+            Examination newExamination = new Examination {
+                patientId = examinationModel.NewPatientId,
+                roomId = roomId,
+                doctorId = examinationModel.NewDoctorId,
+                StartTime = examinationModel.NewStartTime,
+                IsDeleted = true,
+                Anamnesis = null,
+            };
+
+            _ = _examinationRepository.Post(newExamination);
+            _examinationRepository.Save();
+
+            var createdExamination = await _examinationRepository.GetByParams(newExamination.doctorId, newExamination.roomId, newExamination.patientId, newExamination.StartTime);
+
             // Make an approval request
             ExaminationApproval examinationApproval = new ExaminationApproval {
                 State = "created",
-                OldDoctorId = examinationModel.oldDoctorId,
-                OldPatientId = examinationModel.oldPatientId,
-                OldRoomId = examinationModel.oldRoomId,
-                OldStartTime = examinationModel.oldStartTime,
-                NewDoctorId = examinationModel.newDoctorId,
-                NewPatientId = examinationModel.newPatientId,
-                NewRoomId = examinationModel.newRoomId,
-                NewStartTime = examinationModel.newStartTime,
-                isDeleted = false
+                isDeleted = false,
+                NewExaminationId = createdExamination.Id,
+                OldExaminationId = examination.Id
+                //Examination = examination
             };
             _ = _examinationApprovalRepository.Post(examinationApproval);
             _examinationApprovalRepository.Save();
-        }
+        };
+            
 
         if (examinationModel.isPatient) {
             AntiTroll antiTrollItem = new AntiTroll {
-                PatientId = examinationModel.newPatientId,
+                PatientId = examinationModel.NewPatientId,
                 State = "update",
                 DateCreated = DateTime.Now
             };

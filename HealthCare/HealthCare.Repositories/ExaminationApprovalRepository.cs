@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 namespace HealthCare.Repositories {
     public interface IExaminationApprovalRepository : IRepository<ExaminationApproval> {
         public ExaminationApproval Post(ExaminationApproval examinationApproval);
-        public Task<IEnumerable<ExaminationApproval>> GetAllByPatientId(decimal id);
         public ExaminationApproval Update(ExaminationApproval approval);
         public Task<ExaminationApproval>  GetExaminationApprovalById(decimal id);
     }
@@ -22,12 +21,6 @@ namespace HealthCare.Repositories {
         }
         public async Task<IEnumerable<ExaminationApproval>> GetAll() {
             return await _healthCareContext.ExaminationApprovals.ToListAsync();
-        }
-
-        public async Task<IEnumerable<ExaminationApproval>> GetAllByPatientId(decimal id) {
-            return await _healthCareContext.ExaminationApprovals
-                .Where(x => x.OldPatientId == id)
-                .ToListAsync();
         }
 
         public ExaminationApproval Post(ExaminationApproval examinationApproval) {
