@@ -8,19 +8,9 @@ namespace HealthCare.Domain.Models.ModelsForUpdate
 {
     public class UpdateOperationDomainModel
     {
-        public decimal oldDoctorId { get; set; }
-
-        public decimal oldRoomId { get; set; }
-
-        public decimal oldPatientId { get; set; }
-
-        public decimal oldDuration { get; set; }
-
-        public DateTime oldStartTime { get; set; }
+        public decimal OldOperationId { get; set; }
 
         public decimal newDoctorId { get; set; }
-
-        public decimal newRoomId { get; set; }
 
         public decimal newPatientId { get; set; }
 

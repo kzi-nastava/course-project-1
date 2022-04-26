@@ -4,7 +4,6 @@ using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using HealthCare.Domain.Models.ModelsForCreate;
 using HealthCare.Domain.Models.ModelsForUpdate;
-using HealthCare.Domain.Models.ModelsForDelete;
 
 namespace HealthCareAPI.Controllers {
     [ApiController]
@@ -53,10 +52,10 @@ namespace HealthCareAPI.Controllers {
         }
 
         [HttpPut]
-        [Route("delete")]
-        public async Task<ActionResult<OperationDomainModel>> DeleteExamination([FromBody] DeleteOperationDomainModel operationModel)
+        [Route("delete/operationId={id}")]
+        public async Task<ActionResult<OperationDomainModel>> DeleteExamination(decimal id)
         {
-            var deletedOperationModel = await _operationService.Delete(operationModel);
+            var deletedOperationModel = await _operationService.Delete(id);
             return Ok(deletedOperationModel);
         }
     }

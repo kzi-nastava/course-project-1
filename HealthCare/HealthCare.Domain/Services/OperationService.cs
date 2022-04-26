@@ -1,7 +1,6 @@
 using HealthCare.Data.Entities;
 using HealthCare.Domain.Models;
 using HealthCare.Domain.Models.ModelsForCreate;
-using HealthCare.Domain.Models.ModelsForDelete;
 using HealthCare.Domain.Models.ModelsForUpdate;
 using HealthCare.Repositories;
 
@@ -94,13 +93,10 @@ public class OperationService : IOperationService {
         var patientsExaminations = await _examinationRepository.GetAllByPatientId(operationModel.PatientId);
         foreach (Examination examination in patientsExaminations)
         {
-            if (operationModel.DoctorId != examination.doctorId)
+            double difference = (operationModel.StartTime - examination.StartTime).TotalMinutes;
+            if (difference <= 15 && difference >= -(double)operationModel.Duration)
             {
-                double difference = (operationModel.StartTime - examination.StartTime).TotalMinutes;
-                if (difference <= 15 && difference >= -(double)operationModel.Duration)
-                {
-                    return true;
-                }
+                return true;
             }
         }
         return false;
@@ -111,7 +107,7 @@ public class OperationService : IOperationService {
         var patientsOperations = await _operationRepository.GetAllByPatientId(operationModel.PatientId);
         foreach (Operation operation in patientsOperations)
         {
-            if (operationModel.DoctorId !=operation.DoctorId)
+            if (operation.Id != operationModel.Id)
             {
                 double difference = (operationModel.StartTime - operation.StartTime).TotalMinutes;
                 if (difference <= (double)operation.Duration && difference >= -(double)operationModel.Duration)
@@ -132,13 +128,11 @@ public class OperationService : IOperationService {
         }
         foreach (Examination examination in doctorsExaminations)
         {
-            if (operationModel.PatientId != examination.patientId)
+
+            double difference = (operationModel.StartTime - examination.StartTime).TotalMinutes;
+            if (difference <= 15 && difference >= -(double)operationModel.Duration)
             {
-                double difference = (operationModel.StartTime - examination.StartTime).TotalMinutes;
-                if (difference <= 15 && difference >= -(double)operationModel.Duration)
-                {
-                    return true;
-                }
+                return true;
             }
         }
         return false;
@@ -149,7 +143,7 @@ public class OperationService : IOperationService {
         var doctorsOperations = await _operationRepository.GetAllByDoctorId(operationModel.DoctorId);
         foreach (Operation operation in doctorsOperations)
         {
-            if (operationModel.PatientId != operation.PatientId)
+            if (operation.Id != operationModel.Id)
             {
                 double difference = (operationModel.StartTime - operation.StartTime).TotalMinutes;
                 if (difference <= (double)operation.Duration && difference >= -(double)operationModel.Duration)
@@ -157,7 +151,7 @@ public class OperationService : IOperationService {
                     return true;
                 }
             }
-            
+           
         }
         return false;
     }
@@ -227,76 +221,51 @@ public class OperationService : IOperationService {
         return operationModel;
     }
 
-    private OperationDomainModel parseToModel(Operation operation)
-    {
-        OperationDomainModel examinationModel = new OperationDomainModel
-        {
-            StartTime = operation.StartTime,
-            Duration = operation.Duration,
-            RoomId = operation.RoomId,
-            DoctorId = operation.DoctorId,
-            PatientId = operation.PatientId,
-            isDeleted = operation.isDeleted
-        };
-
-        return examinationModel;
-    }
-
     public async Task<UpdateOperationDomainModel> Update(UpdateOperationDomainModel operationModel)
     {
-        var operation = await _operationRepository.GetOperation(operationModel.oldPatientId, operationModel.oldDoctorId, operationModel.oldRoomId, operationModel.oldStartTime);
+        var operation = await _operationRepository.GetById(operationModel.OldOperationId);
 
         if (operation == null)
         {
             return null;
         }
 
-        // if any parts of the primary key components are changed we have to create a new db entry
-        if (operation.DoctorId != operationModel.newDoctorId || operation.PatientId != operationModel.newPatientId || operation.RoomId != operationModel.newRoomId || !DateTime.Equals(operation.StartTime, operationModel.newStartTime))
+        // to be able to use the validation of availability methods:
+        CreateOperationDomainModel createOperationDomainModel = new CreateOperationDomainModel
         {
+            Id = operationModel.OldOperationId,
+            DoctorId = operationModel.newDoctorId,
+            PatientId = operationModel.newPatientId,
+            StartTime = operationModel.newStartTime,
+            Duration = operationModel.newDuration
+        };
 
-            CreateOperationDomainModel createOperationDomainModel = new CreateOperationDomainModel
-            {
-                DoctorId = operationModel.newDoctorId,
-                PatientId = operationModel.newPatientId,
-                StartTime = operationModel.newStartTime,
-                Duration = operationModel.newDuration
-            };
-            var newOperation = await Create(createOperationDomainModel);
-            if (newOperation != null)
-            {
-                DeleteOperationDomainModel deleteOperationDomainModel = new DeleteOperationDomainModel
-                {
-                    patientId = operationModel.oldPatientId,
-                    roomId = operationModel.oldRoomId,
-                    doctorId = operationModel.oldDoctorId,
-                    StartTime = operationModel.oldStartTime
-                };
-                var deletedPatientModel = await Delete(deleteOperationDomainModel);
+        bool doctorAvailable = await IsDoctorAvailable(createOperationDomainModel);
+        bool patientAvailable = await IsPatientAvailable(createOperationDomainModel);
+        if (!doctorAvailable || !patientAvailable)
+            //TODO: Think about the return value if doctor is not available
+            return null;
 
-            }
-            else
-            {
-                return null;
-            }
-
-        } else
+        decimal roomId = await GetAvailableRoomId(createOperationDomainModel);
+        if (roomId == -1)
         {
-            // if only duration is changed (not part of the key), just update the existing entry
-            if (operation.Duration != operationModel.newDuration)
-            {
-                operation.Duration = operationModel.newDuration;
-                _ = _operationRepository.Update(operation);
-                _operationRepository.Save();
-            }
+            return null;
         }
+
+        operation.PatientId = operationModel.newPatientId;
+        operation.DoctorId = operationModel.newDoctorId;
+        operation.Duration = operationModel.newDuration;
+        operation.StartTime = operationModel.newStartTime;
+
+        _ = _operationRepository.Update(operation);
+        _operationRepository.Save();
 
         return operationModel;
     }
 
-    public async Task<DeleteOperationDomainModel> Delete(DeleteOperationDomainModel operationModel)
+    public async Task<OperationDomainModel> Delete(decimal id)
     {
-        var operation = await _operationRepository.GetOperation(operationModel.patientId, operationModel.doctorId, operationModel.roomId, operationModel.StartTime);
+        var operation = await _operationRepository.GetById(id);
 
         if (operation == null)
         {
@@ -308,6 +277,23 @@ public class OperationService : IOperationService {
         _ = _operationRepository.Update(operation);
         _operationRepository.Save();
 
-        return operationModel;
+        return parseToModel(operation);
     }
+
+    private OperationDomainModel parseToModel(Operation operation)
+    {
+        OperationDomainModel examinationModel = new OperationDomainModel
+        {
+            Id = operation.Id,
+            StartTime = operation.StartTime,
+            Duration = operation.Duration,
+            RoomId = operation.RoomId,
+            DoctorId = operation.DoctorId,
+            PatientId = operation.PatientId,
+            isDeleted = operation.isDeleted
+        };
+
+        return examinationModel;
+    }
+
 }
