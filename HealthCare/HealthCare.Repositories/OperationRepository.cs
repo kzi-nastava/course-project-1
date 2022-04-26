@@ -9,13 +9,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthCare.Repositories {
     public interface IOperationRepository : IRepository<Operation> {
+        public Task<Operation> GetById(decimal id);
+        public Task<Operation> GetByParams(decimal patientId, decimal doctorId, decimal roomId, DateTime startTime);
         public Task<IEnumerable<Operation>> GetAllByDoctorId(decimal id);
         public Task<IEnumerable<Operation>> GetAllByDoctorId(decimal id, DateTime date);
         public Task<IEnumerable<Operation>> GetAllByPatientId(decimal id);
         public Task<IEnumerable<Operation>> GetAllByRoomId(decimal id);
         public Operation Post(Operation operation);
         public Operation Update(Operation operation);
-        public Task<Operation> GetOperation(decimal patientId, decimal doctorId, decimal roomId, DateTime startTime);
     }
     public class OperationRepository : IOperationRepository {
         private readonly HealthCareContext _healthCareContext;
@@ -26,6 +27,14 @@ namespace HealthCare.Repositories {
         public async Task<IEnumerable<Operation>> GetAll() {
             return await _healthCareContext.Operations.ToListAsync();
         }
+
+        public async Task<Operation> GetById(decimal id) {
+            return await _healthCareContext.Operations
+                .Where(x => x.Id == id)
+                .Where(x => x.isDeleted == false)
+                .FirstOrDefaultAsync();
+        }
+
 
         public async Task<IEnumerable<Operation>> GetAllByDoctorId(decimal id) {
             return await _healthCareContext.Operations
@@ -59,7 +68,7 @@ namespace HealthCare.Repositories {
                 .ToListAsync();
         }
 
-        public async Task<Operation> GetOperation(decimal patientId, decimal doctorId, decimal roomId, DateTime startTime)
+        public async Task<Operation> GetByParams(decimal patientId, decimal doctorId, decimal roomId, DateTime startTime)
         {
             return await _healthCareContext.Operations
                 .Where(x => x.RoomId == roomId)
