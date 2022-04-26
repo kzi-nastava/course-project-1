@@ -50,6 +50,7 @@ namespace HealthCare.Repositories
             return await _healthCareContext.Examinations
                 .Where(x => x.doctorId == id)
                 .Where(x => x.IsDeleted == false)
+                .Include(x => x.Anamnesis)
                 .ToListAsync();
         }
 
