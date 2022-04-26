@@ -47,6 +47,7 @@ public class EquipmentService : IEquipmentService{
     }
     public async Task<IEnumerable<EquipmentDomainModel>> SearchByName(string nameAlike)
     {
+        nameAlike = nameAlike.ToLower();
         var data = await _equipmentRepository.GetAll();
         if (data == null)
             return null;
@@ -55,24 +56,9 @@ public class EquipmentService : IEquipmentService{
 
         foreach (var item in data)
         {
-            if(item.Name.Contains(nameAlike))
-                results.Add(parseToModel(item));
-        }
-
-        return results;
-    }
-
-    public async Task<IEnumerable<EquipmentDomainModel>> SearchByEquipmentType(EquipmentType equipmentType)
-    {
-        var data = await _equipmentRepository.GetAll();
-        if (data == null)
-            return null;
-
-        List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
-
-        foreach (var item in data)
-        {
-            if (item.EquipmentType.Equals(equipmentType))
+            Console.WriteLine(item.EquipmentType.Name);
+            // added equipment type to search review
+            if(item.Name.ToLower().Contains(nameAlike) || item.EquipmentType.Name.ToLower().Contains(nameAlike))
                 results.Add(parseToModel(item));
         }
 
@@ -125,26 +111,26 @@ public class EquipmentService : IEquipmentService{
             //filter #2
             if (minAmmount != -1)
             {
-                var filteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount > minAmmount)
+                var minFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount > minAmmount)
                     .Select(group => group.EquipmentId);
 
-                result = result.Where(x => filteredEquipmentIds.Contains(x.Id));
+                result = result.Where(x => minFilteredEquipmentIds.Contains(x.Id));
             }
 
             // filter #3
             if (maxAmmount != -1)
             {
-                var filteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount < maxAmmount)
+                var maxFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount < maxAmmount)
                     .Select(group => group.EquipmentId);
 
-                result = result.Where(x => filteredEquipmentIds.Contains(x.Id));
+                result = result.Where(x => maxFilteredEquipmentIds.Contains(x.Id));
             }
         }
 
         // filter #4
         if(roomTypeId != -1)
         {
-            // get rooms of that room type
+            // get rooms ids of that room type
             var rooms = await _roomRepository.GetAll();
             var roomIds = rooms.Where(x => x.RoomTypeId == roomTypeId).Select(r => r.Id);
 
@@ -159,6 +145,15 @@ public class EquipmentService : IEquipmentService{
         }
         return parseToModel(result);
     }
+
+
+    public  async Task<Tuple<EquipmentDomainModel, EquipmentDomainModel>> Transfer(decimal roomIdIn, decimal roomIdOut, decimal equipmentID, decimal amount)
+    {
+        return null;
+    }
+
+
+
 
 
     //maybe yes maybe no

@@ -39,5 +39,13 @@ namespace HealthCareAPI.Controllers {
             return Ok(equipment);
         }
 
+        [HttpPost]
+        [Route("transfer/{roomIdIn:decimal}&{roomIdOut:decimal}&{equipmentId}&{amount:decimal}")]
+        public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> TransferEquipment(decimal roomIdIn, decimal roomIdOut, decimal equipmentID, decimal amount)
+        {
+            Tuple<EquipmentDomainModel, EquipmentDomainModel> equipment = await _equipmentService.Transfer(roomIdIn, roomIdOut, equipmentID, amount);
+            return Ok(equipment);
+        }
+
     }
 }
