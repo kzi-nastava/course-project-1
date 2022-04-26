@@ -1,7 +1,6 @@
 using HealthCare.Data.Entities;
 using HealthCare.Domain.Models;
 using HealthCare.Domain.Models.ModelsForCreate;
-using HealthCare.Domain.Models.ModelsForDelete;
 using HealthCare.Domain.Models.ModelsForUpdate;
 using HealthCare.Repositories;
 
@@ -264,9 +263,9 @@ public class OperationService : IOperationService {
         return operationModel;
     }
 
-    public async Task<DeleteOperationDomainModel> Delete(DeleteOperationDomainModel operationModel)
+    public async Task<OperationDomainModel> Delete(decimal id)
     {
-        var operation = await _operationRepository.GetById(operationModel.Id);
+        var operation = await _operationRepository.GetById(id);
 
         if (operation == null)
         {
@@ -278,13 +277,14 @@ public class OperationService : IOperationService {
         _ = _operationRepository.Update(operation);
         _operationRepository.Save();
 
-        return operationModel;
+        return parseToModel(operation);
     }
 
     private OperationDomainModel parseToModel(Operation operation)
     {
         OperationDomainModel examinationModel = new OperationDomainModel
         {
+            Id = operation.Id,
             StartTime = operation.StartTime,
             Duration = operation.Duration,
             RoomId = operation.RoomId,
