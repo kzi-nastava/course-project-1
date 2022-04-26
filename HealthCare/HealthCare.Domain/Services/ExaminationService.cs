@@ -168,10 +168,13 @@ public class ExaminationService : IExaminationService{
         var patientsExaminations = await _examinationRepository.GetAllByPatientId(examinationModel.patientId);
         foreach (Examination examination in patientsExaminations)
         {
-            double difference = (examinationModel.StartTime - examination.StartTime).TotalMinutes;
-            if (difference <= 15 && difference >= -15)
+            if (examination.Id != examinationModel.Id)
             {
-                return true;
+                double difference = (examinationModel.StartTime - examination.StartTime).TotalMinutes;
+                if (difference <= 15 && difference >= -15)
+                {
+                    return true;
+                }
             }
         }
         return false;
@@ -197,9 +200,13 @@ public class ExaminationService : IExaminationService{
             return false;
         }
         foreach (Examination examination in doctorsExaminations) {
-            double difference = (examinationModel.StartTime - examination.StartTime).TotalMinutes;
-            if (difference <= 15 && difference >= -15) {
-                return true;
+            if (examination.Id != examinationModel.Id)
+            {
+                double difference = (examinationModel.StartTime - examination.StartTime).TotalMinutes;
+                if (difference <= 15 && difference >= -15)
+                {
+                    return true;
+                }
             }
         }
         return false;
@@ -317,6 +324,7 @@ public class ExaminationService : IExaminationService{
         var daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
 
         CreateExaminationDomainModel createExaminationDomainModel = new CreateExaminationDomainModel {
+            Id = examinationModel.OldExaminationId,
             doctorId = examinationModel.NewDoctorId,
             patientId = examinationModel.NewPatientId,
             StartTime = examinationModel.NewStartTime,

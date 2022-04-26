@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Domain.Models.ModelsForCreate {
     public class CreateExaminationDomainModel {
+
+        public decimal Id { get; set; } // used for update purposes
+
         public decimal doctorId { get; set; }
 
         public decimal patientId { get; set; }

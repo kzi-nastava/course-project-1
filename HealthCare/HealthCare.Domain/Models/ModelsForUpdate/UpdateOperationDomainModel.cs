@@ -12,8 +12,6 @@ namespace HealthCare.Domain.Models.ModelsForUpdate
 
         public decimal newDoctorId { get; set; }
 
-        public decimal newRoomId { get; set; }
-
         public decimal newPatientId { get; set; }
 
         public decimal newDuration { get; set; }

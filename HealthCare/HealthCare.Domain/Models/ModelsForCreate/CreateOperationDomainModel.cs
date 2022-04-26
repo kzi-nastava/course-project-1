@@ -8,7 +8,7 @@ namespace HealthCare.Domain.Models.ModelsForCreate
 {
     public class CreateOperationDomainModel
     {
-        public decimal Id { get; set; }
+        public decimal Id { get; set; } // used for update purposes
         public DateTime StartTime { get; set; }
         public decimal Duration { get; set; }
         public decimal DoctorId { get; set; }
