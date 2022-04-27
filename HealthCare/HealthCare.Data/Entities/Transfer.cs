@@ -11,14 +11,18 @@ namespace HealthCare.Data.Entities
     [Table("transfer")]
     public class Transfer
     {
-        [Column("room_id1")]
-        public decimal RoomFromId { get; set; }
+        [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public decimal Id { get; set; }
+
+        [Column("room_id_out")]
+        public decimal RoomIdOut { get; set; }
 
         [Column("equipment_id")]
         public decimal EquipmentId { get; set; }
 
-        [Column("room_id")]
-        public decimal RoomToId { get; set; }
+        [Column("room_id_in")]
+        public decimal RoomIdIn { get; set; }
 
         [Column("amount")]
         public decimal Amount { get; set; }
@@ -27,7 +31,10 @@ namespace HealthCare.Data.Entities
         public DateTime TransferTime { get; set; }
 
         [Column("deleted")]
-        public bool isDeleted { get; set; }
+        public bool IsDeleted { get; set; }
+
+        [Column("executed")]
+        public bool Executed { get; set; }
 
         public Equipment Equipment { get; set; }
 

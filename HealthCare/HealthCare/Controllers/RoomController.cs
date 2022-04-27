@@ -30,18 +30,18 @@ namespace HealthCareAPI.Controllers
         // https://localhost:7195/api/room/create
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<RoomDomainModel>> CreateRoom([FromBody]RoomDomainModel room)
+        public async Task<ActionResult<RoomDomainModel>> CreateRoom([FromBody]RoomDomainModel newRoom)
         {
-            var insertedRoom = await _roomService.Add(room);
+            RoomDomainModel insertedRoom = await _roomService.Add(newRoom);
             return Ok(insertedRoom);
         }
 
         // https://localhost:7195/api/room/update
         [HttpPut]
         [Route("update/{id}")]
-        public async Task<ActionResult<RoomDomainModel>> UpdateRoom(decimal id, RoomDomainModel room)
+        public async Task<ActionResult<RoomDomainModel>> UpdateRoom(decimal id, RoomDomainModel updatedRoom)
         {
-            var updatedRoom = await _roomService.Update(room, id);
+            updatedRoom = await _roomService.Update(updatedRoom, id);
             return Ok(updatedRoom);
         }
 
@@ -49,7 +49,7 @@ namespace HealthCareAPI.Controllers
         [HttpPost]
         [Route("delete/{id}")]
         public async Task<ActionResult<RoomDomainModel>> DeleteRoom(decimal id) {
-            var deletedRoom = await _roomService.Delete(id);
+            RoomDomainModel deletedRoom = await _roomService.Delete(id);
             return Ok(deletedRoom);
         }
 

@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using System.Globalization;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -20,6 +21,23 @@ namespace HealthCareAPI.Controllers {
             if (transfers == null) {
                 transfers = new List<TransferDomainModel>();
             }
+            return Ok(transfers);
+        }
+
+        [HttpPost]
+        [Route("create")]
+        public async Task<ActionResult<TransferDomainModel>> CreateTransfer([FromBody] TransferDomainModel newTransfer)
+        {
+            newTransfer = await _transferService.Add(newTransfer);
+            return Ok(newTransfer);
+        }
+
+        // add to Program.cs
+        [HttpGet]
+        [Route("doTransfer")]
+        public async Task<ActionResult<TransferDomainModel>> DoTransfer()
+        {
+            IEnumerable<TransferDomainModel> transfers = await _transferService.DoTransfers();
             return Ok(transfers);
         }
     }

@@ -35,9 +35,9 @@ namespace HealthCare.Repositories {
                 .ToListAsync();
         }
 
-        public Room Post(Room r)
+        public Room Post(Room newRoom)
         {
-            var result = _healthCareContext.Add(r);
+            var result = _healthCareContext.Add(newRoom);
             return result.Entity;
         }
 
@@ -51,10 +51,10 @@ namespace HealthCare.Repositories {
             return await _healthCareContext.Rooms.FirstOrDefaultAsync(x => x.Id == id);
         }
 
-        public Room Update(Room r)
+        public Room Update(Room updatedRoom)
         {
-            var updatedEntry = _healthCareContext.Attach(r);
-            _healthCareContext.Entry(r).State = EntityState.Modified;
+            var updatedEntry = _healthCareContext.Attach(updatedRoom);
+            _healthCareContext.Entry(updatedRoom).State = EntityState.Modified;
             return updatedEntry.Entity;
         }
     }

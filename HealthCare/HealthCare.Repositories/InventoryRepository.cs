@@ -8,8 +8,11 @@ using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace HealthCare.Repositories {
-    public interface IInventoryRepository : IRepository<Inventory> {
-
+    public interface IInventoryRepository : IRepository<Inventory>
+    {
+        public Task<Inventory> GetInventoryById(decimal roomId, decimal equipmentId);
+        public Inventory Update(Inventory newInventory);
+        public Inventory Post(Inventory newInventory);
     }
     public class InventioryRepository : IInventoryRepository {
         private readonly HealthCareContext _healthCareContext;
@@ -26,6 +29,23 @@ namespace HealthCare.Repositories {
         public void Save()
         {
             _healthCareContext.SaveChanges();
+        }
+        public async Task<Inventory> GetInventoryById(decimal roomId, decimal equipmentId)
+        {
+            return await _healthCareContext.Inventories.FindAsync(roomId, equipmentId);
+        }
+
+        public Inventory Update(Inventory updatedInventory)
+        {
+            var updatedEntry = _healthCareContext.Attach(updatedInventory);
+            _healthCareContext.Entry(updatedInventory).State = EntityState.Modified;
+            return updatedEntry.Entity;
+        }
+
+        public Inventory Post(Inventory newInventory)
+        {
+            var result = _healthCareContext.Inventories.Add(newInventory);
+            return result.Entity;
         }
     }
 }
