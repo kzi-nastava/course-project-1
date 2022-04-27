@@ -68,12 +68,26 @@ namespace HealthCare.Domain.Services {
             return results;
         }
 
+        public async Task<Boolean> isBlocked(CredentialsDomainModel credentialsModel)
+        {
+            Patient patient = await _patientRepository.GetPatientById(credentialsModel.patientId.GetValueOrDefault());
+            if (patient.blockedBy.Equals("")) return false;
+            return true;
+        }
+
         // TODO: Fix this method in the future
         public async Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(string username, string password)
         {
-            var data = await GetAll();
+            var data = await ReadAll();
             foreach (var item in data) {
-                if (item.Username.Equals(username) && item.Password.Equals(password)) {
+                if (item.Username.Equals(username) && item.Password.Equals(password))
+                {
+                    if (item.patientId != null)
+                    {
+                        Boolean blocked = await isBlocked(item);
+                        if (!blocked) return item;
+                        return null;
+                    }
                     return item;
                 }
             }
