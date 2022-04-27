@@ -85,8 +85,8 @@ public class PatientService : IPatientService {
                         isDeleted = examination.Anamnesis.isDeleted
                     };
                     examinationDomainModel.Anamnesis = anamnesisDomainModel;
-                    patientModel.Examinations.Add(examinationDomainModel);
                 }
+                patientModel.Examinations.Add(examinationDomainModel);
             }
         }
         if (item.Operations != null) {

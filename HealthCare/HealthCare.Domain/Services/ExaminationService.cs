@@ -14,14 +14,17 @@ public class ExaminationService : IExaminationService{
     private IRoomRepository _roomRepository;
     private IAntiTrollRepository _antiTrollRepository;
     private IAnamnesisRepository _anamnesisRepository;
+    private IPatientRepository _patientRepository;
 
-    public ExaminationService(IExaminationRepository examinationRepository, IExaminationApprovalRepository examinationApprovalRepository, IOperationRepository operationRepository, IRoomRepository roomRepository, IAntiTrollRepository antiTrollRepository, IAnamnesisRepository anamnesisRepository) {
+    public ExaminationService(IExaminationRepository examinationRepository, IExaminationApprovalRepository examinationApprovalRepository, IOperationRepository operationRepository, IRoomRepository roomRepository, IAntiTrollRepository antiTrollRepository, IAnamnesisRepository anamnesisRepository, IPatientRepository patientRepository)
+    {
         _examinationRepository = examinationRepository;
         _examinationApprovalRepository = examinationApprovalRepository;
         _operationRepository = operationRepository;
         _roomRepository = roomRepository;
         _antiTrollRepository = antiTrollRepository;
         _anamnesisRepository = anamnesisRepository;
+        _patientRepository = patientRepository;
     }
 
     // Async awaits info from database
@@ -340,6 +343,12 @@ public class ExaminationService : IExaminationService{
 
         _ = _examinationRepository.Post(newExamination);
         _examinationRepository.Save();
+
+        /*
+        Patient patient = await _patientRepository.GetPatientById(examinationModel.patientId);
+        _ = _patientRepository.Update(patient);
+        _patientRepository.Save();
+        */
 
         return examinationModel;
     }

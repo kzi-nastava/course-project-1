@@ -74,8 +74,8 @@ public class DoctorService : IDoctorService{
 
                         };
                     examinationDomainModel.Anamnesis = anamnesisDomainModel;
-                    doctorModel.Examinations.Add(examinationDomainModel);
                     }
+                    doctorModel.Examinations.Add(examinationDomainModel);
 
                 }
             }
@@ -83,8 +83,8 @@ public class DoctorService : IDoctorService{
                 foreach (var operation in item.Operations) {
                     OperationDomainModel operationDomainModel = new OperationDomainModel {
                         DoctorId = operation.DoctorId,
-                        RoomId = operation.DoctorId,
-                        PatientId = operation.DoctorId,
+                        RoomId = operation.RoomId,
+                        PatientId = operation.PatientId,
                         Duration = operation.Duration,
                         isDeleted = operation.isDeleted
                     };
