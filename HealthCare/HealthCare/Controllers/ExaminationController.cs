@@ -51,9 +51,9 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/examination/delete
         [HttpPut]
         [Route("delete")]
-        public async Task<ActionResult<PatientDomainModel>> DeleteExamination([FromBody] DeleteExaminationDomainModel id) {
-            var deletedPatientModel = await _examinationService.Delete(id, true);
-            return Ok(deletedPatientModel);
+        public async Task<ActionResult<ExaminationDomainModel>> DeleteExamination([FromBody] DeleteExaminationDomainModel id) {
+            var deletedExaminationModel = await _examinationService.Delete(id, true);
+            return Ok(deletedExaminationModel);
         }
 
 

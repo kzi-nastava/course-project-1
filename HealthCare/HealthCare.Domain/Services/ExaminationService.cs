@@ -13,13 +13,15 @@ public class ExaminationService : IExaminationService{
     private IOperationRepository _operationRepository;
     private IRoomRepository _roomRepository;
     private IAntiTrollRepository _antiTrollRepository;
+    private IAnamnesisRepository _anamnesisRepository;
 
-    public ExaminationService(IExaminationRepository examinationRepository, IExaminationApprovalRepository examinationApprovalRepository, IOperationRepository operationRepository, IRoomRepository roomRepository, IAntiTrollRepository antiTrollRepository) {
+    public ExaminationService(IExaminationRepository examinationRepository, IExaminationApprovalRepository examinationApprovalRepository, IOperationRepository operationRepository, IRoomRepository roomRepository, IAntiTrollRepository antiTrollRepository, IAnamnesisRepository anamnesisRepository) {
         _examinationRepository = examinationRepository;
         _examinationApprovalRepository = examinationApprovalRepository;
         _operationRepository = operationRepository;
         _roomRepository = roomRepository;
         _antiTrollRepository = antiTrollRepository;
+        _anamnesisRepository = anamnesisRepository;
     }
 
     // Async awaits info from database
@@ -130,13 +132,19 @@ public class ExaminationService : IExaminationService{
     public async Task<ExaminationDomainModel> Delete(DeleteExaminationDomainModel deleteExamination, bool writeToAntiTroll) {
         if(deleteExamination.isPatient && await AntiTrollCheck(deleteExamination.PatientId, false))
             return null;
-        var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(deleteExamination.ExaminationId);
+        var examination = await _examinationRepository.GetExamination(deleteExamination.ExaminationId);
         var daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
       
-        if(daysUntilExamination > 1) {
+        if(daysUntilExamination > 1 || !deleteExamination.isPatient) {
             examination.IsDeleted = true;
             _ = _examinationRepository.Update(examination);
             _examinationRepository.Save();
+
+            // anamnesis can't exist without its examination
+            examination.Anamnesis.isDeleted = true;
+            _ = _anamnesisRepository.Update(examination.Anamnesis);
+            _anamnesisRepository.Save();
+            
         } else {
             ExaminationApproval examinationApproval = new ExaminationApproval {
                 State = "created",
@@ -159,7 +167,7 @@ public class ExaminationService : IExaminationService{
             _ = _antiTrollRepository.Post(antiTrollItem);
             _antiTrollRepository.Save();
         }
-        return null;
+        return parseToModel(examination);
        
     }
 
