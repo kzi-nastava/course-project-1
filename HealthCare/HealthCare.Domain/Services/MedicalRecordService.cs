@@ -13,6 +13,16 @@ public class MedicalRecordService : IMedicalRecordService {
 
     // Async awaits info from database
     // GetAll is the equivalent of SELECT *
+    public async Task<IEnumerable<MedicalRecordDomainModel>> ReadAll()
+    {
+        IEnumerable<MedicalRecordDomainModel> medicalRecords = await GetAll();
+        List<MedicalRecordDomainModel> result = new List<MedicalRecordDomainModel>();
+        foreach (var item in medicalRecords)
+        {
+            if (!item.isDeleted) result.Add(item);
+        }
+        return result;
+    } 
     public async Task<IEnumerable<MedicalRecordDomainModel>> GetAll()
     {
         var data = await _medicalRecordRepository.GetAll();

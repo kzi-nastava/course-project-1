@@ -17,11 +17,14 @@ namespace HealthCareAPI.Controllers {
 
         // https://localhost:7195/api/operation
         [HttpGet]
+        [Route("read")]
+        public async Task<ActionResult<IEnumerable<OperationDomainModel>>> ReadAll() {
+            IEnumerable<OperationDomainModel> operations = await _operationService.ReadAll();
+            return Ok(operations);
+        }
+        [HttpGet]
         public async Task<ActionResult<IEnumerable<OperationDomainModel>>> GetAll() {
             IEnumerable<OperationDomainModel> operations = await _operationService.GetAll();
-            if (operations == null) {
-                operations = new List<OperationDomainModel>();
-            }
             return Ok(operations);
         }
 

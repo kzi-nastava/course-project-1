@@ -17,9 +17,13 @@ namespace HealthCareAPI.Controllers {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<MedicalRecordDomainModel>>> GetAll() {
             IEnumerable<MedicalRecordDomainModel> medicalRecords = await _medicalRecordService.GetAll();
-            if (medicalRecords == null) {
-                medicalRecords = new List<MedicalRecordDomainModel>();
-            }
+            return Ok(medicalRecords);
+        }
+        
+        [HttpGet]
+        [Route("read")]
+        public async Task<ActionResult<IEnumerable<MedicalRecordDomainModel>>> ReadAll() {
+            IEnumerable<MedicalRecordDomainModel> medicalRecords = await _medicalRecordService.ReadAll();
             return Ok(medicalRecords);
         }
 

@@ -19,10 +19,14 @@ namespace HealthCareAPI.Controllers {
         public async Task<ActionResult<IEnumerable<CredentialsDomainModel>>> GetAll()
         {
             IEnumerable<CredentialsDomainModel> credentials = await _credentialsService.GetAll();
-            if (credentials == null)
-            {
-                credentials = new List<CredentialsDomainModel>();
-            }
+            return Ok(credentials);
+        }
+        
+        [HttpGet]
+        [Route("read")]
+        public async Task<ActionResult<IEnumerable<CredentialsDomainModel>>> ReadAll()
+        {
+            IEnumerable<CredentialsDomainModel> credentials = await _credentialsService.ReadAll();
             return Ok(credentials);
         }
 

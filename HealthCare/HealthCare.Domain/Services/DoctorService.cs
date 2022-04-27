@@ -10,7 +10,7 @@ public class DoctorService : IDoctorService{
     public DoctorService(IDoctorRepository doctorRepository) {
         _doctorRepository = doctorRepository;
     }
-
+    
     // Async awaits info from database
     // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<DoctorDomainModel>> GetAll()
@@ -96,5 +96,16 @@ public class DoctorService : IDoctorService{
         
 
         return results;
+    }
+    
+    public async Task<IEnumerable<DoctorDomainModel>> ReadAll()
+    {
+        IEnumerable<DoctorDomainModel> doctors = await GetAll();
+        List<DoctorDomainModel> result = new List<DoctorDomainModel>();
+        foreach (DoctorDomainModel doctor in doctors)
+        {
+            if (!doctor.isDeleted) result.Add(doctor);
+        }
+        return result;
     }
 }

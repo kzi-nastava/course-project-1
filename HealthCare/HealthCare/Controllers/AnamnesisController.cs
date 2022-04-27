@@ -18,9 +18,6 @@ namespace HealthCareAPI.Controllers {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<AnamnesisDomainModel>>> GetAll() {
             IEnumerable<AnamnesisDomainModel> anamnesis =  await _anamnesisService.GetAll();
-            if (anamnesis == null) {
-                anamnesis = new List<AnamnesisDomainModel>();
-            }
             return Ok(anamnesis);
         }
 
@@ -30,6 +27,13 @@ namespace HealthCareAPI.Controllers {
         {
             AnamnesisDomainModel domainModel = await _anamnesisService.Create(model);
             return Ok(domainModel);
+        }
+        
+        [HttpGet]
+        [Route("read")]
+        public async Task<ActionResult<IEnumerable<AnamnesisDomainModel>>> ReadAll() {
+            IEnumerable<AnamnesisDomainModel> anamnesis =  await _anamnesisService.ReadAll();
+            return Ok(anamnesis);
         }
     }
 }

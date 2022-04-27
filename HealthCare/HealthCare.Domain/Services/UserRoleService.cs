@@ -35,4 +35,14 @@ public class UserRoleService : IUserRoleService{
 
         return results;
     }
+    public async Task<IEnumerable<UserRoleDomainModel>> ReadAll()
+    {
+        IEnumerable<UserRoleDomainModel> userRoles = await GetAll();
+        List<UserRoleDomainModel> result = new List<UserRoleDomainModel>();
+        foreach (var item in userRoles)
+        {
+            if (!item.isDeleted) result.Add(item);
+        }
+        return result;
+    }
 }
