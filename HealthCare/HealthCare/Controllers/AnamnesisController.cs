@@ -26,7 +26,7 @@ namespace HealthCareAPI.Controllers {
 
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<AnamnesisDomainModel>> Create([FromBody] AnamnesisDomainModel model)
+        public async Task<ActionResult<AnamnesisDomainModel>> Create([FromBody] CreateAnamnesisDomainModel model)
         {
             AnamnesisDomainModel domainModel = await _anamnesisService.Create(model);
             return Ok(domainModel);
