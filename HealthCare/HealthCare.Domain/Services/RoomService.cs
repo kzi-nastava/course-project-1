@@ -133,6 +133,6 @@ public class RoomService : IRoomService{
         r.isDeleted = true;
         _ = _roomRepository.Update(r);
         _roomRepository.Save();
-        return null;
+        return new RoomDomainModel();
     }
 }

@@ -316,7 +316,7 @@ public class PatientService : IPatientService {
         credentials.Password = patientModel.Credentials.Password;
         _ = _credentialsRepository.Update(credentials);
         _credentialsRepository.Save();
-        return null;
+        return parseToDomainModel(patient);
     }
 
 
@@ -326,7 +326,7 @@ public class PatientService : IPatientService {
         patient.isDeleted = true;
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
-        return null;
+        return new PatientDomainModel();
     }
 
     public async Task<IEnumerable<PatientDomainModel>> GetBlockedPatients()
