@@ -72,35 +72,26 @@ public class ExaminationApprovalService : IExaminationApprovalService{
 
     public async Task<ExaminationApprovalDomainModel> Approve(ExaminationApprovalDomainModel examinationModel)
     {
-        //if (!examinationModel.State.Equals("created")) return null;
+        if (!examinationModel.State.Equals("created")) return null;
         
-        //ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationModel.Id);
-        //examinationApproval.State = "approved";
-        //_ = _examinationApprovalRepository.Update(examinationApproval);
-        //_examinationApprovalRepository.Save();
-        //examinationModel.State = "approved";
+        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationModel.Id);
+        examinationApproval.State = "approved";
+        _ = _examinationApprovalRepository.Update(examinationApproval);
+        _examinationApprovalRepository.Save();
+        examinationModel.State = "approved";
 
-        //Examination examination = await _examinationRepository.GetExamination(examinationModel.OldExaminationId);
+        Examination oldExamination = await _examinationRepository.GetExamination(examinationModel.OldExaminationId);
         
-        //// If it's a delete request
-        //if (examinationModel.NewExaminationId != examinationModel.OldExaminationId)
-        //{
-        //    Anamnesis? anamnesis = examination.Anamnesis;
-
-        //    Examination newExamination = new Examination
-        //    {
-        //        doctorId = examinationModel.NewDoctorId,
-        //        patientId = examinationModel.NewPatientId,
-        //        roomId = examinationModel.NewRoomId,
-        //        StartTime = examinationModel.NewStartTime,
-        //        IsDeleted = false,
-        //        Anamnesis = anamnesis
-        //    };
-        //    _ = _examinationRepository.Post(newExamination);
-        //}
-        //examination.IsDeleted = true;
-        //_ = _examinationRepository.Update(examination);
-        //_examinationRepository.Save();
+        if (examinationApproval.OldExaminationId != examinationApproval.NewExaminationId)
+        {
+            Examination newExamination = await _examinationRepository.GetExamination(examinationModel.NewExaminationId);
+            newExamination.IsDeleted = false;
+            _ = _examinationRepository.Update(newExamination);
+        }
+        // Delete request
+        oldExamination.IsDeleted = true;
+        _ = _examinationRepository.Update(oldExamination);
+        _examinationRepository.Save();
         
         return examinationModel;
     }
