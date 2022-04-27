@@ -209,6 +209,17 @@ public class PatientService : IPatientService {
         return results;
     }
 
+    public async Task<IEnumerable<PatientDomainModel>> ReadAll()
+    {
+        IEnumerable<PatientDomainModel> patients = await GetAll();
+        List<PatientDomainModel> result = new List<PatientDomainModel>();
+        foreach (PatientDomainModel patientModel in patients)
+        {
+            if (!patientModel.isDeleted) result.Add(patientModel);
+        }
+        return result;
+    }
+
     public async Task<PatientDomainModel> Block(decimal patientId)
     {
         Patient patient = await _patientRepository.GetPatientById(patientId);

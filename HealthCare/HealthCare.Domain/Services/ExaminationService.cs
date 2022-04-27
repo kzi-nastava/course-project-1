@@ -98,6 +98,17 @@ public class ExaminationService : IExaminationService{
 
         return results;
     }
+    
+    public async Task<IEnumerable<ExaminationDomainModel>> ReadAll()
+    {
+        IEnumerable<ExaminationDomainModel> examinations = await GetAll();
+        List<ExaminationDomainModel> result = new List<ExaminationDomainModel>();
+        foreach (var item in examinations)
+        {           
+            if (!item.IsDeleted) result.Add(item);
+        }
+        return result;
+    }
 
     public async Task<IEnumerable<ExaminationDomainModel>> GetAllForPatient(decimal id) {
         var data = await _examinationRepository.GetAllByPatientId(id);

@@ -10,6 +10,5 @@ public interface IExaminationService : IService<ExaminationDomainModel> {
     public Task<ExaminationDomainModel> Delete(DeleteExaminationDomainModel updateExamination, bool writeToAntiTroll);
     public Task<CreateExaminationDomainModel> Create(CreateExaminationDomainModel examinationModel, bool writeToAntiTroll);
     public Task<UpdateExaminationDomainModel> Update(UpdateExaminationDomainModel examinationModel);
-
-
+    public Task<IEnumerable<ExaminationDomainModel>> ReadAll();
 }

@@ -17,11 +17,16 @@ namespace HealthCareAPI.Controllers {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> GetAll() {
             IEnumerable<EquipmentDomainModel> equipment = await _equipmentService.GetAll();
-            if (equipment == null) {
-                equipment = new List<EquipmentDomainModel>();
-            }
             return Ok(equipment);
         }
+        
+        [HttpGet]
+        [Route("read")]
+        public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> ReadAll() {
+            IEnumerable<EquipmentDomainModel> equipment = await _equipmentService.ReadAll();
+            return Ok(equipment);
+        }
+        
 
         // https://localhost:7195/api/equipment/search
         [HttpGet]

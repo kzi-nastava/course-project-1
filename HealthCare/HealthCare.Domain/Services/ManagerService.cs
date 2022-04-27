@@ -13,6 +13,16 @@ public class ManagerService : IManagerService{
 
     // Async awaits info from database
     // GetAll is the equivalent of SELECT *
+    public async Task<IEnumerable<ManagerDomainModel>> ReadAll()
+    {
+        IEnumerable<ManagerDomainModel> managers = await GetAll();
+        List<ManagerDomainModel> result = new List<ManagerDomainModel>();
+        foreach (var item in managers)
+        {
+            if (!item.isDeleted) result.Add(item);
+        }
+        return result;
+    } 
     public async Task<IEnumerable<ManagerDomainModel>> GetAll()
     {
         var data = await _managerRepository.GetAll();

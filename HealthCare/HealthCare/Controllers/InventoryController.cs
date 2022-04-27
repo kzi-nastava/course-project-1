@@ -17,9 +17,13 @@ namespace HealthCareAPI.Controllers {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<InventoryDomainModel>>> GetAll() {
             IEnumerable<InventoryDomainModel> inventories = await _inventoryService.GetAll();
-            if (inventories == null) {
-                inventories = new List<InventoryDomainModel>();
-            }
+            return Ok(inventories);
+        }
+        
+        [HttpGet]
+        [Route("read")]
+        public async Task<ActionResult<IEnumerable<InventoryDomainModel>>> ReadAll() {
+            IEnumerable<InventoryDomainModel> inventories = await _inventoryService.ReadAll();
             return Ok(inventories);
         }
     }

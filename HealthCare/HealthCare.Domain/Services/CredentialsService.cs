@@ -24,6 +24,16 @@ namespace HealthCare.Domain.Services {
         
         // Async awaits info from database
         // GetAll is the equivalent of SELECT *
+        public async Task<IEnumerable<CredentialsDomainModel>> ReadAll()
+        {
+            IEnumerable<CredentialsDomainModel> credentials = await GetAll();
+            List<CredentialsDomainModel> result = new List<CredentialsDomainModel>();
+            foreach (var item in credentials)
+            {
+                if(!item.isDeleted) result.Add(item);
+            }
+            return result;
+        }
         public async Task<IEnumerable<CredentialsDomainModel>> GetAll()
         {
             var data = await _credentialsRepository.GetAll();
@@ -43,6 +53,7 @@ namespace HealthCare.Domain.Services {
                     managerId = item.managerId,
                     patientId = item.patientId,
                     userRoleId = item.userRoleId,
+                    isDeleted = item.isDeleted
                 };
                 if (item.UserRole != null) {
                     credentialsModel.UserRole = new UserRoleDomainModel {

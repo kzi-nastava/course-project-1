@@ -10,6 +10,17 @@ public class SecretaryService : ISecretaryService{
     public SecretaryService(ISecretaryRepository secretaryRepository) {
         _secretaryRepository = secretaryRepository;
     }
+    
+    public async Task<IEnumerable<SecretaryDomainModel>> ReadAll()
+    {
+        IEnumerable<SecretaryDomainModel> secretaries = await GetAll();
+        List<SecretaryDomainModel> result = new List<SecretaryDomainModel>();
+        foreach (var item in secretaries)
+        {
+            if(!item.isDeleted) result.Add(item);
+        }
+        return result;
+    } 
 
     // Async awaits info from database
     // GetAll is the equivalent of SELECT *

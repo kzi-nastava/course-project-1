@@ -47,6 +47,17 @@ public class ExaminationApprovalService : IExaminationApprovalService{
 
         return results;
     }
+    public async Task<IEnumerable<ExaminationApprovalDomainModel>> ReadAll()
+    {
+        IEnumerable<ExaminationApprovalDomainModel> examinationApprovals = await GetAll();
+        List<ExaminationApprovalDomainModel> result = new List<ExaminationApprovalDomainModel>();
+        foreach (var item in examinationApprovals)
+        {
+            if (!item.isDeleted) result.Add(item);
+        }
+
+        return result;
+    }
 
     public async Task<ExaminationApprovalDomainModel> Reject(ExaminationApprovalDomainModel examinationModel)
     {

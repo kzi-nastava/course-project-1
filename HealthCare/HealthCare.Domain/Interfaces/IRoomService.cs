@@ -7,4 +7,5 @@ public interface IRoomService : IService<RoomDomainModel>
     Task<RoomDomainModel> Add(RoomDomainModel room);
     Task<RoomDomainModel> Update(RoomDomainModel room, decimal id);
     Task<RoomDomainModel> Delete(decimal id);
+    public Task<IEnumerable<RoomDomainModel>> ReadAll();
 }

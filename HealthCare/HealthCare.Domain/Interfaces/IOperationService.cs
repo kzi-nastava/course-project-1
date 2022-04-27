@@ -9,4 +9,5 @@ public interface IOperationService : IService<OperationDomainModel> {
     public Task<CreateOperationDomainModel> Create(CreateOperationDomainModel operationModel);
     public Task<UpdateOperationDomainModel> Update(UpdateOperationDomainModel operationModel);
     public Task<OperationDomainModel> Delete(decimal id);
+    public Task<IEnumerable<OperationDomainModel>> ReadAll();
 }

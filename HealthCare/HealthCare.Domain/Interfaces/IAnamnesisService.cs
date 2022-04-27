@@ -6,4 +6,5 @@ namespace HealthCare.Domain.Interfaces;
 
 public interface IAnamnesisService : IService<AnamnesisDomainModel> {
     public Task<AnamnesisDomainModel> Create(CreateAnamnesisDomainModel createModel);
+    public Task<IEnumerable<AnamnesisDomainModel>> ReadAll();
 }

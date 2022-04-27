@@ -17,6 +17,17 @@ public class EquipmentService : IEquipmentService{
 
     // Async awaits info from database
     // GetAll is the equivalent of SELECT *
+    public async Task<IEnumerable<EquipmentDomainModel>> ReadAll()
+    {
+        IEnumerable<EquipmentDomainModel> equipment = await GetAll();
+        List<EquipmentDomainModel> result = new List<EquipmentDomainModel>();
+        foreach (var item in equipment)
+        {
+            if (!item.IsDeleted) result.Add(item);
+        }
+
+        return result;
+    }
     public async Task<IEnumerable<EquipmentDomainModel>> GetAll()
     {
         var data = await _equipmentRepository.GetAll();

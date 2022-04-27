@@ -3,6 +3,8 @@ using HealthCare.Domain.Models;
 using HealthCare.Domain.Models.ModelsForCreate;
 using HealthCare.Domain.Models.ModelsForUpdate;
 using HealthCare.Repositories;
+using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
+using Microsoft.OpenApi.Any;
 
 namespace HealthCare.Domain.Interfaces;
 
@@ -19,6 +21,16 @@ public class OperationService : IOperationService {
 
     // Async awaits info from database
     // GetAll is the equivalent of SELECT *
+    public async Task<IEnumerable<OperationDomainModel>> ReadAll()
+    {
+        IEnumerable<OperationDomainModel> operations = await GetAll();
+        List<OperationDomainModel> result = new List<OperationDomainModel>();
+        foreach (var item in operations)
+        {
+            if (!item.isDeleted) result.Add(item);
+        }
+        return result;
+    }
     public async Task<IEnumerable<OperationDomainModel>> GetAll()
     {
         var data = await _operationRepository.GetAll();

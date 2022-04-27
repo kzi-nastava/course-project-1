@@ -35,4 +35,14 @@ public class EquipmentTypeService : IEquipmentTypeService {
 
         return results;
     }
+    public async Task<IEnumerable<EquipmentTypeDomainModel>> ReadAll()
+    {
+        IEnumerable<EquipmentTypeDomainModel> equipmentTypes = await GetAll();
+        List<EquipmentTypeDomainModel> result = new List<EquipmentTypeDomainModel>();
+        foreach (var item in equipmentTypes)
+        {
+            if (!item.IsDeleted) result.Add(item);
+        }
+        return result;
+    }
 }

@@ -41,6 +41,17 @@ public class AnamnesisService : IAnamnesisService
 
         return results;
     }
+    
+    public async Task<IEnumerable<AnamnesisDomainModel>> ReadAll()
+    {
+        IEnumerable<AnamnesisDomainModel> anamnesis = await GetAll();
+        List<AnamnesisDomainModel> result = new List<AnamnesisDomainModel>();
+        foreach (var item in anamnesis)
+        {
+            if (!item.isDeleted) result.Add(item);
+        }
+        return result;
+    }
 
     public async Task<AnamnesisDomainModel> Create(CreateAnamnesisDomainModel createModel)
     {
