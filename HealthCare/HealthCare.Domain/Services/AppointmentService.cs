@@ -51,6 +51,7 @@ namespace HealthCare.Domain.Services
         {
             AppointmentDomainModel appointmentModel = new AppointmentDomainModel
             {
+                Id = examination.Id,
                 StartTime = examination.StartTime,
                 Duration = 15,
                 doctorId = examination.doctorId,
@@ -76,6 +77,7 @@ namespace HealthCare.Domain.Services
         {
             AppointmentDomainModel appointmentModel = new AppointmentDomainModel
             {
+                Id = operation.Id,
                 StartTime = operation.StartTime,
                 Duration = operation.Duration,
                 doctorId = operation.DoctorId,

@@ -10,12 +10,6 @@ namespace HealthCare.Domain.Models.ModelsForCreate
     {
         public string Description { get; set; }
 
-        public decimal doctorId { get; set; }
-
-        public decimal roomId { get; set; }
-
-        public decimal patientId { get; set; }
-
-        public DateTime StartTime { get; set; }
+        public decimal ExaminationId { get; set; }
     }
 }

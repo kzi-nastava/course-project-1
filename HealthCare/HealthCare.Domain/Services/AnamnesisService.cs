@@ -10,9 +10,11 @@ namespace HealthCare.Domain.Services;
 public class AnamnesisService : IAnamnesisService
 {
     private IAnamnesisRepository _anamnesisRepository;
+    private IExaminationRepository _examinationRepository;
 
-    public AnamnesisService(IAnamnesisRepository anamnesisRepository) {
+    public AnamnesisService(IAnamnesisRepository anamnesisRepository, IExaminationRepository examinationRepository) {
         _anamnesisRepository = anamnesisRepository;
+        _examinationRepository = examinationRepository;
     }
 
     // Async awaits info from database
@@ -40,7 +42,7 @@ public class AnamnesisService : IAnamnesisService
         return results;
     }
 
-    public async Task<AnamnesisDomainModel> Create(AnamnesisDomainModel createModel)
+    public async Task<AnamnesisDomainModel> Create(CreateAnamnesisDomainModel createModel)
     {
         Anamnesis anamesis = new Anamnesis
         {
@@ -61,7 +63,7 @@ public class AnamnesisService : IAnamnesisService
             Id = anamnesis.Id,
             Description = anamnesis.Description,
             ExaminationId = anamnesis.ExaminationId,
-            isDeleted = anamnesis.isDeleted
+            isDeleted = anamnesis.isDeleted,
         };
 
         return model;

@@ -5,5 +5,5 @@ using HealthCare.Domain.Models.ModelsForCreate;
 namespace HealthCare.Domain.Interfaces;
 
 public interface IAnamnesisService : IService<AnamnesisDomainModel> {
-    public Task<AnamnesisDomainModel> Create(AnamnesisDomainModel createModel);
+    public Task<AnamnesisDomainModel> Create(CreateAnamnesisDomainModel createModel);
 }
