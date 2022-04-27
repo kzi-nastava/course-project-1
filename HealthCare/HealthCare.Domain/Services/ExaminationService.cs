@@ -309,11 +309,19 @@ public class ExaminationService : IExaminationService{
             return null;
         }
 
+        int year = examinationModel.StartTime.Year;
+        int month = examinationModel.StartTime.Month;
+        int day = examinationModel.StartTime.Day;
+        int hour = examinationModel.StartTime.Hour;
+        int minute = examinationModel.StartTime.Minute;
+        int second = 0;
+        DateTime startTime = new DateTime(year, month, day, hour, minute, second);
+
         Examination newExamination = new Examination {
             patientId = examinationModel.patientId,
             roomId = roomId,
             doctorId = examinationModel.doctorId,
-            StartTime = examinationModel.StartTime,
+            StartTime = startTime,
             IsDeleted = false,
             Anamnesis = null,
             //ExaminationApproval = null
