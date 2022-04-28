@@ -20,7 +20,7 @@ namespace HealthCare.Domain.Models.ModelsForUpdate {
 
         public decimal blockingCounter { get; set; }
 
-        public bool isDeleted { get; set; }
+        public bool IsDeleted { get; set; }
 
         public UpdateMedicalRecordDomainModel MedicalRecord { get; set; }
         public UpdateCredentialsPatientDomainModel Credentials { get; set; }

@@ -7,13 +7,13 @@ public class ExaminationDomainModel
 
     public decimal Id { get; set; }
 
-    public decimal doctorId { get; set; }
+    public decimal DoctorId { get; set; }
 
 
-    public decimal roomId { get; set; }
+    public decimal RoomId { get; set; }
 
 
-    public decimal patientId { get; set; }
+    public decimal PatientId { get; set; }
 
     public DateTime StartTime { get; set; }
 

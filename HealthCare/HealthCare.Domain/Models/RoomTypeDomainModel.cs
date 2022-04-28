@@ -8,7 +8,7 @@ public class RoomTypeDomainModel
 
     public string RoleName { get; set; }
 
-    public bool isDeleted { get; set; }
+    public bool IsDeleted { get; set; }
 
     public string Purpose { get; set; }
 

@@ -17,13 +17,13 @@ namespace HealthCare.Data.Entities
         public decimal Id { get; set; }
 
         [Column("doctor_id")]
-        public decimal doctorId { get; set; }
+        public decimal DoctorId { get; set; }
 
         [Column("room_Id")]
-        public decimal roomId { get; set; }
+        public decimal RoomId { get; set; }
 
         [Column("patient_id")]
-        public decimal patientId { get; set; }
+        public decimal PatientId { get; set; }
 
         [Column("examination_started")]
         public DateTime StartTime { get; set; }

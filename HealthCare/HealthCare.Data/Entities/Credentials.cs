@@ -23,19 +23,20 @@ namespace HealthCare.Data.Entities
         public string Password { get; set; }
 
         [Column("Doctor_id")]
-        public decimal? doctorId { get; set; }
+
+        public decimal? DoctorId { get; set; }
 
         [Column("Secretary_Id")]
-        public decimal? secretaryId { get; set; }
+        public decimal? SecretaryId { get; set; }
 
         [Column("Manager_id")] 
-        public decimal? managerId { get; set; }
+        public decimal? ManagerId { get; set; }
         
         [Column("Patient_id")]
-        public decimal? patientId { get; set; }
+        public decimal? PatientId { get; set; }
 
         [Column("User_role_id")]
-        public decimal userRoleId { get; set; }
+        public decimal UserRoleId { get; set; }
 
         [Column("deleted")]
         public bool isDeleted { get; set; }

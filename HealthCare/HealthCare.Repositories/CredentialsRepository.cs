@@ -35,7 +35,7 @@ namespace HealthCare.Repositories
         }
 
         public async Task<Credentials> GetCredentialsByPatientId(decimal id) {
-            return await _healthCareContext.Credentials.FirstAsync(x => x.patientId == id);
+            return await _healthCareContext.Credentials.FirstAsync(x => x.PatientId == id);
         }
         public Credentials Post(Credentials credentials) {
             var result = _healthCareContext.Add(credentials);

@@ -12,7 +12,7 @@ public class EquipmentDomainModel
 
     public string Name { get; set; }
 
-    public decimal equipmentTypeId { get; set; }
+    public decimal EquipmentTypeId { get; set; }
 
     public bool IsDeleted { get; set; }
 

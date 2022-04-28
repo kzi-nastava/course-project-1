@@ -30,13 +30,13 @@ namespace HealthCare.Data.Entities
         public string Phone { get; set; }
 
         [Column("blocked")]
-        public string? blockedBy { get; set; }
+        public string? BlockedBy { get; set; }
 
         [Column("blocking_counter")]
-        public decimal blockingCounter { get; set; }
+        public decimal BlockingCounter { get; set; }
         
         [Column("deleted")]
-        public bool isDeleted { get; set; }
+        public bool IsDeleted { get; set; }
 
         public List<Operation> Operations { get; set; }
 

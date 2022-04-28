@@ -43,7 +43,7 @@ public class TransferService : ITransferService{
             if (item.Equipment != null) {
                 transferModel.Equipment = new EquipmentDomainModel {
                     Id = item.Equipment.Id,
-                    equipmentTypeId = item.Equipment.equipmentTypeId,
+                    EquipmentTypeId = item.Equipment.equipmentTypeId,
                     IsDeleted = item.Equipment.IsDeleted,
                     Name = item.Equipment.Name
                 };
@@ -72,8 +72,8 @@ public class TransferService : ITransferService{
             inRoomInventory = new Inventory
             {
                 Amount = newTransfer.Amount,
-                equipmentId = newTransfer.EquipmentId,
-                roomId = newTransfer.RoomIdIn,
+                RquipmentId = newTransfer.EquipmentId,
+                RoomId = newTransfer.RoomIdIn,
                 IsDeleted = false
             };               
             _inventoryRepository.Post(inRoomInventory);
@@ -137,14 +137,14 @@ public class TransferService : ITransferService{
         _transferRepository.Save();
         return transfersExecuted;
     }
-    } 
+     
     public async Task<IEnumerable<TransferDomainModel>> ReadAll()
     {
         IEnumerable<TransferDomainModel> transfers = await GetAll();
         List<TransferDomainModel> result = new List<TransferDomainModel>();
         foreach (var item in transfers)
         {
-            if(!item.isDeleted) result.Add(item);
+            if(!item.IsDeleted) result.Add(item);
         }
         return result;
     } 

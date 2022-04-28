@@ -11,6 +11,6 @@ namespace HealthCare.Domain.Models.ModelsForUpdate {
 
         public decimal PatientId { get; set; }
 
-        public bool isPatient { get; set; }
+        public bool IsPatient { get; set; }
     }
 }

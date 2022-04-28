@@ -9,13 +9,13 @@ namespace HealthCare.Domain.Models.ModelsForCreate {
 
         public decimal Id { get; set; } // used for update purposes
 
-        public decimal doctorId { get; set; }
+        public decimal DoctorId { get; set; }
 
-        public decimal patientId { get; set; }
+        public decimal PatientId { get; set; }
 
         public DateTime StartTime { get; set; }
 
-        public bool isPatient { get; set; }
+        public bool IsPatient { get; set; }
 
     }
 }

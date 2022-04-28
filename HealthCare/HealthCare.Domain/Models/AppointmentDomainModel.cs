@@ -15,17 +15,17 @@ namespace HealthCare.Domain.Models
     public class AppointmentDomainModel
     {
         public decimal Id { get; set; }
-        public decimal doctorId { get; set; }
+        public decimal DoctorId { get; set; }
 
-        public decimal roomId { get; set; }
+        public decimal RoomId { get; set; }
 
-        public decimal patientId { get; set; }
+        public decimal PatientId { get; set; }
 
         public DateTime StartTime { get; set; }
 
         public decimal Duration  { get; set; }
 
-        public Appointment type { get; set; }
+        public Appointment Type { get; set; }
 
         public bool IsDeleted { get; set; }
         public AnamnesisDomainModel? Anamnesis { get; set; }

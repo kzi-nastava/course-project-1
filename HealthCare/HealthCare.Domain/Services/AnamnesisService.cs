@@ -34,7 +34,7 @@ public class AnamnesisService : IAnamnesisService
                 Id = item.Id,
                 Description = item.Description,
                 ExaminationId = item.ExaminationId,
-                isDeleted = item.isDeleted
+                IsDeleted = item.IsDeleted
             };
             results.Add(anamnesisModel);
         }
@@ -48,7 +48,7 @@ public class AnamnesisService : IAnamnesisService
         List<AnamnesisDomainModel> result = new List<AnamnesisDomainModel>();
         foreach (var item in anamnesis)
         {
-            if (!item.isDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     }
@@ -58,7 +58,7 @@ public class AnamnesisService : IAnamnesisService
         Anamnesis anamesis = new Anamnesis
         {
             ExaminationId = createModel.ExaminationId,
-            isDeleted = false,
+            IsDeleted = false,
             Description = createModel.Description
         };
         _ = _anamnesisRepository.Post(anamesis);
@@ -74,7 +74,7 @@ public class AnamnesisService : IAnamnesisService
             Id = anamnesis.Id,
             Description = anamnesis.Description,
             ExaminationId = anamnesis.ExaminationId,
-            isDeleted = anamnesis.isDeleted,
+            IsDeleted = anamnesis.IsDeleted,
         };
 
         return model;

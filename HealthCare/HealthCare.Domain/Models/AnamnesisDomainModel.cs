@@ -14,7 +14,7 @@ public class AnamnesisDomainModel {
     
     public decimal ExaminationId { get; set; }
     
-    public bool isDeleted { get; set; }
+    public bool IsDeleted { get; set; }
 
     //public ExaminationDomainModel Examination { get; set; }
 

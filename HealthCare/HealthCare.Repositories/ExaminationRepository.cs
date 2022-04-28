@@ -38,7 +38,7 @@ namespace HealthCare.Repositories
         public async Task<IEnumerable<Examination>> GetAllByPatientId(decimal id)
         {
             return await _healthCareContext.Examinations
-                .Where(x => x.patientId == id)
+                .Where(x => x.PatientId == id)
                 .Include(x => x.Anamnesis!)
                 .Where(x => x.IsDeleted == false)
 
@@ -48,7 +48,7 @@ namespace HealthCare.Repositories
         public async Task<IEnumerable<Examination>> GetAllByDoctorId(decimal id)
         {
             return await _healthCareContext.Examinations
-                .Where(x => x.doctorId == id)
+                .Where(x => x.DoctorId == id)
                 .Where(x => x.IsDeleted == false)
                 .Include(x => x.Anamnesis)
                 .ToListAsync();
@@ -57,7 +57,7 @@ namespace HealthCare.Repositories
         public async Task<IEnumerable<Examination>> GetAllByDoctorId(decimal id, DateTime date)
         {
             return await _healthCareContext.Examinations
-                .Where(x => x.doctorId == id)
+                .Where(x => x.DoctorId == id)
                 .Where(x => x.IsDeleted == false)
                 .Where(x => DateTime.Compare(x.StartTime.Date, date.Date) >= 0 && DateTime.Compare(x.StartTime.Date, date.Date.AddDays(3)) <= 0)
                 .ToListAsync();
@@ -67,16 +67,16 @@ namespace HealthCare.Repositories
         public async Task<IEnumerable<Examination>> GetAllByRoomId(decimal id)
         {
             return await _healthCareContext.Examinations
-                .Where(x => x.roomId == id)
+                .Where(x => x.RoomId == id)
                 .Where(x => x.IsDeleted == false)
                 .ToListAsync();
         }
 
         public async Task<Examination> GetByParams(decimal doctorId, decimal roomId, decimal patientId, DateTime startTime) {
             return await _healthCareContext.Examinations
-                .Where(x => x.roomId == roomId)
-                .Where(x => x.doctorId == doctorId)
-                .Where(x => x.patientId == patientId)
+                .Where(x => x.RoomId == roomId)
+                .Where(x => x.DoctorId == doctorId)
+                .Where(x => x.PatientId == patientId)
                 .Where(x => x.StartTime == startTime)
                 .FirstOrDefaultAsync();
         }

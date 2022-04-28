@@ -23,7 +23,7 @@ public class DoctorService : IDoctorService{
         DoctorDomainModel doctorModel;
         foreach (var item in data) {
             doctorModel = new DoctorDomainModel {
-                isDeleted = item.isDeleted,
+                isDeleted = item.IsDeleted,
                 BirthDate = item.BirthDate,
                 //Credentials = item.Credentials,
                 Email = item.Email,
@@ -37,18 +37,18 @@ public class DoctorService : IDoctorService{
                     Id = item.Credentials.Id,
                     Username = item.Credentials.Username,
                     Password = item.Credentials.Password,
-                    doctorId = item.Credentials.doctorId,
-                    secretaryId = item.Credentials.secretaryId,
-                    managerId = item.Credentials.managerId,
-                    patientId = item.Credentials.patientId,
-                    userRoleId = item.Credentials.userRoleId
+                    DoctorId = item.Credentials.DoctorId,
+                    SecretaryId = item.Credentials.SecretaryId,
+                    ManagerId = item.Credentials.ManagerId,
+                    PatientId = item.Credentials.PatientId,
+                    UserRoleId = item.Credentials.UserRoleId
 
                 };
                 if (item.Credentials.UserRole != null) {
                     doctorModel.Credentials.UserRole = new UserRoleDomainModel {
                         Id = item.Credentials.UserRole.Id,
                         RoleName = item.Credentials.UserRole.RoleName,
-                        isDeleted = item.Credentials.UserRole.isDeleted
+                        IsDeleted = item.Credentials.UserRole.IsDeleted
                     };
                 }
             }
@@ -57,9 +57,9 @@ public class DoctorService : IDoctorService{
             if (item.Examinations != null) {
                 foreach (var examination in item.Examinations) {
                     ExaminationDomainModel examinationDomainModel = new ExaminationDomainModel {
-                        doctorId = examination.doctorId,
-                        roomId = examination.roomId,
-                        patientId = examination.patientId,
+                        DoctorId = examination.DoctorId,
+                        RoomId = examination.RoomId,
+                        PatientId = examination.PatientId,
                         StartTime = examination.StartTime,
                         IsDeleted = examination.IsDeleted
                     };
@@ -70,7 +70,7 @@ public class DoctorService : IDoctorService{
                             Id = examination.Anamnesis.Id,
                             Description = examination.Anamnesis.Description,
                             ExaminationId = examination.Anamnesis.ExaminationId,
-                            isDeleted = examination.Anamnesis.isDeleted
+                            IsDeleted = examination.Anamnesis.IsDeleted
 
                         };
                     examinationDomainModel.Anamnesis = anamnesisDomainModel;
@@ -86,7 +86,7 @@ public class DoctorService : IDoctorService{
                         RoomId = operation.RoomId,
                         PatientId = operation.PatientId,
                         Duration = operation.Duration,
-                        isDeleted = operation.isDeleted
+                        IsDeleted = operation.IsDeleted
                     };
                     doctorModel.Operations.Add(operationDomainModel);
                 }

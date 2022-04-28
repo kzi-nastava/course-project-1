@@ -13,17 +13,17 @@ namespace HealthCare.Domain.Models {
 
         public string Password { get; set; }
 
-        public decimal? doctorId { get; set; }
+        public decimal? DoctorId { get; set; }
 
-        public decimal? secretaryId { get; set; }
+        public decimal? SecretaryId { get; set; }
 
-        public decimal? managerId { get; set; }
+        public decimal? ManagerId { get; set; }
 
-        public decimal? patientId { get; set; }
+        public decimal? PatientId { get; set; }
 
-        public decimal userRoleId { get; set; }
+        public decimal UserRoleId { get; set; }
         
-        public bool isDeleted { get; set; }
+        public bool IsDeleted { get; set; }
 
         public UserRoleDomainModel UserRole { get; set; }
 

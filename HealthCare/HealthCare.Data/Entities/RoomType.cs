@@ -17,7 +17,7 @@ namespace HealthCare.Data.Entities
         public string RoleName { get; set; }
 
         [Column("deleted")]
-        public bool isDeleted { get; set; }
+        public bool IsDeleted { get; set; }
 
         [Column("purpose")]
         public string Purpose { get; set; }

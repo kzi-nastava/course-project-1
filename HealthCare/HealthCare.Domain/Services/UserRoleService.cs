@@ -25,7 +25,7 @@ public class UserRoleService : IUserRoleService{
         {
             userRoleModel = new UserRoleDomainModel
             {
-                isDeleted = item.isDeleted,
+                IsDeleted = item.IsDeleted,
                 //Credentials = item.Credentials,
                 Id = item.Id,
                 RoleName = item.RoleName
@@ -41,7 +41,7 @@ public class UserRoleService : IUserRoleService{
         List<UserRoleDomainModel> result = new List<UserRoleDomainModel>();
         foreach (var item in userRoles)
         {
-            if (!item.isDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     }

@@ -29,7 +29,7 @@ public class ExaminationApprovalService : IExaminationApprovalService{
             examinationApprovalModel = new ExaminationApprovalDomainModel
             {
                 Id = item.Id,
-                isDeleted = item.isDeleted,
+                IsDeleted = item.IsDeleted,
                 State = item.State,
                 NewExaminationId = item.NewExaminationId,
                 OldExaminationId = item.OldExaminationId
@@ -53,7 +53,7 @@ public class ExaminationApprovalService : IExaminationApprovalService{
         List<ExaminationApprovalDomainModel> result = new List<ExaminationApprovalDomainModel>();
         foreach (var item in examinationApprovals)
         {
-            if (!item.isDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
 
         return result;
