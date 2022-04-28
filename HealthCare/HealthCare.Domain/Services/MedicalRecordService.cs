@@ -74,9 +74,9 @@ public class MedicalRecordService : IMedicalRecordService {
         
     }
 
-    public async Task<MedicalRecordDomainModel> Update(MedicalRecordDomainModel model)
+    public async Task<MedicalRecordDomainModel> Update(MedicalRecordDomainModel medicalRecordModel)
     {
-        MedicalRecord medicalRecord = _medicalRecordRepository.Update(parseFromModel(model));
+        MedicalRecord medicalRecord = _medicalRecordRepository.Update(parseFromModel(medicalRecordModel));
         _medicalRecordRepository.Save();
 
         if (medicalRecord != null)
@@ -101,16 +101,16 @@ public class MedicalRecordService : IMedicalRecordService {
         };
     }
 
-    private MedicalRecord parseFromModel(MedicalRecordDomainModel domainModel)
+    private MedicalRecord parseFromModel(MedicalRecordDomainModel medicalRecordModel)
     {
         return new MedicalRecord
         {
-            Height = domainModel.Height,
-            Weight = domainModel.Weight,
-            BedriddenDiseases =domainModel.BedriddenDiseases,
-            PatientId = domainModel.PatientId,
-            Allergies = domainModel.Allergies,
-            IsDeleted = domainModel.IsDeleted
+            Height = medicalRecordModel.Height,
+            Weight = medicalRecordModel.Weight,
+            BedriddenDiseases = medicalRecordModel.BedriddenDiseases,
+            PatientId = medicalRecordModel.PatientId,
+            Allergies = medicalRecordModel.Allergies,
+            IsDeleted = medicalRecordModel.IsDeleted
         };
     }
 }

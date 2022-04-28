@@ -95,35 +95,35 @@ public class RoomService : IRoomService{
         return results;
     }
 
-    public async Task<RoomDomainModel> Add(RoomDomainModel newRoomModel)
+    public async Task<RoomDomainModel> Add(RoomDomainModel roomModel)
     {
         Room newRoom = new Room();
-        newRoom.IsDeleted = newRoomModel.IsDeleted;
-        newRoom.RoomName = newRoomModel.RoomName;
-        RoomType roomType = await _roomTypeRepository.GetById(newRoomModel.RoomTypeId);
+        newRoom.IsDeleted = roomModel.IsDeleted;
+        newRoom.RoomName = roomModel.RoomName;
+        RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);
         newRoom.RoomType = roomType;
         newRoom.RoomTypeId = roomType.Id;
         Room insertedRoom = _roomRepository.Post(newRoom);
         _roomRepository.Save();
 
-        return newRoomModel;
+        return roomModel;
     }
 
-    public async Task<RoomDomainModel> Update(RoomDomainModel updatedRoomModel, decimal id)
+    public async Task<RoomDomainModel> Update(RoomDomainModel roomModel, decimal id)
     {
         Room updatedRoom = await _roomRepository.GetRoomById(id);
-        updatedRoom.IsDeleted = updatedRoomModel.IsDeleted;
+        updatedRoom.IsDeleted = roomModel.IsDeleted;
         //r.Inventories = room.Inventories;
         //r.Operations = room.Operations;
-        updatedRoom.RoomName = updatedRoomModel.RoomName;
-        RoomType roomType = await _roomTypeRepository.GetById(updatedRoomModel.RoomTypeId);
+        updatedRoom.RoomName = roomModel.RoomName;
+        RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);
         updatedRoom.RoomType = roomType;
         updatedRoom.RoomTypeId = roomType.Id;
         //r.RoomTypeId = room.RoomType;
         _roomRepository.Update(updatedRoom);
         _roomRepository.Save();
 
-        return updatedRoomModel;
+        return roomModel;
 
 
     }
