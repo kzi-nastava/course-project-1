@@ -16,7 +16,7 @@ public class AntiTrollService : IAntiTrollService {
     // Async awaits info from database
     // GetAll is the equivalent of SELECT *
 
-    private AntiTrollDomainModel parseToDomainModel(AntiTroll antiTroll) {
+    private AntiTrollDomainModel parseToModel(AntiTroll antiTroll) {
         AntiTrollDomainModel antiTrollModel = new AntiTrollDomainModel {
             Id = antiTroll.Id,
             PatientId = antiTroll.PatientId,
@@ -34,7 +34,7 @@ public class AntiTrollService : IAntiTrollService {
         List<AntiTrollDomainModel> results = new List<AntiTrollDomainModel>();
         AntiTrollDomainModel antiTrollModel;
         foreach (var item in data) {
-            results.Add(parseToDomainModel(item));
+            results.Add(parseToModel(item));
         }
 
         return results;
@@ -48,7 +48,7 @@ public class AntiTrollService : IAntiTrollService {
         List<AntiTrollDomainModel> results = new List<AntiTrollDomainModel>();
         AntiTrollDomainModel antiTrollModel;
         foreach (var item in data) {
-            results.Add(parseToDomainModel(item));
+            results.Add(parseToModel(item));
         }
 
         return results;

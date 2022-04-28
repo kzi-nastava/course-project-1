@@ -76,17 +76,19 @@ public class EquipmentService : IEquipmentService{
         return results;
     }
 
-    private EquipmentDomainModel parseToModel(Equipment item) => new EquipmentDomainModel
+    private EquipmentDomainModel parseToModel(Equipment item)
     {
-        Id = item.Id,
-        //EquipmentType = item.EquipmentType,
-        EquipmentTypeId = item.equipmentTypeId,
-        Name = item.Name,
-        IsDeleted = item.IsDeleted,
+        EquipmentDomainModel equipmentModel = new EquipmentDomainModel {
+            Id = item.Id,
+            //EquipmentType = item.EquipmentType,
+            EquipmentTypeId = item.equipmentTypeId,
+            Name = item.Name,
+            IsDeleted = item.IsDeleted,
+        };
+        return equipmentModel;
+    }
 
-    };
-
-    private IEnumerable<EquipmentDomainModel> ParseToModel(IEnumerable<Equipment> input)
+    private IEnumerable<EquipmentDomainModel> parseToModels(IEnumerable<Equipment> input)
     {
         List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
         foreach (Equipment equipment in input)
@@ -154,7 +156,7 @@ public class EquipmentService : IEquipmentService{
             filterResult = filterResult.Where(x => equipmentIds.Contains(x.Id));
 
         }
-        return ParseToModel(filterResult);
+        return parseToModels(filterResult);
     }
 
 }

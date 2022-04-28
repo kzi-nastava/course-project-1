@@ -20,7 +20,7 @@ public class PatientService : IPatientService {
         _medicalRecordRepository = medicalRecordRepository;
     }
 
-    private PatientDomainModel parseToDomainModel(Patient item) {
+    private PatientDomainModel parseToModel(Patient item) {
         PatientDomainModel patientModel = new PatientDomainModel {
             IsDeleted = item.IsDeleted,
             BirthDate = item.BirthDate,
@@ -202,7 +202,7 @@ public class PatientService : IPatientService {
         PatientDomainModel patientModel;
         foreach (var item in data)
         {
-            patientModel = parseToDomainModel(item);
+            patientModel = parseToModel(item);
             results.Add(patientModel);
         }
 
@@ -228,7 +228,7 @@ public class PatientService : IPatientService {
         patient.BlockingCounter++;
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
-        return parseToDomainModel(patient);
+        return parseToModel(patient);
     }
 
     public async Task<PatientDomainModel> Unblock(decimal patientId)
@@ -239,7 +239,7 @@ public class PatientService : IPatientService {
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
 
-        return parseToDomainModel(patient);
+        return parseToModel(patient);
     }
 
     public async Task<CreatePatientDomainModel> Add(CreatePatientDomainModel patientModel)
@@ -316,7 +316,7 @@ public class PatientService : IPatientService {
         credentials.Password = patientModel.Credentials.Password;
         _ = _credentialsRepository.Update(credentials);
         _credentialsRepository.Save();
-        return parseToDomainModel(patient);
+        return parseToModel(patient);
     }
 
 

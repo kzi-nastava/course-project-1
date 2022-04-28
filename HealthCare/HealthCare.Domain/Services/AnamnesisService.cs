@@ -53,13 +53,13 @@ public class AnamnesisService : IAnamnesisService
         return result;
     }
 
-    public async Task<AnamnesisDomainModel> Create(CreateAnamnesisDomainModel createModel)
+    public async Task<AnamnesisDomainModel> Create(CreateAnamnesisDomainModel createAnamnesisModel)
     {
         Anamnesis anamesis = new Anamnesis
         {
-            ExaminationId = createModel.ExaminationId,
+            ExaminationId = createAnamnesisModel.ExaminationId,
             IsDeleted = false,
-            Description = createModel.Description
+            Description = createAnamnesisModel.Description
         };
         _ = _anamnesisRepository.Post(anamesis);
         _anamnesisRepository.Save();
@@ -67,7 +67,7 @@ public class AnamnesisService : IAnamnesisService
         return parseToModel(anamesis);
     }
 
-    public AnamnesisDomainModel parseToModel(Anamnesis anamnesis)
+    private AnamnesisDomainModel parseToModel(Anamnesis anamnesis)
     {
         AnamnesisDomainModel model = new AnamnesisDomainModel
         {

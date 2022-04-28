@@ -59,32 +59,32 @@ public class ExaminationApprovalService : IExaminationApprovalService{
         return result;
     }
 
-    public async Task<ExaminationApprovalDomainModel> Reject(ExaminationApprovalDomainModel examinationModel)
+    public async Task<ExaminationApprovalDomainModel> Reject(ExaminationApprovalDomainModel examinationApprovalModel)
     {
-        if (!examinationModel.State.Equals("created")) return null;
-        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationModel.Id);
+        if (!examinationApprovalModel.State.Equals("created")) return null;
+        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationApprovalModel.Id);
         examinationApproval.State = "rejected";
         _ = _examinationApprovalRepository.Update(examinationApproval);
         _examinationApprovalRepository.Save();
-        examinationModel.State = "rejected";
-        return examinationModel;
+        examinationApprovalModel.State = "rejected";
+        return examinationApprovalModel;
     }
 
-    public async Task<ExaminationApprovalDomainModel> Approve(ExaminationApprovalDomainModel examinationModel)
+    public async Task<ExaminationApprovalDomainModel> Approve(ExaminationApprovalDomainModel examinationApprovalModel)
     {
-        if (!examinationModel.State.Equals("created")) return null;
+        if (!examinationApprovalModel.State.Equals("created")) return null;
         
-        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationModel.Id);
+        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationApprovalModel.Id);
         examinationApproval.State = "approved";
         _ = _examinationApprovalRepository.Update(examinationApproval);
         _examinationApprovalRepository.Save();
-        examinationModel.State = "approved";
+        examinationApprovalModel.State = "approved";
 
-        Examination oldExamination = await _examinationRepository.GetExamination(examinationModel.OldExaminationId);
+        Examination oldExamination = await _examinationRepository.GetExamination(examinationApprovalModel.OldExaminationId);
         
         if (examinationApproval.OldExaminationId != examinationApproval.NewExaminationId)
         {
-            Examination newExamination = await _examinationRepository.GetExamination(examinationModel.NewExaminationId);
+            Examination newExamination = await _examinationRepository.GetExamination(examinationApprovalModel.NewExaminationId);
             newExamination.IsDeleted = false;
             _ = _examinationRepository.Update(newExamination);
         }
@@ -93,6 +93,6 @@ public class ExaminationApprovalService : IExaminationApprovalService{
         _ = _examinationRepository.Update(oldExamination);
         _examinationRepository.Save();
         
-        return examinationModel;
+        return examinationApprovalModel;
     }
 }

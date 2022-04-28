@@ -68,7 +68,7 @@ namespace HealthCare.Domain.Services {
             return results;
         }
 
-        public async Task<Boolean> isBlocked(CredentialsDomainModel credentialsModel)
+        public async Task<Boolean> IsBlocked(CredentialsDomainModel credentialsModel)
         {
             Patient patient = await _patientRepository.GetPatientById(credentialsModel.PatientId.GetValueOrDefault());
             if (patient.BlockedBy.Equals("")) return false;
@@ -84,7 +84,7 @@ namespace HealthCare.Domain.Services {
                 {
                     if (item.PatientId != null)
                     {
-                        Boolean blocked = await isBlocked(item);
+                        Boolean blocked = await IsBlocked(item);
                         if (!blocked) return item;
                         return null;
                     }
