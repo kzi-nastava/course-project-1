@@ -24,7 +24,7 @@ public class RoomTypeService : IRoomTypeService{
         {
             roomTypeModel = new RoomTypeDomainModel
             {
-                isDeleted = item.isDeleted,
+                IsDeleted = item.IsDeleted,
                 Id = item.Id,
                 RoleName = item.RoleName,
                 Purpose = item.Purpose,
@@ -40,7 +40,7 @@ public class RoomTypeService : IRoomTypeService{
         List<RoomTypeDomainModel> result = new List<RoomTypeDomainModel>();
         foreach (var item in roomTypes)
         {
-            if(!item.isDeleted) result.Add(item);
+            if(!item.IsDeleted) result.Add(item);
         }
         return result;
     } 

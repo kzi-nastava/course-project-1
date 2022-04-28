@@ -30,7 +30,7 @@ namespace HealthCare.Domain.Services {
             List<CredentialsDomainModel> result = new List<CredentialsDomainModel>();
             foreach (var item in credentials)
             {
-                if(!item.isDeleted) result.Add(item);
+                if(!item.IsDeleted) result.Add(item);
             }
             return result;
         }
@@ -48,18 +48,18 @@ namespace HealthCare.Domain.Services {
                     Id = item.Id,
                     Username = item.Username,
                     Password = item.Password,
-                    doctorId = item.doctorId,
-                    secretaryId = item.secretaryId,
-                    managerId = item.managerId,
-                    patientId = item.patientId,
-                    userRoleId = item.userRoleId,
-                    isDeleted = item.isDeleted
+                    DoctorId = item.DoctorId,
+                    SecretaryId = item.SecretaryId,
+                    ManagerId = item.ManagerId,
+                    PatientId = item.PatientId,
+                    UserRoleId = item.UserRoleId,
+                    IsDeleted = item.isDeleted
                 };
                 if (item.UserRole != null) {
                     credentialsModel.UserRole = new UserRoleDomainModel {
                         Id = item.UserRole.Id,
                         RoleName = item.UserRole.RoleName,
-                        isDeleted = item.UserRole.isDeleted
+                        IsDeleted = item.UserRole.IsDeleted
                     };
                 }
                 results.Add(credentialsModel);
@@ -68,10 +68,10 @@ namespace HealthCare.Domain.Services {
             return results;
         }
 
-        public async Task<Boolean> isBlocked(CredentialsDomainModel credentialsModel)
+        public async Task<Boolean> IsBlocked(CredentialsDomainModel credentialsModel)
         {
-            Patient patient = await _patientRepository.GetPatientById(credentialsModel.patientId.GetValueOrDefault());
-            if (patient.blockedBy.Equals("")) return false;
+            Patient patient = await _patientRepository.GetPatientById(credentialsModel.PatientId.GetValueOrDefault());
+            if (patient.BlockedBy.Equals("")) return false;
             return true;
         }
 
@@ -82,9 +82,9 @@ namespace HealthCare.Domain.Services {
             foreach (var item in data) {
                 if (item.Username.Equals(username) && item.Password.Equals(password))
                 {
-                    if (item.patientId != null)
+                    if (item.PatientId != null)
                     {
-                        Boolean blocked = await isBlocked(item);
+                        Boolean blocked = await IsBlocked(item);
                         if (!blocked) return item;
                         return null;
                     }

@@ -8,7 +8,7 @@ public class UserRoleDomainModel
 
     public string RoleName { get; set; }
 
-    public bool isDeleted { get; set; }
+    public bool IsDeleted { get; set; }
 
     //public List<Credentials> Credentials { get; set; }
 }

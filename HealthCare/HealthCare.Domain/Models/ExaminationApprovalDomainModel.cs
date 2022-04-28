@@ -8,7 +8,7 @@ public class ExaminationApprovalDomainModel
     public string State { get; set; }
     public decimal OldExaminationId { get; set; }
     public decimal NewExaminationId { get; set; }
-    public bool isDeleted { get; set; }
+    public bool IsDeleted { get; set; }
 
     //public ExaminationDomainModel Examination { get; set; }
 

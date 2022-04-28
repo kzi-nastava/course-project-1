@@ -19,7 +19,7 @@ public class MedicalRecordService : IMedicalRecordService {
         List<MedicalRecordDomainModel> result = new List<MedicalRecordDomainModel>();
         foreach (var item in medicalRecords)
         {
-            if (!item.isDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     } 
@@ -35,7 +35,7 @@ public class MedicalRecordService : IMedicalRecordService {
         {
             medicalRecordModel = new MedicalRecordDomainModel
             {
-                isDeleted = item.isDeleted,
+                IsDeleted = item.IsDeleted,
                 Allergies = item.Allergies,
                 BedriddenDiseases = item.BedriddenDiseases,
                 Height = item.Height,
@@ -56,7 +56,7 @@ public class MedicalRecordService : IMedicalRecordService {
         {
             MedicalRecordDomainModel medicalRecordModel = new MedicalRecordDomainModel
             {
-                isDeleted = data.isDeleted,
+                IsDeleted = data.IsDeleted,
                 Allergies = data.Allergies,
                 BedriddenDiseases = data.BedriddenDiseases,
                 Height = data.Height,
@@ -74,9 +74,9 @@ public class MedicalRecordService : IMedicalRecordService {
         
     }
 
-    public async Task<MedicalRecordDomainModel> Update(MedicalRecordDomainModel model)
+    public async Task<MedicalRecordDomainModel> Update(MedicalRecordDomainModel medicalRecordModel)
     {
-        MedicalRecord medicalRecord = _medicalRecordRepository.Update(parseFromModel(model));
+        MedicalRecord medicalRecord = _medicalRecordRepository.Update(parseFromModel(medicalRecordModel));
         _medicalRecordRepository.Save();
 
         if (medicalRecord != null)
@@ -97,20 +97,20 @@ public class MedicalRecordService : IMedicalRecordService {
             BedriddenDiseases = medicalRecord.BedriddenDiseases,
             PatientId = medicalRecord.PatientId,
             Allergies = medicalRecord.Allergies,
-            isDeleted = medicalRecord.isDeleted
+            IsDeleted = medicalRecord.IsDeleted
         };
     }
 
-    private MedicalRecord parseFromModel(MedicalRecordDomainModel domainModel)
+    private MedicalRecord parseFromModel(MedicalRecordDomainModel medicalRecordModel)
     {
         return new MedicalRecord
         {
-            Height = domainModel.Height,
-            Weight = domainModel.Weight,
-            BedriddenDiseases =domainModel.BedriddenDiseases,
-            PatientId = domainModel.PatientId,
-            Allergies = domainModel.Allergies,
-            isDeleted = domainModel.isDeleted
+            Height = medicalRecordModel.Height,
+            Weight = medicalRecordModel.Weight,
+            BedriddenDiseases = medicalRecordModel.BedriddenDiseases,
+            PatientId = medicalRecordModel.PatientId,
+            Allergies = medicalRecordModel.Allergies,
+            IsDeleted = medicalRecordModel.IsDeleted
         };
     }
 }

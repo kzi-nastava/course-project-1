@@ -51,17 +51,17 @@ public class ExaminationService : IExaminationService{
         ExaminationDomainModel examinationModel = new ExaminationDomainModel {
             Id = examination.Id,
             StartTime = examination.StartTime,
-            doctorId = examination.doctorId,
+            DoctorId = examination.DoctorId,
             IsDeleted = examination.IsDeleted,
-            patientId = examination.patientId,
-            roomId = examination.roomId
+            PatientId = examination.PatientId,
+            RoomId = examination.RoomId
         };
         if (examination.Anamnesis != null) {
             examinationModel.Anamnesis = new AnamnesisDomainModel {
                 Id = examination.Anamnesis.Id,
                 Description = examination.Anamnesis.Description,
                 ExaminationId = examination.Anamnesis.ExaminationId,
-                isDeleted = examination.Anamnesis.isDeleted
+                IsDeleted = examination.Anamnesis.IsDeleted
             };
         }
         return examinationModel;
@@ -71,17 +71,17 @@ public class ExaminationService : IExaminationService{
         Examination examinationModel = new Examination {
             Id = examination.Id,
             StartTime = examination.StartTime,
-            doctorId = examination.doctorId,
+            DoctorId = examination.DoctorId,
             IsDeleted = examination.IsDeleted,
-            patientId = examination.patientId,
-            roomId = examination.roomId
+            PatientId = examination.PatientId,
+            RoomId = examination.RoomId
         };
         if (examination.Anamnesis != null) {
             examinationModel.Anamnesis = new Anamnesis {
                 Id = examination.Anamnesis.Id,
                 Description = examination.Anamnesis.Description,
                 ExaminationId = examination.Anamnesis.ExaminationId,
-                isDeleted = examination.Anamnesis.isDeleted
+                IsDeleted = examination.Anamnesis.IsDeleted
             };
         }
         return examinationModel;
@@ -143,26 +143,26 @@ public class ExaminationService : IExaminationService{
         return results;
     }
 
-    public async Task<ExaminationDomainModel> Delete(DeleteExaminationDomainModel deleteExamination, bool writeToAntiTroll) {
-        if(deleteExamination.isPatient && await AntiTrollCheck(deleteExamination.PatientId, false))
+    public async Task<ExaminationDomainModel> Delete(DeleteExaminationDomainModel deleteExaminationModel, bool writeToAntiTroll) {
+        if(deleteExaminationModel.IsPatient && await AntiTrollCheck(deleteExaminationModel.PatientId, false))
             return null;
-        var examination = await _examinationRepository.GetExamination(deleteExamination.ExaminationId);
+        var examination = await _examinationRepository.GetExamination(deleteExaminationModel.ExaminationId);
         var daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
       
-        if(daysUntilExamination > 1 || !deleteExamination.isPatient) {
+        if(daysUntilExamination > 1 || !deleteExaminationModel.IsPatient) {
             examination.IsDeleted = true;
             _ = _examinationRepository.Update(examination);
             _examinationRepository.Save();
 
             // anamnesis can't exist without its examination
-            examination.Anamnesis.isDeleted = true;
+            examination.Anamnesis.IsDeleted = true;
             _ = _anamnesisRepository.Update(examination.Anamnesis);
             _anamnesisRepository.Save();
             
         } else {
             ExaminationApproval examinationApproval = new ExaminationApproval {
                 State = "created",
-                isDeleted = false,
+                IsDeleted = false,
                 NewExaminationId = examination.Id,
                 OldExaminationId = examination.Id
                 //Examination = examination
@@ -171,9 +171,9 @@ public class ExaminationService : IExaminationService{
             _examinationApprovalRepository.Save();
         }
 
-        if (deleteExamination.isPatient && writeToAntiTroll) {
+        if (deleteExaminationModel.IsPatient && writeToAntiTroll) {
             AntiTroll antiTrollItem = new AntiTroll {
-                PatientId = examination.patientId,
+                PatientId = examination.PatientId,
                 State = "delete",
                 DateCreated = DateTime.Now
             };
@@ -187,7 +187,7 @@ public class ExaminationService : IExaminationService{
 
     private async Task<bool> IsPatientOnExaminationAsync(CreateExaminationDomainModel examinationModel)
     {
-        var patientsExaminations = await _examinationRepository.GetAllByPatientId(examinationModel.patientId);
+        var patientsExaminations = await _examinationRepository.GetAllByPatientId(examinationModel.PatientId);
         foreach (Examination examination in patientsExaminations)
         {
             if (examination.Id != examinationModel.Id)
@@ -204,7 +204,7 @@ public class ExaminationService : IExaminationService{
 
     private async Task<bool> IsPatientOnOperationAsync(CreateExaminationDomainModel examinationModel)
     {
-        var patientsOperations = await _operationRepository.GetAllByPatientId(examinationModel.patientId);
+        var patientsOperations = await _operationRepository.GetAllByPatientId(examinationModel.PatientId);
         foreach (Operation operation in patientsOperations)
         {
             double difference = (examinationModel.StartTime - operation.StartTime).TotalMinutes;
@@ -217,7 +217,7 @@ public class ExaminationService : IExaminationService{
     }
 
     private async Task<bool> IsDoctorOnExaminationAsync(CreateExaminationDomainModel examinationModel) {
-        var doctorsExaminations = await _examinationRepository.GetAllByDoctorId(examinationModel.doctorId);
+        var doctorsExaminations = await _examinationRepository.GetAllByDoctorId(examinationModel.DoctorId);
         if (doctorsExaminations == null) {
             return false;
         }
@@ -235,7 +235,7 @@ public class ExaminationService : IExaminationService{
     }
 
     private async Task<bool> IsDoctorOnOperationAsync(CreateExaminationDomainModel examinationModel) {
-        var doctorsOperations = await _operationRepository.GetAllByDoctorId(examinationModel.doctorId);
+        var doctorsOperations = await _operationRepository.GetAllByDoctorId(examinationModel.DoctorId);
         foreach (Operation operation in doctorsOperations) {
             double difference = (examinationModel.StartTime - operation.StartTime).TotalMinutes;
             if (difference <= (double) operation.Duration && difference >= -15) {
@@ -298,41 +298,41 @@ public class ExaminationService : IExaminationService{
         return true;
     }
 
-    public async Task<CreateExaminationDomainModel> Create(CreateExaminationDomainModel examinationModel, bool writeToAntiTroll) {
-        if (examinationModel.isPatient && await AntiTrollCheck(examinationModel.patientId, true))
+    public async Task<CreateExaminationDomainModel> Create(CreateExaminationDomainModel createExaminationModel, bool writeToAntiTroll) {
+        if (createExaminationModel.IsPatient && await AntiTrollCheck(createExaminationModel.PatientId, true))
             return null;
-        bool doctorAvailable = await IsDoctorAvailable(examinationModel);
-        bool patientAvailable = await IsPatientAvailable(examinationModel);
+        bool doctorAvailable = await IsDoctorAvailable(createExaminationModel);
+        bool patientAvailable = await IsPatientAvailable(createExaminationModel);
         if (!doctorAvailable || !patientAvailable)
             //TODO: Think about the return value if doctor is not available
             return null;
 
-        decimal roomId = await GetAvailableRoomId(examinationModel);
+        decimal roomId = await GetAvailableRoomId(createExaminationModel);
         if (roomId == -1) {
             return null;
         }
 
-        int year = examinationModel.StartTime.Year;
-        int month = examinationModel.StartTime.Month;
-        int day = examinationModel.StartTime.Day;
-        int hour = examinationModel.StartTime.Hour;
-        int minute = examinationModel.StartTime.Minute;
+        int year = createExaminationModel.StartTime.Year;
+        int month = createExaminationModel.StartTime.Month;
+        int day = createExaminationModel.StartTime.Day;
+        int hour = createExaminationModel.StartTime.Hour;
+        int minute = createExaminationModel.StartTime.Minute;
         int second = 0;
         DateTime startTime = new DateTime(year, month, day, hour, minute, second);
 
         Examination newExamination = new Examination {
-            patientId = examinationModel.patientId,
-            roomId = roomId,
-            doctorId = examinationModel.doctorId,
+            PatientId = createExaminationModel.PatientId,
+            RoomId = roomId,
+            DoctorId = createExaminationModel.DoctorId,
             StartTime = startTime,
             IsDeleted = false,
             Anamnesis = null,
             //ExaminationApproval = null
         };
 
-        if (examinationModel.isPatient && writeToAntiTroll) {
+        if (createExaminationModel.IsPatient && writeToAntiTroll) {
             AntiTroll antiTrollItem = new AntiTroll {
-                PatientId = examinationModel.patientId,
+                PatientId = createExaminationModel.PatientId,
                 State = "create",
                 DateCreated = DateTime.Now
             };
@@ -350,21 +350,21 @@ public class ExaminationService : IExaminationService{
         _patientRepository.Save();
         */
 
-        return examinationModel;
+        return createExaminationModel;
     }
 
-    public async Task<UpdateExaminationDomainModel> Update(UpdateExaminationDomainModel examinationModel) {
-        if (examinationModel.isPatient && await AntiTrollCheck(examinationModel.NewPatientId, false))
+    public async Task<UpdateExaminationDomainModel> Update(UpdateExaminationDomainModel updateExaminationModel) {
+        if (updateExaminationModel.isPatient && await AntiTrollCheck(updateExaminationModel.NewPatientId, false))
             return null;
-        var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(examinationModel.OldExaminationId);
+        var examination = await _examinationRepository.GetExaminationWithoutAnamnesis(updateExaminationModel.OldExaminationId);
         var daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
 
         CreateExaminationDomainModel createExaminationDomainModel = new CreateExaminationDomainModel {
-            Id = examinationModel.OldExaminationId,
-            doctorId = examinationModel.NewDoctorId,
-            patientId = examinationModel.NewPatientId,
-            StartTime = examinationModel.NewStartTime,
-            isPatient = examinationModel.isPatient
+            Id = updateExaminationModel.OldExaminationId,
+            DoctorId = updateExaminationModel.NewDoctorId,
+            PatientId = updateExaminationModel.NewPatientId,
+            StartTime = updateExaminationModel.NewStartTime,
+            IsPatient = updateExaminationModel.isPatient
         };
         bool doctorAvailable = await IsDoctorAvailable(createExaminationDomainModel);
         bool patientAvailable = await IsPatientAvailable(createExaminationDomainModel);
@@ -377,22 +377,22 @@ public class ExaminationService : IExaminationService{
             return null;
         }
 
-        if (daysUntilExamination > 1 || !examinationModel.isPatient) { 
+        if (daysUntilExamination > 1 || !updateExaminationModel.isPatient) { 
             
-            examination.roomId = roomId;
-            examination.doctorId = examinationModel.NewDoctorId;
-            examination.patientId = examinationModel.NewPatientId;
-            examination.StartTime = examinationModel.NewStartTime;
+            examination.RoomId = roomId;
+            examination.DoctorId = updateExaminationModel.NewDoctorId;
+            examination.PatientId = updateExaminationModel.NewPatientId;
+            examination.StartTime = updateExaminationModel.NewStartTime;
             //update
             Examination updatedExamination = _examinationRepository.Update(examination);
             _examinationRepository.Save();
 
         } else {
             Examination newExamination = new Examination {
-                patientId = examinationModel.NewPatientId,
-                roomId = roomId,
-                doctorId = examinationModel.NewDoctorId,
-                StartTime = examinationModel.NewStartTime,
+                PatientId = updateExaminationModel.NewPatientId,
+                RoomId = roomId,
+                DoctorId = updateExaminationModel.NewDoctorId,
+                StartTime = updateExaminationModel.NewStartTime,
                 IsDeleted = true,
                 Anamnesis = null,
             };
@@ -400,12 +400,12 @@ public class ExaminationService : IExaminationService{
             _ = _examinationRepository.Post(newExamination);
             _examinationRepository.Save();
 
-            var createdExamination = await _examinationRepository.GetByParams(newExamination.doctorId, newExamination.roomId, newExamination.patientId, newExamination.StartTime);
+            var createdExamination = await _examinationRepository.GetByParams(newExamination.DoctorId, newExamination.RoomId, newExamination.PatientId, newExamination.StartTime);
 
             // Make an approval request
             ExaminationApproval examinationApproval = new ExaminationApproval {
                 State = "created",
-                isDeleted = false,
+                IsDeleted = false,
                 NewExaminationId = createdExamination.Id,
                 OldExaminationId = examination.Id
                 //Examination = examination
@@ -415,9 +415,9 @@ public class ExaminationService : IExaminationService{
         };
             
 
-        if (examinationModel.isPatient) {
+        if (updateExaminationModel.isPatient) {
             AntiTroll antiTrollItem = new AntiTroll {
-                PatientId = examinationModel.NewPatientId,
+                PatientId = updateExaminationModel.NewPatientId,
                 State = "update",
                 DateCreated = DateTime.Now
             };
@@ -426,6 +426,6 @@ public class ExaminationService : IExaminationService{
             _antiTrollRepository.Save();
         }
 
-        return examinationModel;
+        return updateExaminationModel;
     }
 }

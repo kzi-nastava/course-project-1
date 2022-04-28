@@ -16,11 +16,11 @@ public class PatientDomainModel
 
     public string Phone { get; set; }
 
-    public string blockedBy { get; set; }
+    public string BlockedBy { get; set; }
 
-    public decimal blockingCounter { get; set; }
+    public decimal BlockingCounter { get; set; }
         
-    public bool isDeleted { get; set; }
+    public bool IsDeleted { get; set; }
 
     public List<OperationDomainModel> Operations { get; set; }
 

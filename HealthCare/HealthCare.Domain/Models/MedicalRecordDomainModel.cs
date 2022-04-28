@@ -14,7 +14,7 @@ public class MedicalRecordDomainModel
 
     public decimal PatientId { get; set; }
 
-    public bool isDeleted { get; set; }
+    public bool IsDeleted { get; set; }
 
     //public Patient Patient { get; set; }
 }

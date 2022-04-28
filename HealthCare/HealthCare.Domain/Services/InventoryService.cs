@@ -25,14 +25,14 @@ public class InventoryService : IInventoryService {
             inventoryModel = new InventoryDomainModel
             {
                 IsDeleted = item.IsDeleted,
-                roomId = item.roomId,
+                RoomId = item.RoomId,
                 Amount = item.Amount,
-                equipmentId = item.equipmentId,
+                EquipmentId = item.RquipmentId,
             };
             if (item.Equipment != null) {
                 inventoryModel.Equipment = new EquipmentDomainModel {
                     Id = item.Equipment.Id,
-                    equipmentTypeId = item.Equipment.equipmentTypeId,
+                    EquipmentTypeId = item.Equipment.equipmentTypeId,
                     IsDeleted = item.Equipment.IsDeleted,
                     Name = item.Equipment.Name,
                 };

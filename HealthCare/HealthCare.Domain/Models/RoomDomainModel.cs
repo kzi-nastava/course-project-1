@@ -10,7 +10,7 @@ public class RoomDomainModel
 
     public decimal RoomTypeId  { get; set; }
 
-    public bool isDeleted { get; set; }
+    public bool IsDeleted { get; set; }
 
     public List<InventoryDomainModel> Inventories { get; set; }
     //public List<TransferDomainModel> TransfersFrom { get; set; }

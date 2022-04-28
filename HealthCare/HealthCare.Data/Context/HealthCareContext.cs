@@ -90,7 +90,7 @@ namespace HealthCare.Data.Context
             //    .HasOne(x => x.Equipment)
             //    .WithMany(x => x.Inventories)
             //    .IsRequired();
-            modelBuilder.Entity<Inventory>().HasKey(x => new {x.roomId, x.equipmentId });
+            modelBuilder.Entity<Inventory>().HasKey(x => new {x.RoomId, x.RquipmentId });
 
 
             //modelBuilder.Entity<Room>()

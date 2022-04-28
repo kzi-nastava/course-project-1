@@ -30,7 +30,7 @@ namespace HealthCare.Data.Entities
         public decimal PatientId { get; set; }
 
         [Column("deleted")]
-        public bool isDeleted { get; set; }
+        public bool IsDeleted { get; set; }
 
         //public Room Room { get; set; }
 

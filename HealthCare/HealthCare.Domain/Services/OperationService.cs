@@ -27,7 +27,7 @@ public class OperationService : IOperationService {
         List<OperationDomainModel> result = new List<OperationDomainModel>();
         foreach (var item in operations)
         {
-            if (!item.isDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     }
@@ -43,7 +43,7 @@ public class OperationService : IOperationService {
         {
             operationModel = new OperationDomainModel
             {
-                isDeleted = item.isDeleted,
+                IsDeleted = item.IsDeleted,
                 //Patient = item.Patient,
                 PatientId = item.PatientId,
                 //Doctor = item.Doctor,
@@ -224,7 +224,7 @@ public class OperationService : IOperationService {
             DoctorId = operationModel.DoctorId,
             StartTime = operationModel.StartTime,
             Duration = operationModel.Duration,
-            isDeleted = false
+            IsDeleted = false
         };
 
         _ = _operationRepository.Post(newOperation);
@@ -246,10 +246,10 @@ public class OperationService : IOperationService {
         CreateOperationDomainModel createOperationDomainModel = new CreateOperationDomainModel
         {
             Id = operationModel.OldOperationId,
-            DoctorId = operationModel.newDoctorId,
-            PatientId = operationModel.newPatientId,
-            StartTime = operationModel.newStartTime,
-            Duration = operationModel.newDuration
+            DoctorId = operationModel.NewDoctorId,
+            PatientId = operationModel.NewPatientId,
+            StartTime = operationModel.NewStartTime,
+            Duration = operationModel.NewDuration
         };
 
         bool doctorAvailable = await IsDoctorAvailable(createOperationDomainModel);
@@ -264,10 +264,10 @@ public class OperationService : IOperationService {
             return null;
         }
 
-        operation.PatientId = operationModel.newPatientId;
-        operation.DoctorId = operationModel.newDoctorId;
-        operation.Duration = operationModel.newDuration;
-        operation.StartTime = operationModel.newStartTime;
+        operation.PatientId = operationModel.NewPatientId;
+        operation.DoctorId = operationModel.NewDoctorId;
+        operation.Duration = operationModel.NewDuration;
+        operation.StartTime = operationModel.NewStartTime;
 
         _ = _operationRepository.Update(operation);
         _operationRepository.Save();
@@ -285,7 +285,7 @@ public class OperationService : IOperationService {
         }
 
         // logical delete
-        operation.isDeleted = true;
+        operation.IsDeleted = true;
         _ = _operationRepository.Update(operation);
         _operationRepository.Save();
 
@@ -302,7 +302,7 @@ public class OperationService : IOperationService {
             RoomId = operation.RoomId,
             DoctorId = operation.DoctorId,
             PatientId = operation.PatientId,
-            isDeleted = operation.isDeleted
+            IsDeleted = operation.IsDeleted
         };
 
         return examinationModel;

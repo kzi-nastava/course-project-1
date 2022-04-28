@@ -10,13 +10,13 @@ namespace HealthCare.Domain.Models.ModelsForUpdate
     {
         public decimal OldOperationId { get; set; }
 
-        public decimal newDoctorId { get; set; }
+        public decimal NewDoctorId { get; set; }
 
-        public decimal newPatientId { get; set; }
+        public decimal NewPatientId { get; set; }
 
-        public decimal newDuration { get; set; }
+        public decimal NewDuration { get; set; }
 
-        public DateTime newStartTime { get; set; }
+        public DateTime NewStartTime { get; set; }
 
     }
 }

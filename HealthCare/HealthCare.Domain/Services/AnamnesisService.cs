@@ -34,7 +34,7 @@ public class AnamnesisService : IAnamnesisService
                 Id = item.Id,
                 Description = item.Description,
                 ExaminationId = item.ExaminationId,
-                isDeleted = item.isDeleted
+                IsDeleted = item.IsDeleted
             };
             results.Add(anamnesisModel);
         }
@@ -48,18 +48,18 @@ public class AnamnesisService : IAnamnesisService
         List<AnamnesisDomainModel> result = new List<AnamnesisDomainModel>();
         foreach (var item in anamnesis)
         {
-            if (!item.isDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     }
 
-    public async Task<AnamnesisDomainModel> Create(CreateAnamnesisDomainModel createModel)
+    public async Task<AnamnesisDomainModel> Create(CreateAnamnesisDomainModel createAnamnesisModel)
     {
         Anamnesis anamesis = new Anamnesis
         {
-            ExaminationId = createModel.ExaminationId,
-            isDeleted = false,
-            Description = createModel.Description
+            ExaminationId = createAnamnesisModel.ExaminationId,
+            IsDeleted = false,
+            Description = createAnamnesisModel.Description
         };
         _ = _anamnesisRepository.Post(anamesis);
         _anamnesisRepository.Save();
@@ -67,14 +67,14 @@ public class AnamnesisService : IAnamnesisService
         return parseToModel(anamesis);
     }
 
-    public AnamnesisDomainModel parseToModel(Anamnesis anamnesis)
+    private AnamnesisDomainModel parseToModel(Anamnesis anamnesis)
     {
         AnamnesisDomainModel model = new AnamnesisDomainModel
         {
             Id = anamnesis.Id,
             Description = anamnesis.Description,
             ExaminationId = anamnesis.ExaminationId,
-            isDeleted = anamnesis.isDeleted,
+            IsDeleted = anamnesis.IsDeleted,
         };
 
         return model;

@@ -54,11 +54,11 @@ namespace HealthCare.Domain.Services
                 Id = examination.Id,
                 StartTime = examination.StartTime,
                 Duration = 15,
-                doctorId = examination.doctorId,
+                DoctorId = examination.DoctorId,
                 IsDeleted = examination.IsDeleted,
-                patientId = examination.patientId,
-                roomId = examination.roomId,
-                type = Appointment.Examination
+                PatientId = examination.PatientId,
+                RoomId = examination.RoomId,
+                Type = Appointment.Examination
             };
             if (examination.Anamnesis != null)
             {
@@ -67,7 +67,7 @@ namespace HealthCare.Domain.Services
                     Id = examination.Anamnesis.Id,
                     Description = examination.Anamnesis.Description,
                     ExaminationId = examination.Anamnesis.ExaminationId,
-                    isDeleted = examination.Anamnesis.isDeleted
+                    IsDeleted = examination.Anamnesis.IsDeleted
                 };
             }
             return appointmentModel;
@@ -80,12 +80,12 @@ namespace HealthCare.Domain.Services
                 Id = operation.Id,
                 StartTime = operation.StartTime,
                 Duration = operation.Duration,
-                doctorId = operation.DoctorId,
-                IsDeleted = operation.isDeleted,
-                patientId = operation.PatientId,
-                roomId = operation.RoomId,
+                DoctorId = operation.DoctorId,
+                IsDeleted = operation.IsDeleted,
+                PatientId = operation.PatientId,
+                RoomId = operation.RoomId,
                 Anamnesis = null,
-                type = Appointment.Operation
+                Type = Appointment.Operation
             };
 
             return appointmentModel;

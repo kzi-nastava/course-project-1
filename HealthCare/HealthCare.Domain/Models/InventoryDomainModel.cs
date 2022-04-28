@@ -6,9 +6,9 @@ public class InventoryDomainModel
 {
     public decimal Amount { get; set; }
 
-    public decimal roomId { get; set; }
+    public decimal RoomId { get; set; }
 
-    public decimal equipmentId { get; set; }
+    public decimal EquipmentId { get; set; }
 
     public bool IsDeleted { get; set; }
 

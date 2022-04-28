@@ -31,7 +31,7 @@ namespace HealthCare.Repositories {
         public async Task<Operation> GetById(decimal id) {
             return await _healthCareContext.Operations
                 .Where(x => x.Id == id)
-                .Where(x => x.isDeleted == false)
+                .Where(x => x.IsDeleted == false)
                 .FirstOrDefaultAsync();
         }
 
@@ -39,7 +39,7 @@ namespace HealthCare.Repositories {
         public async Task<IEnumerable<Operation>> GetAllByDoctorId(decimal id) {
             return await _healthCareContext.Operations
                 .Where(x => x.DoctorId == id)
-                .Where(x => x.isDeleted == false)
+                .Where(x => x.IsDeleted == false)
                 .ToListAsync();
         }
 
@@ -47,7 +47,7 @@ namespace HealthCare.Repositories {
         {
             return await _healthCareContext.Operations
                 .Where(x => x.DoctorId == id)
-                .Where(x => x.isDeleted == false)
+                .Where(x => x.IsDeleted == false)
                 .Where(x => x.StartTime.Date >= date.Date && x.StartTime.Date <= date.Date.AddDays(3))
                 .ToListAsync();
         }
@@ -56,7 +56,7 @@ namespace HealthCare.Repositories {
         {
             return await _healthCareContext.Operations
                 .Where(x => x.PatientId == id)
-                .Where(x => x.isDeleted == false)
+                .Where(x => x.IsDeleted == false)
                 .ToListAsync();
         }
 
@@ -64,7 +64,7 @@ namespace HealthCare.Repositories {
         {
             return await _healthCareContext.Operations
                 .Where(x => x.RoomId == id)
-                .Where(x => x.isDeleted == false)
+                .Where(x => x.IsDeleted == false)
                 .ToListAsync();
         }
 

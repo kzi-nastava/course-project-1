@@ -17,7 +17,7 @@ public class SecretaryService : ISecretaryService{
         List<SecretaryDomainModel> result = new List<SecretaryDomainModel>();
         foreach (var item in secretaries)
         {
-            if(!item.isDeleted) result.Add(item);
+            if(!item.IsDeleted) result.Add(item);
         }
         return result;
     } 
@@ -36,7 +36,7 @@ public class SecretaryService : ISecretaryService{
         {
             secretaryModel = new SecretaryDomainModel
             {
-                isDeleted = item.isDeleted,
+                IsDeleted = item.IsDeleted,
                 Id = item.Id,
                 BirthDate = item.BirthDate,
                 Email = item.Email,
@@ -49,18 +49,18 @@ public class SecretaryService : ISecretaryService{
                     Id = item.Credentials.Id,
                     Username = item.Credentials.Username,
                     Password = item.Credentials.Password,
-                    doctorId = item.Credentials.doctorId,
-                    secretaryId = item.Credentials.secretaryId,
-                    managerId = item.Credentials.managerId,
-                    patientId = item.Credentials.patientId,
-                    userRoleId = item.Credentials.userRoleId
+                    DoctorId = item.Credentials.DoctorId,
+                    SecretaryId = item.Credentials.SecretaryId,
+                    ManagerId = item.Credentials.ManagerId,
+                    PatientId = item.Credentials.PatientId,
+                    UserRoleId = item.Credentials.UserRoleId
 
                 };
                 if (item.Credentials.UserRole != null) {
                     secretaryModel.Credentials.UserRole = new UserRoleDomainModel {
                         Id = item.Credentials.UserRole.Id,
                         RoleName = item.Credentials.UserRole.RoleName,
-                        isDeleted = item.Credentials.UserRole.isDeleted
+                        IsDeleted = item.Credentials.UserRole.IsDeleted
                     };
                 }
             }

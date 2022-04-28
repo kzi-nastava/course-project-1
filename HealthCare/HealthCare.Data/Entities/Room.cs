@@ -21,7 +21,7 @@ namespace HealthCare.Data.Entities
         public decimal RoomTypeId  { get; set; }
 
         [Column("deleted")]
-        public bool isDeleted { get; set; }
+        public bool IsDeleted { get; set; }
 
         public List<Inventory> Inventories { get; set; }
         //public List<Transfer> TransfersFrom { get; set; }
