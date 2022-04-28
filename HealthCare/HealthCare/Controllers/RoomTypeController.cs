@@ -17,9 +17,12 @@ namespace HealthCareAPI.Controllers {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RoomTypeDomainModel>>> GetAll() {
             IEnumerable<RoomTypeDomainModel> roomTypes = await _roomTypeService.GetAll();
-            if (roomTypes == null) {
-                roomTypes = new List<RoomTypeDomainModel>();
-            }
+            return Ok(roomTypes);
+        }
+        [HttpGet]
+        [Route("read")]
+        public async Task<ActionResult<IEnumerable<RoomTypeDomainModel>>> ReadAll() {
+            IEnumerable<RoomTypeDomainModel> roomTypes = await _roomTypeService.ReadAll();
             return Ok(roomTypes);
         }
     }

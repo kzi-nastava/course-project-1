@@ -20,12 +20,24 @@ namespace HealthCareAPI.Controllers {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PatientDomainModel>>> GetAll() {
             IEnumerable<PatientDomainModel> patients = await _patientService.GetAll();
-            if (patients == null) {
-                patients = new List<PatientDomainModel>();
-            }
             return Ok(patients);
         }
         
+        [HttpGet]
+        [Route("read")]
+        public async Task<ActionResult<IEnumerable<PatientDomainModel>>> ReadAll() {
+            IEnumerable<PatientDomainModel> patients = await _patientService.ReadAll();
+            return Ok(patients);
+        }
+
+        [HttpGet]
+        [Route("medical_record/patientId={id}")]
+        public async Task<ActionResult<PatientDomainModel>> GetWithMedicalRecord(decimal id)
+        {
+            PatientDomainModel patient = await _patientService.GetWithMedicalRecord(id);
+            return Ok(patient);
+        }
+
         // https://localhost:7195/api/patient/create
         [HttpPost]
         [Route("create")]

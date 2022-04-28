@@ -4,18 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HealthCare.Domain.Models.ModelsForCreate {
-    public class CreateExaminationDomainModel {
-
+namespace HealthCare.Domain.Models.ModelsForCreate
+{
+    public class CreateOperationDomainModel
+    {
         public decimal Id { get; set; } // used for update purposes
-
-        public decimal doctorId { get; set; }
-
-        public decimal patientId { get; set; }
-
         public DateTime StartTime { get; set; }
-
-        public bool isPatient { get; set; }
-
+        public decimal Duration { get; set; }
+        public decimal DoctorId { get; set; }
+        public decimal PatientId { get; set; }
     }
 }

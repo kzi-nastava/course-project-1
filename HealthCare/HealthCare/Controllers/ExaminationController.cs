@@ -19,9 +19,13 @@ namespace HealthCareAPI.Controllers {
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAll() {
             IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAll();
-            if (examinations == null) {
-                examinations = new List<ExaminationDomainModel>();
-            }
+            return Ok(examinations);
+        }
+        
+        [HttpGet]
+        [Route("read")]
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> ReadAll() {
+            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.ReadAll();
             return Ok(examinations);
         }
 
@@ -51,9 +55,9 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/examination/delete
         [HttpPut]
         [Route("delete")]
-        public async Task<ActionResult<PatientDomainModel>> DeleteExamination([FromBody] DeleteExaminationDomainModel id) {
-            var deletedPatientModel = await _examinationService.Delete(id, true);
-            return Ok(deletedPatientModel);
+        public async Task<ActionResult<ExaminationDomainModel>> DeleteExamination([FromBody] DeleteExaminationDomainModel id) {
+            var deletedExaminationModel = await _examinationService.Delete(id, true);
+            return Ok(deletedExaminationModel);
         }
 
 

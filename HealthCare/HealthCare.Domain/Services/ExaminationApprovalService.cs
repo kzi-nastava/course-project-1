@@ -30,15 +30,9 @@ public class ExaminationApprovalService : IExaminationApprovalService{
             {
                 Id = item.Id,
                 isDeleted = item.isDeleted,
-                OldDoctorId = item.OldDoctorId,
-                OldPatientId = item.OldPatientId,
-                OldRoomId = item.OldRoomId,
-                OldStartTime = item.OldStartTime,
-                NewDoctorId = item.NewDoctorId,
-                NewPatientId = item.NewPatientId,
-                NewRoomId = item.NewRoomId,
-                NewStartTime = item.NewStartTime,
-                State = item.State
+                State = item.State,
+                NewExaminationId = item.NewExaminationId,
+                OldExaminationId = item.OldExaminationId
             };
             //if (item.Examination != null)
             //    examinationApprovalModel.Examination = new ExaminationDomainModel {
@@ -52,6 +46,17 @@ public class ExaminationApprovalService : IExaminationApprovalService{
         }
 
         return results;
+    }
+    public async Task<IEnumerable<ExaminationApprovalDomainModel>> ReadAll()
+    {
+        IEnumerable<ExaminationApprovalDomainModel> examinationApprovals = await GetAll();
+        List<ExaminationApprovalDomainModel> result = new List<ExaminationApprovalDomainModel>();
+        foreach (var item in examinationApprovals)
+        {
+            if (!item.isDeleted) result.Add(item);
+        }
+
+        return result;
     }
 
     public async Task<ExaminationApprovalDomainModel> Reject(ExaminationApprovalDomainModel examinationModel)
@@ -75,30 +80,17 @@ public class ExaminationApprovalService : IExaminationApprovalService{
         _examinationApprovalRepository.Save();
         examinationModel.State = "approved";
 
-        Examination examination = await _examinationRepository.GetExamination(examinationModel.OldRoomId, 
-            examinationModel.OldDoctorId, examinationModel.OldPatientId, examinationModel.OldStartTime);
+        Examination oldExamination = await _examinationRepository.GetExamination(examinationModel.OldExaminationId);
         
-        // If it's a delete request
-        if (examinationModel.OldDoctorId == examinationModel.NewDoctorId &&
-            examinationModel.OldPatientId == examinationModel.NewPatientId &&
-            examinationModel.OldRoomId == examinationModel.NewRoomId &&
-            examinationModel.OldStartTime == examinationModel.NewStartTime) { }
-        else {
-            Anamnesis? anamnesis = examination.Anamnesis;
-
-            Examination newExamination = new Examination
-            {
-                doctorId = examinationModel.NewDoctorId,
-                patientId = examinationModel.NewPatientId,
-                roomId = examinationModel.NewRoomId,
-                StartTime = examinationModel.NewStartTime,
-                IsDeleted = false,
-                Anamnesis = anamnesis
-            };
-            _ = _examinationRepository.Post(newExamination);
+        if (examinationApproval.OldExaminationId != examinationApproval.NewExaminationId)
+        {
+            Examination newExamination = await _examinationRepository.GetExamination(examinationModel.NewExaminationId);
+            newExamination.IsDeleted = false;
+            _ = _examinationRepository.Update(newExamination);
         }
-        examination.IsDeleted = true;
-        _ = _examinationRepository.Update(examination);
+        // Delete request
+        oldExamination.IsDeleted = true;
+        _ = _examinationRepository.Update(oldExamination);
         _examinationRepository.Save();
         
         return examinationModel;

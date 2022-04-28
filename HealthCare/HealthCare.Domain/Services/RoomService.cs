@@ -15,7 +15,18 @@ public class RoomService : IRoomService{
         _roomTypeRepository = roomTypeRepository;
     }
 
-    public async Task<IEnumerable<RoomDomainModel>> GetAll()
+    public async Task<IEnumerable<RoomDomainModel>> ReadAll()
+    {
+        IEnumerable<RoomDomainModel> rooms = await GetAll();
+        List<RoomDomainModel> result = new List<RoomDomainModel>();
+        foreach (var item in rooms)
+        {
+            if(!item.isDeleted) result.Add(item);
+        }
+        return result;
+    }
+
+  public async Task<IEnumerable<RoomDomainModel>> GetAll()
     {
         IEnumerable<Room> rooms = await _roomRepository.GetAll();
         if (rooms == null)
@@ -136,5 +147,6 @@ public class RoomService : IRoomService{
             isDeleted = deletedRoom.isDeleted
 
         };
+        return new RoomDomainModel();
     }
 }

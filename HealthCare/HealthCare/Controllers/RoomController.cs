@@ -21,10 +21,14 @@ namespace HealthCareAPI.Controllers
         public async Task<ActionResult<IEnumerable<RoomDomainModel>>> GetAll()
         {
             IEnumerable<RoomDomainModel> rooms = await _roomService.GetAll();
-            if (rooms == null)
-            {
-                rooms = new List<RoomDomainModel>();
-            }
+            return Ok(rooms);
+        }
+        
+        [HttpGet]
+        [Route("read")]
+        public async Task<ActionResult<IEnumerable<RoomDomainModel>>> ReadAll()
+        {
+            IEnumerable<RoomDomainModel> rooms = await _roomService.ReadAll();
             return Ok(rooms);
         }
         // https://localhost:7195/api/room/create

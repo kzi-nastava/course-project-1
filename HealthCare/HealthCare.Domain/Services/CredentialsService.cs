@@ -24,6 +24,16 @@ namespace HealthCare.Domain.Services {
         
         // Async awaits info from database
         // GetAll is the equivalent of SELECT *
+        public async Task<IEnumerable<CredentialsDomainModel>> ReadAll()
+        {
+            IEnumerable<CredentialsDomainModel> credentials = await GetAll();
+            List<CredentialsDomainModel> result = new List<CredentialsDomainModel>();
+            foreach (var item in credentials)
+            {
+                if(!item.isDeleted) result.Add(item);
+            }
+            return result;
+        }
         public async Task<IEnumerable<CredentialsDomainModel>> GetAll()
         {
             var data = await _credentialsRepository.GetAll();
@@ -43,6 +53,7 @@ namespace HealthCare.Domain.Services {
                     managerId = item.managerId,
                     patientId = item.patientId,
                     userRoleId = item.userRoleId,
+                    isDeleted = item.isDeleted
                 };
                 if (item.UserRole != null) {
                     credentialsModel.UserRole = new UserRoleDomainModel {
@@ -57,12 +68,26 @@ namespace HealthCare.Domain.Services {
             return results;
         }
 
+        public async Task<Boolean> isBlocked(CredentialsDomainModel credentialsModel)
+        {
+            Patient patient = await _patientRepository.GetPatientById(credentialsModel.patientId.GetValueOrDefault());
+            if (patient.blockedBy.Equals("")) return false;
+            return true;
+        }
+
         // TODO: Fix this method in the future
         public async Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(string username, string password)
         {
-            var data = await GetAll();
+            var data = await ReadAll();
             foreach (var item in data) {
-                if (item.Username.Equals(username) && item.Password.Equals(password)) {
+                if (item.Username.Equals(username) && item.Password.Equals(password))
+                {
+                    if (item.patientId != null)
+                    {
+                        Boolean blocked = await isBlocked(item);
+                        if (!blocked) return item;
+                        return null;
+                    }
                     return item;
                 }
             }

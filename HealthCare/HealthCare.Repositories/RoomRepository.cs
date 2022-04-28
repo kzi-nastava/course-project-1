@@ -10,10 +10,14 @@ using Microsoft.EntityFrameworkCore;
 namespace HealthCare.Repositories {
     public interface IRoomRepository : IRepository<Room> {
         public Task<IEnumerable<Room>> GetAllExaminationRooms();
+
+        public Task<IEnumerable<Room>> GetAllAppointmentRooms(string roomPurpose);
+
         public Room Post(Room r);
         public Task<Room> GetRoomById(decimal id);
         public Room Update(Room r);
     }
+
     public class RoomRepository : IRoomRepository {
         private readonly HealthCareContext _healthCareContext;
 
@@ -28,7 +32,16 @@ namespace HealthCare.Repositories {
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Room>> GetAllExaminationRooms() {
+        // Argument roomPurpose differantiates if the fetched rooms should be rooms for operation/examination
+        public async Task<IEnumerable<Room>> GetAllAppointmentRooms(string roomPurpose) {
+            return await _healthCareContext.Rooms
+                .Include(x => x.RoomType)
+                .Where(x => x.RoomType.Purpose == roomPurpose)
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Room>> GetAllExaminationRooms()
+        {
             return await _healthCareContext.Rooms
                 .Include(x => x.RoomType)
                 .Where(x => x.RoomType.Purpose == "examination")

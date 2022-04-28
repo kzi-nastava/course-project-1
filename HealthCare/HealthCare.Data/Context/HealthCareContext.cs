@@ -44,14 +44,14 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<Anamnesis>()
                 .HasOne(x => x.Examination)
                 .WithOne(x => x.Anamnesis)
-                .HasForeignKey<Examination>(x => new { x.patientId, x.roomId, x.doctorId, x.StartTime })
+                .HasForeignKey<Examination>(x => new { x.Id })
                 .IsRequired();
             modelBuilder.Entity<Examination>()
                 .HasOne(x => x.Anamnesis)
                 .WithOne(x => x.Examination)
                 .IsRequired(false);
-            modelBuilder.Entity<Anamnesis>().HasKey(x => new {x.patientId, x.roomId, x.doctorId, x.StartTime});
-            modelBuilder.Entity<Examination>().HasKey(x => new {x.patientId, x.roomId, x.doctorId, x.StartTime});
+            modelBuilder.Entity<Anamnesis>().HasKey(x => x.Id);
+            modelBuilder.Entity<Examination>().HasKey(x => x.Id);
 
 
             //modelBuilder.Entity<ExaminationApproval>()
@@ -137,7 +137,7 @@ namespace HealthCare.Data.Context
             //    .HasOne(x => x.Room)
             //    .WithMany(x => x.Operations)
             //    .IsRequired();
-            modelBuilder.Entity<Operation>().HasKey(x => new {x.RoomId, x.DoctorId, x.PatientId, x.Duration});
+            modelBuilder.Entity<Operation>().HasKey(x => new {x.Id});
 
 
             //modelBuilder.Entity<Operation>()

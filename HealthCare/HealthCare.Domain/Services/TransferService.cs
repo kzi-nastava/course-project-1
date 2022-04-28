@@ -137,4 +137,15 @@ public class TransferService : ITransferService{
         _transferRepository.Save();
         return transfersExecuted;
     }
+    } 
+    public async Task<IEnumerable<TransferDomainModel>> ReadAll()
+    {
+        IEnumerable<TransferDomainModel> transfers = await GetAll();
+        List<TransferDomainModel> result = new List<TransferDomainModel>();
+        foreach (var item in transfers)
+        {
+            if(!item.isDeleted) result.Add(item);
+        }
+        return result;
+    } 
 }

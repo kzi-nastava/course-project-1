@@ -47,6 +47,16 @@ public class InventoryService : IInventoryService {
         }
 
         return results;
-    }
 
+    }    
+    public async Task<IEnumerable<InventoryDomainModel>> ReadAll()
+    {
+        IEnumerable<InventoryDomainModel> inventory = await GetAll();
+        List<InventoryDomainModel> result = new List<InventoryDomainModel>();
+        foreach (var item in inventory)
+        {
+            if(!item.IsDeleted) result.Add(item);
+        }
+        return result;
+    }    
 }

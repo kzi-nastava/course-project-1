@@ -22,6 +22,8 @@ namespace HealthCare.Domain.Models {
         public decimal? patientId { get; set; }
 
         public decimal userRoleId { get; set; }
+        
+        public bool isDeleted { get; set; }
 
         public UserRoleDomainModel UserRole { get; set; }
 

@@ -34,4 +34,14 @@ public class RoomTypeService : IRoomTypeService{
 
         return results;
     } 
+    public async Task<IEnumerable<RoomTypeDomainModel>> ReadAll()
+    {
+        IEnumerable<RoomTypeDomainModel> roomTypes = await GetAll();
+        List<RoomTypeDomainModel> result = new List<RoomTypeDomainModel>();
+        foreach (var item in roomTypes)
+        {
+            if(!item.isDeleted) result.Add(item);
+        }
+        return result;
+    } 
 }

@@ -11,6 +11,11 @@ namespace HealthCare.Data.Entities
     [Table("examination")]
     public class Examination
     {
+        [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+
+        public decimal Id { get; set; }
+
         [Column("doctor_id")]
         public decimal doctorId { get; set; }
 
