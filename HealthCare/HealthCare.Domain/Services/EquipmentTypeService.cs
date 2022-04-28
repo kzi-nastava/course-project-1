@@ -1,3 +1,4 @@
+using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -12,17 +13,15 @@ public class EquipmentTypeService : IEquipmentTypeService {
         _equipmentTypeRepository = equipmentTypeRepository;
     }
 
-    // Async awaits info from database
-    // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<EquipmentTypeDomainModel>> GetAll()
     {
-        var data = await _equipmentTypeRepository.GetAll();
-        if (data == null)
+        IEnumerable<EquipmentType> equipmentTypes = await _equipmentTypeRepository.GetAll();
+        if (equipmentTypes == null)
             return null;
 
         List<EquipmentTypeDomainModel> results = new List<EquipmentTypeDomainModel>();
         EquipmentTypeDomainModel equipmentTypeModel;
-        foreach (var item in data)
+        foreach (EquipmentType item in equipmentTypes)
         {
             equipmentTypeModel = new EquipmentTypeDomainModel
             {

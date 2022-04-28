@@ -1,3 +1,4 @@
+using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -11,17 +12,15 @@ public class RoomTypeService : IRoomTypeService{
         _roomTypeRepository = roomTypeRepository;
     }
 
-    // Async awaits info from database
-    // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<RoomTypeDomainModel>> GetAll()
     {
-        var data = await _roomTypeRepository.GetAll();
-        if (data == null)
+        IEnumerable<RoomType> roomTypes = await _roomTypeRepository.GetAll();
+        if (roomTypes == null)
             return null;
 
         List<RoomTypeDomainModel> results = new List<RoomTypeDomainModel>();
         RoomTypeDomainModel roomTypeModel;
-        foreach (var item in data)
+        foreach (RoomType item in roomTypes)
         {
             roomTypeModel = new RoomTypeDomainModel
             {

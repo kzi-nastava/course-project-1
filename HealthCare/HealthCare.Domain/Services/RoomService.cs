@@ -25,15 +25,16 @@ public class RoomService : IRoomService{
         }
         return result;
     }
-    public async Task<IEnumerable<RoomDomainModel>> GetAll()
+
+  public async Task<IEnumerable<RoomDomainModel>> GetAll()
     {
-        var data = await _roomRepository.GetAll();
-        if (data == null)
+        IEnumerable<Room> rooms = await _roomRepository.GetAll();
+        if (rooms == null)
             return null;
 
         List<RoomDomainModel> results = new List<RoomDomainModel>();
         RoomDomainModel roomModel;
-        foreach (var item in data)
+        foreach (Room item in rooms)
         {
             roomModel = new RoomDomainModel
             {
@@ -94,45 +95,58 @@ public class RoomService : IRoomService{
         return results;
     }
 
-    public async Task<RoomDomainModel> Add(RoomDomainModel room)
+    public async Task<RoomDomainModel> Add(RoomDomainModel newRoomModel)
     {
-        Room r = new Room();
-        r.isDeleted = room.isDeleted;
-        r.RoomName = room.RoomName;
-        RoomType roomType = await _roomTypeRepository.GetById(room.RoomTypeId);
-        r.RoomType = roomType;
-        r.RoomTypeId = roomType.Id;
-        Room insertedRoom = _roomRepository.Post(r);
+        Room newRoom = new Room();
+        newRoom.isDeleted = newRoomModel.isDeleted;
+        newRoom.RoomName = newRoomModel.RoomName;
+        RoomType roomType = await _roomTypeRepository.GetById(newRoomModel.RoomTypeId);
+        newRoom.RoomType = roomType;
+        newRoom.RoomTypeId = roomType.Id;
+        Room insertedRoom = _roomRepository.Post(newRoom);
         _roomRepository.Save();
 
-        return room;
+        return newRoomModel;
     }
 
-    public async Task<RoomDomainModel> Update(RoomDomainModel room, decimal id)
+    public async Task<RoomDomainModel> Update(RoomDomainModel updatedRoomModel, decimal id)
     {
-        Room r = await _roomRepository.GetRoomById(id);
-        r.isDeleted = room.isDeleted;
+        Room updatedRoom = await _roomRepository.GetRoomById(id);
+        updatedRoom.isDeleted = updatedRoomModel.isDeleted;
         //r.Inventories = room.Inventories;
         //r.Operations = room.Operations;
-        r.RoomName = room.RoomName;
-        RoomType roomType = await _roomTypeRepository.GetById(room.RoomTypeId);
-        r.RoomType = roomType;
-        r.RoomTypeId = roomType.Id;
+        updatedRoom.RoomName = updatedRoomModel.RoomName;
+        RoomType roomType = await _roomTypeRepository.GetById(updatedRoomModel.RoomTypeId);
+        updatedRoom.RoomType = roomType;
+        updatedRoom.RoomTypeId = roomType.Id;
         //r.RoomTypeId = room.RoomType;
-        _ = _roomRepository.Update(r);
+        _roomRepository.Update(updatedRoom);
         _roomRepository.Save();
 
-        return room;
+        return updatedRoomModel;
 
 
     }
 
     public async Task<RoomDomainModel> Delete(decimal id)
     {
-        Room r = await _roomRepository.GetRoomById(id);
-        r.isDeleted = true;
-        _ = _roomRepository.Update(r);
+        Room deletedRoom = await _roomRepository.GetRoomById(id);
+        deletedRoom.isDeleted = true;
+        _ = _roomRepository.Update(deletedRoom);
         _roomRepository.Save();
+        return parseToModel(deletedRoom);
+    }
+
+    private RoomDomainModel parseToModel(Room deletedRoom)
+    {
+        return new RoomDomainModel
+        {
+            Id = deletedRoom.Id,
+            RoomName = deletedRoom.RoomName,
+            RoomTypeId = deletedRoom.RoomTypeId,
+            isDeleted = deletedRoom.isDeleted
+
+        };
         return new RoomDomainModel();
     }
 }

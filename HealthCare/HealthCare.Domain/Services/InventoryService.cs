@@ -1,3 +1,4 @@
+using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -11,17 +12,15 @@ public class InventoryService : IInventoryService {
         _inventoryRepository = inventoryRepository;
     }
 
-    // Async awaits info from database
-    // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<InventoryDomainModel>> GetAll()
     {
-        var data = await _inventoryRepository.GetAll();
-        if (data == null)
+        IEnumerable<Inventory> inventories = await _inventoryRepository.GetAll();
+        if (inventories == null)
             return null;
 
         List<InventoryDomainModel> results = new List<InventoryDomainModel>();
         InventoryDomainModel inventoryModel;
-        foreach (var item in data)
+        foreach (Inventory item in inventories)
         {
             inventoryModel = new InventoryDomainModel
             {
@@ -48,6 +47,7 @@ public class InventoryService : IInventoryService {
         }
 
         return results;
+
     }    
     public async Task<IEnumerable<InventoryDomainModel>> ReadAll()
     {

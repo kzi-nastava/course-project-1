@@ -109,7 +109,7 @@ namespace HealthCare.Data.Context
             //    .HasOne(x => x.RoomFrom)
             //    .WithMany(x => x.TransfersFrom)
             //    .IsRequired();
-            modelBuilder.Entity<Transfer>().HasKey(x => new {x.RoomFromId, x.EquipmentId, x.RoomToId, x.TransferTime});
+            modelBuilder.Entity<Transfer>().HasKey(x => new {x.Id});
 
 
             //modelBuilder.Entity<Room>()

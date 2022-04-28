@@ -4,6 +4,7 @@ namespace HealthCare.Domain.Models;
 
 public class EquipmentDomainModel
 {
+    // ???
     private Equipment item;
 
 

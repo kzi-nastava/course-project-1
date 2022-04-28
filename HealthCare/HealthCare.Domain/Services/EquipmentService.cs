@@ -30,13 +30,13 @@ public class EquipmentService : IEquipmentService{
     }
     public async Task<IEnumerable<EquipmentDomainModel>> GetAll()
     {
-        var data = await _equipmentRepository.GetAll();
-        if (data == null)
+        IEnumerable<Equipment> equipment = await _equipmentRepository.GetAll();
+        if (equipment == null)
             return null;
 
         List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
         EquipmentDomainModel equipmentModel;
-        foreach (var item in data)
+        foreach (Equipment item in equipment)
         {
             equipmentModel = new EquipmentDomainModel
             {
@@ -49,27 +49,27 @@ public class EquipmentService : IEquipmentService{
                 equipmentModel.EquipmentType = new EquipmentTypeDomainModel {
                     Id = item.EquipmentType.Id,
                     Name = item.EquipmentType.Name,
-                    IsDeleted = item.EquipmentType.IsDeleted
+                    IsDeleted = item.EquipmentType.IsDeleted,
                 };
             results.Add(equipmentModel);
         }
 
         return results;
     }
-    public async Task<IEnumerable<EquipmentDomainModel>> SearchByName(string nameAlike)
+    public async Task<IEnumerable<EquipmentDomainModel>> SearchByName(string substring)
     {
-        nameAlike = nameAlike.ToLower();
-        var data = await _equipmentRepository.GetAll();
-        if (data == null)
+        substring = substring.ToLower();
+        IEnumerable<Equipment> equipment = await _equipmentRepository.GetAll();
+        if (equipment == null)
             return null;
 
         List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
 
-        foreach (var item in data)
+        foreach (Equipment item in equipment)
         {
             Console.WriteLine(item.EquipmentType.Name);
             // added equipment type to search review
-            if(item.Name.ToLower().Contains(nameAlike) || item.EquipmentType.Name.ToLower().Contains(nameAlike))
+            if(item.Name.ToLower().Contains(substring) || item.EquipmentType.Name.ToLower().Contains(substring))
                 results.Add(parseToModel(item));
         }
 
@@ -86,32 +86,32 @@ public class EquipmentService : IEquipmentService{
 
     };
 
-    private IEnumerable<EquipmentDomainModel> parseToModel(IEnumerable<Equipment> input)
+    private IEnumerable<EquipmentDomainModel> ParseToModel(IEnumerable<Equipment> input)
     {
-        var results = new List<EquipmentDomainModel>();
-        foreach (var item in input)
+        List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
+        foreach (Equipment equipment in input)
         {
-            results.Add(parseToModel((Equipment)item));
+            results.Add(parseToModel(equipment));
         }
         return results;
     }
 
     public async Task<IEnumerable<EquipmentDomainModel>> Filter(decimal equipmentTypeId, int minAmmount, int maxAmmount, decimal roomTypeId)
     {
-        var result = await _equipmentRepository.GetAll();
-        if (result == null || result.Count() < 1)
+        IEnumerable<Equipment> filterResult = await _equipmentRepository.GetAll();
+        if (filterResult == null || filterResult.Count() < 1)
             return null;
 
         // filter #1
         if (equipmentTypeId != -1)
         {
-            result = result.Where(e => e.equipmentTypeId == equipmentTypeId);
+            filterResult = filterResult.Where(e => e.equipmentTypeId == equipmentTypeId);
         }
             
 
         if(minAmmount != -1 || maxAmmount != -1)
         {
-            var inventories = await _inventoryRepository.GetAll();
+            IEnumerable<Inventory> inventories = await _inventoryRepository.GetAll();
             // group inventories by equipment and sum the ammount
             var summedEquipment = inventories.GroupBy(inventory => inventory.equipmentId)
                 .Select(group => new
@@ -125,7 +125,7 @@ public class EquipmentService : IEquipmentService{
                 var minFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount > minAmmount)
                     .Select(group => group.EquipmentId);
 
-                result = result.Where(x => minFilteredEquipmentIds.Contains(x.Id));
+                filterResult = filterResult.Where(x => minFilteredEquipmentIds.Contains(x.Id));
             }
 
             // filter #3
@@ -134,7 +134,7 @@ public class EquipmentService : IEquipmentService{
                 var maxFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount < maxAmmount)
                     .Select(group => group.EquipmentId);
 
-                result = result.Where(x => maxFilteredEquipmentIds.Contains(x.Id));
+                filterResult = filterResult.Where(x => maxFilteredEquipmentIds.Contains(x.Id));
             }
         }
 
@@ -142,78 +142,19 @@ public class EquipmentService : IEquipmentService{
         if(roomTypeId != -1)
         {
             // get rooms ids of that room type
-            var rooms = await _roomRepository.GetAll();
-            var roomIds = rooms.Where(x => x.RoomTypeId == roomTypeId).Select(r => r.Id);
+            IEnumerable<Room> rooms = await _roomRepository.GetAll();
+            IEnumerable<decimal> roomIds = rooms.Where(x => x.RoomTypeId == roomTypeId).Select(r => r.Id);
 
             // find equipment ids in all inventories stored in the rooms
-            var inventories = await _inventoryRepository.GetAll();
-            var equipmentIds = inventories.Where(i => roomIds.Contains(i.roomId)).Select(x => x.equipmentId); 
+            IEnumerable<Inventory> inventories = await _inventoryRepository.GetAll();
+            IEnumerable<decimal> equipmentIds = inventories.Where(i => roomIds.Contains(i.roomId)).Select(x => x.equipmentId); 
 
             // return equipment with those ids
-            var equipment = await _equipmentRepository.GetAll();
-            result = result.Where(x => equipmentIds.Contains(x.Id));
+            IEnumerable<Equipment> equipment = await _equipmentRepository.GetAll();
+            filterResult = filterResult.Where(x => equipmentIds.Contains(x.Id));
 
         }
-        return parseToModel(result);
+        return ParseToModel(filterResult);
     }
-
-
-    public  async Task<Tuple<EquipmentDomainModel, EquipmentDomainModel>> Transfer(decimal roomIdIn, decimal roomIdOut, decimal equipmentID, decimal amount)
-    {
-        return null;
-    }
-
-
-
-
-
-    //maybe yes maybe no
-    public interface IFilter<T>
-    {
-        IEnumerable<T> Execute(IEnumerable<T> input);
-    }
-
-    public abstract class Pipeline<T>
-    {
-        protected List<IFilter<T>> filters = new List<IFilter<T>>();
-        public Pipeline<T> Register(IFilter<T> filter)
-        {
-            filters.Add(filter);
-            return this;
-        }
-        public abstract IEnumerable<T> Process(IEnumerable<T> input);
-    }
-
-    public class EquipmentSelectionPipeline : Pipeline<Equipment>
-    {
-        public override IEnumerable<Equipment> Process(IEnumerable<Equipment> input)
-        {
-            foreach(var filter in filters)
-            {
-                input = filter.Execute(input);
-            }
-            return input;
-        }
-    }
-
-    public class EquipmentTypeFilter : IFilter<Equipment>
-    {
-        private EquipmentType equipmentType;
-        EquipmentTypeFilter(EquipmentType equipmentType)
-        {
-            this.equipmentType = equipmentType;
-        }
-        public IEnumerable<Equipment> Execute(IEnumerable<Equipment> input)
-        {
-            IEnumerable<Equipment> filteredEquipment;
-            if (input == null || input.Count() == 0)
-            {
-                return input;
-            }
-            filteredEquipment = input.Where(equipment => equipment.EquipmentType.Equals(this.equipmentType)).ToList();
-            return filteredEquipment;
-        }
-    }
-
 
 }

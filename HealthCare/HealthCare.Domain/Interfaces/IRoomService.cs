@@ -4,8 +4,8 @@ namespace HealthCare.Domain.Interfaces;
 
 public interface IRoomService : IService<RoomDomainModel>
 {
-    Task<RoomDomainModel> Add(RoomDomainModel room);
-    Task<RoomDomainModel> Update(RoomDomainModel room, decimal id);
-    Task<RoomDomainModel> Delete(decimal id);
+    public Task<RoomDomainModel> Add(RoomDomainModel room);
+    public Task<RoomDomainModel> Update(RoomDomainModel room, decimal id);
+    public Task<RoomDomainModel> Delete(decimal id);
     public Task<IEnumerable<RoomDomainModel>> ReadAll();
 }

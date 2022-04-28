@@ -9,7 +9,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthCare.Repositories {
     public interface ITransferRepository : IRepository<Transfer> {
-
+        public Transfer Post(Transfer newTransfer);
+        public Task<Transfer> GetTransferById(decimal id);
     }
     public class TransferRepository : ITransferRepository {
         private readonly HealthCareContext _healthCareContext;
@@ -22,10 +23,18 @@ namespace HealthCare.Repositories {
                 .Include(x => x.Equipment).ThenInclude(x => x.EquipmentType)
                 .ToListAsync();
         }
-
+        public Transfer Post(Transfer newTransfer)
+        {
+            var result = _healthCareContext.Add(newTransfer);
+            return result.Entity;
+        }
         public void Save()
         {
             _healthCareContext.SaveChanges();
+        }
+        public async Task<Transfer> GetTransferById(decimal id)
+        {
+            return await _healthCareContext.Transfers.FindAsync(id);
         }
     }
 }

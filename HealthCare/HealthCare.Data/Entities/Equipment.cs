@@ -11,6 +11,7 @@ namespace HealthCare.Data.Entities
     public class Equipment
     {
         [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public decimal Id { get; set; }
 
         [Column("name")]
