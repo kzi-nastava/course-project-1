@@ -29,9 +29,5 @@ namespace HealthCare.Data.Entities
 
         //public List<Inventory> Inventories { get; set; }
 
-
-
-
-
     }
 }
