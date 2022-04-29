@@ -32,8 +32,8 @@ namespace HealthCareAPI.Controllers {
         [Route("medical_record/patientId={id}")]
         public async Task<ActionResult<PatientDomainModel>> GetWithMedicalRecord(decimal id)
         {
-            PatientDomainModel patient = await _patientService.GetWithMedicalRecord(id);
-            return Ok(patient);
+            PatientDomainModel patientModel = await _patientService.GetWithMedicalRecord(id);
+            return Ok(patientModel);
         }
 
         // https://localhost:7195/api/patient/create
@@ -41,16 +41,16 @@ namespace HealthCareAPI.Controllers {
         [Route("create")]
         public async Task<ActionResult<PatientDomainModel>> CreatePatient([FromBody] PatientDomainModel patientModel)
         {
-            var insertedPatientModel = await _patientService.Add(patientModel);
+            PatientDomainModel insertedPatientModel = await _patientService.Add(patientModel);
             return Ok(insertedPatientModel);
         }
         
         // https://localhost:7195/api/patient/update
         [HttpPut]
         [Route("update/{id}")]
-        public async Task<ActionResult<PatientDomainModel>> UpdatePatient(PatientDomainModel patientModel)
+        public async Task<ActionResult<PatientDomainModel>> UpdatePatient([FromBody] PatientDomainModel patientModel)
         {
-            var updatedPatientModel = await _patientService.Update(patientModel);
+            PatientDomainModel updatedPatientModel = await _patientService.Update(patientModel);
             return Ok(updatedPatientModel);
         }
         
@@ -59,7 +59,7 @@ namespace HealthCareAPI.Controllers {
         [Route("delete/{id}")]
         public async Task<ActionResult<PatientDomainModel>> DeletePatient(decimal id)
         {
-            var deletedPatientModel = await _patientService.Delete(id);
+            PatientDomainModel deletedPatientModel = await _patientService.Delete(id);
             return Ok(deletedPatientModel);
         }
         
@@ -68,7 +68,7 @@ namespace HealthCareAPI.Controllers {
         [Route("block/{id}")]
         public async Task<ActionResult<PatientDomainModel>> BlockPatient(decimal id)
         {
-            var blockedPatient = await _patientService.Block(id);
+            PatientDomainModel blockedPatient = await _patientService.Block(id);
             return Ok(blockedPatient);
         }
         
@@ -85,7 +85,7 @@ namespace HealthCareAPI.Controllers {
         [Route("unblock/{id}")]
         public async Task<ActionResult<PatientDomainModel>> UnblockPatient(decimal id)
         {
-            var blockedPatient = await _patientService.Unblock(id);
+            PatientDomainModel blockedPatient = await _patientService.Unblock(id);
             return Ok(blockedPatient);
         }
     }

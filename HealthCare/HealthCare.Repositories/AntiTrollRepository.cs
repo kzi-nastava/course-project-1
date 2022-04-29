@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HealthCare.Repositories {
 
@@ -28,7 +29,7 @@ namespace HealthCare.Repositories {
         }
 
         public AntiTroll Post(AntiTroll antiTroll) {
-            var result = _healthCareContext.AntiTrolls.Add(antiTroll);
+            EntityEntry<AntiTroll> result = _healthCareContext.AntiTrolls.Add(antiTroll);
             return result.Entity;
         }
 

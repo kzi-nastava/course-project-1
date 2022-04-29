@@ -38,9 +38,9 @@ public class RoomTypeService : IRoomTypeService{
     {
         IEnumerable<RoomTypeDomainModel> roomTypes = await GetAll();
         List<RoomTypeDomainModel> result = new List<RoomTypeDomainModel>();
-        foreach (var item in roomTypes)
+        foreach (RoomTypeDomainModel item in roomTypes)
         {
-            if(!item.IsDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     } 

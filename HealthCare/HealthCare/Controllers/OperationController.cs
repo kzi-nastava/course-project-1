@@ -41,14 +41,14 @@ namespace HealthCareAPI.Controllers {
         [HttpPost]
         [Route("create")]
         public async Task<ActionResult<OperationDomainModel>> Create([FromBody] OperationDomainModel operationModel) {
-            var createdOperationModel = await _operationService.Create(operationModel);
+            OperationDomainModel createdOperationModel = await _operationService.Create(operationModel);
             return Ok(createdOperationModel);
         }
 
         [HttpPut]
         [Route("update")]
         public async Task<ActionResult<OperationDomainModel>>  Update([FromBody] OperationDomainModel operationModel) {
-            var updatedOperationModel = await _operationService.Update(operationModel);
+            OperationDomainModel updatedOperationModel = await _operationService.Update(operationModel);
             return Ok(updatedOperationModel);
         }
 
@@ -56,7 +56,7 @@ namespace HealthCareAPI.Controllers {
         [Route("delete/operationId={id}")]
         public async Task<ActionResult<OperationDomainModel>> DeleteExamination([FromBody] OperationDomainModel operationModel)
         {
-            var deletedOperationModel = await _operationService.Delete(operationModel);
+            OperationDomainModel deletedOperationModel = await _operationService.Delete(operationModel);
             return Ok(deletedOperationModel);
         }
     }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HealthCare.Data.Context;
 using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HealthCare.Repositories {
     public interface IMedicalRecordRepository : IRepository<MedicalRecord> {
@@ -31,12 +32,12 @@ namespace HealthCare.Repositories {
         }
 
         public MedicalRecord Post(MedicalRecord medicalRecord) {
-            var result = _healthCareContext.Add(medicalRecord);
+            EntityEntry<MedicalRecord> result = _healthCareContext.Add(medicalRecord);
             return result.Entity;
         }
 
         public MedicalRecord Update(MedicalRecord medicalRecord) {
-            var updatedEntry = _healthCareContext.MedicalRecords.Attach(medicalRecord);
+            EntityEntry<MedicalRecord> updatedEntry = _healthCareContext.MedicalRecords.Attach(medicalRecord);
             _healthCareContext.Entry(medicalRecord).State = EntityState.Modified;
             return updatedEntry.Entity;
         }

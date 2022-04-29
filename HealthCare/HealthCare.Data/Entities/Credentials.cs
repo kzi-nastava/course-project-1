@@ -42,10 +42,5 @@ namespace HealthCare.Data.Entities
         public bool isDeleted { get; set; }
 
         public UserRole UserRole { get; set; }
-
-        //public Manager Manager { get; set; }
-        //public Doctor Doctor { get; set; }
-        //public Patient Patient { get; set; }
-        //public Secretary Secretary { get; set; }
     }
 }

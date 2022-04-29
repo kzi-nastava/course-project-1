@@ -34,27 +34,27 @@ namespace HealthCareAPI.Controllers
         // https://localhost:7195/api/room/create
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<RoomDomainModel>> CreateRoom([FromBody]RoomDomainModel newRoom)
+        public async Task<ActionResult<RoomDomainModel>> CreateRoom([FromBody] RoomDomainModel roomModel)
         {
-            RoomDomainModel insertedRoom = await _roomService.Add(newRoom);
-            return Ok(insertedRoom);
+            RoomDomainModel insertedRoomModel = await _roomService.Add(roomModel);
+            return Ok(insertedRoomModel);
         }
 
         // https://localhost:7195/api/room/update
         [HttpPut]
         [Route("update/{id}")]
-        public async Task<ActionResult<RoomDomainModel>> UpdateRoom(decimal id, RoomDomainModel updatedRoom)
+        public async Task<ActionResult<RoomDomainModel>> UpdateRoom([FromBody] RoomDomainModel roomModel)
         {
-            updatedRoom = await _roomService.Update(updatedRoom, id);
-            return Ok(updatedRoom);
+            RoomDomainModel updatedRoomModel = await _roomService.Update(roomModel);
+            return Ok(updatedRoomModel);
         }
 
         // https://localhost:7195/api/room/delete
         [HttpPost]
         [Route("delete/{id}")]
         public async Task<ActionResult<RoomDomainModel>> DeleteRoom(decimal id) {
-            RoomDomainModel deletedRoom = await _roomService.Delete(id);
-            return Ok(deletedRoom);
+            RoomDomainModel deletedRoomModel = await _roomService.Delete(id);
+            return Ok(deletedRoomModel);
         }
 
 

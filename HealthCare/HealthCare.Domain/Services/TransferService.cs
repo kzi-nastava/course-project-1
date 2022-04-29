@@ -25,7 +25,7 @@ public class TransferService : ITransferService{
 
         List<TransferDomainModel> results = new List<TransferDomainModel>();
         TransferDomainModel transferModel;
-        foreach (var item in transfers)
+        foreach (Transfer item in transfers)
         {
             transferModel = new TransferDomainModel
             {
@@ -33,9 +33,7 @@ public class TransferService : ITransferService{
                 IsDeleted = item.IsDeleted,
                 Amount = item.Amount,
                 EquipmentId = item.EquipmentId,
-                //RoomFrom = item.RoomFrom,
                 RoomIdOut = item.RoomIdOut,
-                //RoomTo = item.RoomTo,
                 RoomIdIn = item.RoomIdIn,
                 TransferTime = item.TransferTime,
                 Executed = item.Executed
@@ -94,7 +92,7 @@ public class TransferService : ITransferService{
                 TransferTime = transferModel.TransferTime,
                 Amount = transferModel.Amount,
                 EquipmentId = transferModel.EquipmentId,
-                Executed = transferModel.Executed,
+                Executed = transferModel.Executed
             };
         }
         
@@ -103,16 +101,20 @@ public class TransferService : ITransferService{
         return parseToModel(transfer);
     }
 
-    private TransferDomainModel parseToModel(Transfer transfer) => new TransferDomainModel
+    private TransferDomainModel parseToModel(Transfer transfer)
     {
-        Id = transfer.Id,
-        RoomIdOut= transfer.RoomIdOut,
-        RoomIdIn= transfer.RoomIdIn,
-        TransferTime= transfer.TransferTime,
-        Amount= transfer.Amount,
-        EquipmentId = transfer.EquipmentId,
-        Executed = transfer.Executed,
-    };
+        TransferDomainModel transferModel = new TransferDomainModel
+        {
+            Id = transfer.Id,
+            RoomIdOut = transfer.RoomIdOut,
+            RoomIdIn = transfer.RoomIdIn,
+            TransferTime = transfer.TransferTime,
+            Amount = transfer.Amount,
+            EquipmentId = transfer.EquipmentId,
+            Executed = transfer.Executed
+        };
+        return transferModel;
+    }
 
     public async Task<IEnumerable<TransferDomainModel>> DoTransfers()
     {
@@ -122,12 +124,12 @@ public class TransferService : ITransferService{
 
         List<TransferDomainModel> transfersExecuted = new List<TransferDomainModel>();
 
-        foreach(var transfer in transfers)
+        foreach(Transfer transfer in transfers)
         {
             if(transfer.TransferTime < DateTime.UtcNow)
             {
-                var roomIn = await _inventoryRepository.GetInventoryById(transfer.RoomIdIn, transfer.EquipmentId);
-                var roomOut = await _inventoryRepository.GetInventoryById(transfer.RoomIdOut, transfer.EquipmentId);
+                Inventory roomIn = await _inventoryRepository.GetInventoryById(transfer.RoomIdIn, transfer.EquipmentId);
+                Inventory roomOut = await _inventoryRepository.GetInventoryById(transfer.RoomIdOut, transfer.EquipmentId);
                 roomIn.Amount += transfer.Amount;
                 roomOut.Amount -= transfer.Amount;
                 transfer.Executed = true;
@@ -142,9 +144,9 @@ public class TransferService : ITransferService{
     {
         IEnumerable<TransferDomainModel> transfers = await GetAll();
         List<TransferDomainModel> result = new List<TransferDomainModel>();
-        foreach (var item in transfers)
+        foreach (TransferDomainModel item in transfers)
         {
-            if(!item.IsDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     } 

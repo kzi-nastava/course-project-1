@@ -5,7 +5,6 @@ namespace HealthCare.Domain.Models;
 
 public class AnamnesisDomainModel {
  
-
     public decimal Id { get; set; }
 
     
@@ -15,7 +14,4 @@ public class AnamnesisDomainModel {
     public decimal ExaminationId { get; set; }
     
     public bool IsDeleted { get; set; }
-
-    //public ExaminationDomainModel Examination { get; set; }
-
 }

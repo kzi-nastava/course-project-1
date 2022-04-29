@@ -20,7 +20,7 @@ public class RoomService : IRoomService{
         List<RoomDomainModel> result = new List<RoomDomainModel>();
         foreach (RoomDomainModel item in rooms)
         {
-            if(!item.IsDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     }
@@ -53,7 +53,7 @@ public class RoomService : IRoomService{
             roomModel.Inventories = new List<InventoryDomainModel>();
             roomModel.Operations = new List<OperationDomainModel>();
             if (item.Inventories != null) {
-                foreach (var inventory in item.Inventories) {
+                foreach (Inventory inventory in item.Inventories) {
                     InventoryDomainModel inventoryModel = new InventoryDomainModel {
                         IsDeleted = inventory.IsDeleted,
                         RoomId = inventory.RoomId,
@@ -76,15 +76,15 @@ public class RoomService : IRoomService{
                 }
             }
             if (item.Operations != null) {
-                foreach (var operation in item.Operations) {
-                    OperationDomainModel operationDomainModel = new OperationDomainModel {
+                foreach (Operation operation in item.Operations) {
+                    OperationDomainModel operationModel = new OperationDomainModel {
                         DoctorId = operation.DoctorId,
                         RoomId = operation.DoctorId,
                         PatientId = operation.DoctorId,
                         Duration = operation.Duration,
                         IsDeleted = operation.IsDeleted
                     };
-                    roomModel.Operations.Add(operationDomainModel);
+                    roomModel.Operations.Add(operationModel);
                 }
             }
             results.Add(roomModel);
@@ -108,9 +108,9 @@ public class RoomService : IRoomService{
         return roomModel;
     }
 
-    public async Task<RoomDomainModel> Update(RoomDomainModel roomModel, decimal id)
+    public async Task<RoomDomainModel> Update(RoomDomainModel roomModel)
     {
-        Room room = await _roomRepository.GetRoomById(id);
+        Room room = await _roomRepository.GetRoomById(roomModel.Id);
         room.IsDeleted = roomModel.IsDeleted;
         room.RoomName = roomModel.RoomName;
         RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);

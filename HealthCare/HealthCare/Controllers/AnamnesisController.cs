@@ -22,10 +22,10 @@ namespace HealthCareAPI.Controllers {
 
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<AnamnesisDomainModel>> Create([FromBody] AnamnesisDomainModel anamnesisModel)
+        public async Task<ActionResult<AnamnesisDomainModel>> Create([FromBody] AnamnesisDomainModel newAnamnesisModel)
         {
-            AnamnesisDomainModel domainModel = await _anamnesisService.Create(anamnesisModel);
-            return Ok(domainModel);
+            AnamnesisDomainModel anamnesisModel = await _anamnesisService.Create(newAnamnesisModel);
+            return Ok(anamnesisModel);
         }
         
         [HttpGet]

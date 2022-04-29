@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HealthCare.Data.Context;
 using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HealthCare.Repositories
 {
@@ -38,12 +39,12 @@ namespace HealthCare.Repositories
             return await _healthCareContext.Credentials.FirstAsync(x => x.PatientId == id);
         }
         public Credentials Post(Credentials credentials) {
-            var result = _healthCareContext.Add(credentials);
+            EntityEntry<Credentials> result = _healthCareContext.Add(credentials);
             return result.Entity;
         }
 
         public Credentials Update(Credentials credentials) {
-            var updatedEntry = _healthCareContext.Credentials.Attach(credentials);
+            EntityEntry<Credentials> updatedEntry = _healthCareContext.Credentials.Attach(credentials);
             _healthCareContext.Entry(credentials).State = EntityState.Modified;
             return updatedEntry.Entity;
         }

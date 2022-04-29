@@ -19,7 +19,4 @@ public class ExaminationDomainModel
 
     public bool IsDeleted { get; set; }
     public AnamnesisDomainModel? Anamnesis { get; set; }
-    //public ExaminationApprovalDomainModel? ExaminationApproval { get; set; }
-    //public Patient Patient { get; set; }
-    //public Doctor Doctor { get; set; } 
 }

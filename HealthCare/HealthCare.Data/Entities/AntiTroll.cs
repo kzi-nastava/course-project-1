@@ -21,6 +21,5 @@ namespace HealthCare.Data.Entities {
 
         [Column("patient_id")]
         public decimal PatientId { get; set; }
-
     }
 }

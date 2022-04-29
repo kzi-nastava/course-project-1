@@ -29,10 +29,10 @@ namespace HealthCareAPI.Controllers {
 
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<TransferDomainModel>> CreateTransfer([FromBody] TransferDomainModel newTransfer)
+        public async Task<ActionResult<TransferDomainModel>> CreateTransfer([FromBody] TransferDomainModel transferModel)
         {
-            newTransfer = await _transferService.Add(newTransfer);
-            return Ok(newTransfer);
+            TransferDomainModel newTransferModel = await _transferService.Add(transferModel);
+            return Ok(newTransferModel);
         }
 
         // add to Program.cs

@@ -38,9 +38,9 @@ namespace HealthCareAPI.Controllers {
 
         [HttpGet]
         [Route("filter/{equipmentTypeId:decimal?}/{minAmmount:int?}/{MaxAmmount:int?}/{roomTypeId:decimal?}")]
-        public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> GetFilteredEquipment(decimal equipmentTypeId=-1, int minAmmount=-1, int maxAmmount=-1, decimal roomTypeId = -1)
+        public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> GetFilteredEquipment(decimal equipmentTypeId=-1, int minAmount=-1, int maxAmount=-1, decimal roomTypeId = -1)
         {
-            IEnumerable<EquipmentDomainModel> equipment = await _equipmentService.Filter(equipmentTypeId, minAmmount, maxAmmount, roomTypeId);
+            IEnumerable<EquipmentDomainModel> equipment = await _equipmentService.Filter(equipmentTypeId, minAmount, maxAmount, roomTypeId);
             return Ok(equipment);
         }
 

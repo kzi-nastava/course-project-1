@@ -22,6 +22,4 @@ public class TransferDomainModel
 
     public bool Executed { get; set; }
 
-    //public RoomDomainModel RoomFrom { get; set; }
-    //public RoomDomainModel RoomTo { get; set; }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HealthCare.Data.Context;
 using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HealthCare.Repositories {
     public interface IAnamnesisRepository : IRepository<Anamnesis> {
@@ -24,13 +25,13 @@ namespace HealthCare.Repositories {
 
         public Anamnesis Post(Anamnesis anamensis)
         {
-            var result = _healthCareContext.Anamneses.Add(anamensis);
+            EntityEntry<Anamnesis> result = _healthCareContext.Anamneses.Add(anamensis);
             return result.Entity;
         }
 
         public Anamnesis Update(Anamnesis anamnesis)
         {
-            var updatedEntry = _healthCareContext.Anamneses.Attach(anamnesis);
+            EntityEntry<Anamnesis> updatedEntry = _healthCareContext.Anamneses.Attach(anamnesis);
             _healthCareContext.Entry(anamnesis).State = EntityState.Modified;
             return updatedEntry.Entity;
         }

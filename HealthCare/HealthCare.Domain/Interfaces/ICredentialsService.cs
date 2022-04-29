@@ -7,7 +7,7 @@ using HealthCare.Domain.Models;
 
 namespace HealthCare.Domain.Interfaces {
     public interface ICredentialsService : IService<CredentialsDomainModel> {
-        Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(string username, string password);
+        public Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(string username, string password);
         public Task<IEnumerable<CredentialsDomainModel>> ReadAll();
     }
 }

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HealthCare.Data.Context;
 using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HealthCare.Repositories {
     public interface ITransferRepository : IRepository<Transfer> {
@@ -25,7 +26,7 @@ namespace HealthCare.Repositories {
         }
         public Transfer Post(Transfer newTransfer)
         {
-            var result = _healthCareContext.Add(newTransfer);
+            EntityEntry<Transfer> result = _healthCareContext.Add(newTransfer);
             return result.Entity;
         }
         public void Save()

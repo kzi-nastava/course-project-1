@@ -21,7 +21,5 @@ namespace HealthCare.Data.Entities
 
         [Column("purpose")]
         public string Purpose { get; set; }
-
-        //public List<Room> Rooms { get; set; }
     }
 }   

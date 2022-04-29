@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HealthCare.Data.Context;
 using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HealthCare.Repositories {
     public interface IRoomRepository : IRepository<Room> {
@@ -50,7 +51,7 @@ namespace HealthCare.Repositories {
 
         public Room Post(Room newRoom)
         {
-            var result = _healthCareContext.Add(newRoom);
+            EntityEntry<Room> result = _healthCareContext.Add(newRoom);
             return result.Entity;
         }
 
@@ -66,7 +67,7 @@ namespace HealthCare.Repositories {
 
         public Room Update(Room updatedRoom)
         {
-            var updatedEntry = _healthCareContext.Attach(updatedRoom);
+            EntityEntry<Room> updatedEntry = _healthCareContext.Attach(updatedRoom);
             _healthCareContext.Entry(updatedRoom).State = EntityState.Modified;
             return updatedEntry.Entity;
         }

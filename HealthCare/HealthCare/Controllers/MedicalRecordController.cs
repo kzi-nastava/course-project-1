@@ -31,16 +31,15 @@ namespace HealthCareAPI.Controllers {
         [Route("patientId={id}")]
         public async Task<ActionResult<MedicalRecordDomainModel>> GetForPatient(decimal id)
         {
-            MedicalRecordDomainModel medicalRecord = await _medicalRecordService.GetForPatient(id);
-
-            return medicalRecord;
+            MedicalRecordDomainModel medicalRecordModel = await _medicalRecordService.GetForPatient(id);
+            return medicalRecordModel;
         }
 
         [HttpPut]
         [Route("update")]
-        public async Task<ActionResult<MedicalRecordDomainModel>> Update([FromBody] MedicalRecordDomainModel medicalRecord)
+        public async Task<ActionResult<MedicalRecordDomainModel>> Update([FromBody] MedicalRecordDomainModel medicalRecordModel)
         {
-            MedicalRecordDomainModel updatedRecord = await _medicalRecordService.Update(medicalRecord);
+            MedicalRecordDomainModel updatedRecord = await _medicalRecordService.Update(medicalRecordModel);
             return Ok(updatedRecord);
         }
     }

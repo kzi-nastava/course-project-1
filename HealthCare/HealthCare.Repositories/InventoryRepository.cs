@@ -6,12 +6,13 @@ using System.Threading.Tasks;
 using HealthCare.Data.Context;
 using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HealthCare.Repositories {
     public interface IInventoryRepository : IRepository<Inventory>
     {
         public Task<Inventory> GetInventoryById(decimal roomId, decimal equipmentId);
-        public Inventory Update(Inventory newInventory);
+        public Inventory Update(Inventory updatedInventory);
         public Inventory Post(Inventory newInventory);
     }
     public class InventioryRepository : IInventoryRepository {
@@ -37,14 +38,14 @@ namespace HealthCare.Repositories {
 
         public Inventory Update(Inventory updatedInventory)
         {
-            var updatedEntry = _healthCareContext.Attach(updatedInventory);
+            EntityEntry<Inventory> updatedEntry = _healthCareContext.Attach(updatedInventory);
             _healthCareContext.Entry(updatedInventory).State = EntityState.Modified;
             return updatedEntry.Entity;
         }
 
         public Inventory Post(Inventory newInventory)
         {
-            var result = _healthCareContext.Inventories.Add(newInventory);
+            EntityEntry<Inventory> result = _healthCareContext.Inventories.Add(newInventory);
             return result.Entity;
         }
     }

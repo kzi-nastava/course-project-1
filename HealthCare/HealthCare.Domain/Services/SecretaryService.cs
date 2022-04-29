@@ -1,3 +1,4 @@
+using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -15,9 +16,9 @@ public class SecretaryService : ISecretaryService{
     {
         IEnumerable<SecretaryDomainModel> secretaries = await GetAll();
         List<SecretaryDomainModel> result = new List<SecretaryDomainModel>();
-        foreach (var item in secretaries)
+        foreach (SecretaryDomainModel item in secretaries)
         {
-            if(!item.IsDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     } 
@@ -26,13 +27,13 @@ public class SecretaryService : ISecretaryService{
     // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<SecretaryDomainModel>> GetAll()
     {
-        var data = await _secretaryRepository.GetAll();
+        IEnumerable<Secretary> data = await _secretaryRepository.GetAll();
         if (data == null)
             return null;
 
         List<SecretaryDomainModel> results = new List<SecretaryDomainModel>();
         SecretaryDomainModel secretaryModel;
-        foreach (var item in data)
+        foreach (Secretary item in data)
         {
             secretaryModel = new SecretaryDomainModel
             {
