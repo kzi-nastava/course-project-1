@@ -5,10 +5,12 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class ManagerService : IManagerService{
+public class ManagerService : IManagerService
+{
     private IManagerRepository _managerRepository;
 
-    public ManagerService(IManagerRepository managerRepository) {
+    public ManagerService(IManagerRepository managerRepository) 
+    {
         _managerRepository = managerRepository;
     }
 
@@ -26,7 +28,7 @@ public class ManagerService : IManagerService{
     } 
     public async Task<IEnumerable<ManagerDomainModel>> GetAll()
     {
-        var data = await _managerRepository.GetAll();
+        IEnumerable<Manager> data = await _managerRepository.GetAll();
         if (data == null)
             return null;
 
@@ -44,8 +46,10 @@ public class ManagerService : IManagerService{
                 Phone = item.Phone,
                 Surname = item.Surname
             };
-            if (item.Credentials != null) {
-                managerModel.Credentials = new CredentialsDomainModel {
+            if (item.Credentials != null) 
+            {
+                managerModel.Credentials = new CredentialsDomainModel 
+                {
                     Id = item.Credentials.Id,
                     Username = item.Credentials.Username,
                     Password = item.Credentials.Password,
@@ -56,8 +60,10 @@ public class ManagerService : IManagerService{
                     UserRoleId = item.Credentials.UserRoleId
 
                 };
-                if (item.Credentials.UserRole != null) {
-                    managerModel.Credentials.UserRole = new UserRoleDomainModel {
+                if (item.Credentials.UserRole != null) 
+                {
+                    managerModel.Credentials.UserRole = new UserRoleDomainModel 
+                    {
                         Id = item.Credentials.UserRole.Id,
                         RoleName = item.Credentials.UserRole.RoleName,
                         IsDeleted = item.Credentials.UserRole.IsDeleted

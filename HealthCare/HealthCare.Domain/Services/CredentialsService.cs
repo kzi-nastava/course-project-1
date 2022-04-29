@@ -8,8 +8,10 @@ using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
 
-namespace HealthCare.Domain.Services {
-    public class CredentialsService : ICredentialsService{
+namespace HealthCare.Domain.Services 
+{
+    public class CredentialsService : ICredentialsService
+    {
 
         private ICredentialsRepository _credentialsRepository;
         private IUserRoleRepository _userRoleRepository;
@@ -18,7 +20,8 @@ namespace HealthCare.Domain.Services {
         private ISecretaryRepository _secretaryRepository;
         private IDoctorRepository _doctorRepository;
 
-        public CredentialsService(ICredentialsRepository credentialsRepository) {
+        public CredentialsService(ICredentialsRepository credentialsRepository) 
+        {
             _credentialsRepository = credentialsRepository;
         }
         
@@ -77,8 +80,8 @@ namespace HealthCare.Domain.Services {
 
         public async Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(string username, string password)
         {
-            var data = await ReadAll();
-            foreach (var item in data) {
+            IEnumerable<CredentialsDomainModel> data = await ReadAll();
+            foreach (CredentialsDomainModel item in data) {
                 if (item.Username.Equals(username) && item.Password.Equals(password))
                 {
                     if (item.PatientId != null)

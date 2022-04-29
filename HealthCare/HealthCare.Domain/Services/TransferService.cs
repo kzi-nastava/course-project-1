@@ -5,16 +5,19 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class TransferService : ITransferService{
+public class TransferService : ITransferService
+{
     private ITransferRepository _transferRepository;
     private IInventoryRepository _inventoryRepository;
     private IEquipmentRepository _equipmentRepository;
 
-    public TransferService(ITransferRepository transferRepository, IEquipmentRepository equipmentRepository, IInventoryRepository inventioryRepository) {
+    public TransferService(ITransferRepository transferRepository, 
+                           IEquipmentRepository equipmentRepository, 
+                           IInventoryRepository inventioryRepository) 
+    {
         _transferRepository = transferRepository;
         _inventoryRepository = inventioryRepository;
-        _equipmentRepository = equipmentRepository; 
-
+        _equipmentRepository = equipmentRepository;
     }
 
     public async Task<IEnumerable<TransferDomainModel>> GetAll()
@@ -38,19 +41,24 @@ public class TransferService : ITransferService{
                 TransferTime = item.TransferTime,
                 Executed = item.Executed
             };
-            if (item.Equipment != null) {
-                transferModel.Equipment = new EquipmentDomainModel {
+            if (item.Equipment != null) 
+            {
+                transferModel.Equipment = new EquipmentDomainModel 
+                {
                     Id = item.Equipment.Id,
                     EquipmentTypeId = item.Equipment.equipmentTypeId,
                     IsDeleted = item.Equipment.IsDeleted,
                     Name = item.Equipment.Name
                 };
                 if (item.Equipment.EquipmentType != null)
-                    transferModel.Equipment.EquipmentType = new EquipmentTypeDomainModel {
+                {
+                    transferModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
+                    {
                         Id = item.Equipment.EquipmentType.Id,
                         Name = item.Equipment.EquipmentType.Name,
                         IsDeleted = item.Equipment.EquipmentType.IsDeleted
                     };
+                }
             }
             results.Add(transferModel);
         }

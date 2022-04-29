@@ -3,19 +3,23 @@ using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HealthCareAPI.Controllers {
+namespace HealthCareAPI.Controllers 
+{
     [ApiController]
     [Route("api/[controller]")]
-    public class AnamnesisController : ControllerBase {
+    public class AnamnesisController : ControllerBase 
+    {
         private IAnamnesisService _anamnesisService;
 
-        public AnamnesisController(IAnamnesisService anamnesisService) {
+        public AnamnesisController(IAnamnesisService anamnesisService) 
+        {
             _anamnesisService = anamnesisService;
         }
 
         // https://localhost:7195/api/anamnsesis
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AnamnesisDomainModel>>> GetAll() {
+        public async Task<ActionResult<IEnumerable<AnamnesisDomainModel>>> GetAll() 
+        {
             IEnumerable<AnamnesisDomainModel> anamnesis =  await _anamnesisService.GetAll();
             return Ok(anamnesis);
         }
@@ -30,7 +34,8 @@ namespace HealthCareAPI.Controllers {
         
         [HttpGet]
         [Route("read")]
-        public async Task<ActionResult<IEnumerable<AnamnesisDomainModel>>> ReadAll() {
+        public async Task<ActionResult<IEnumerable<AnamnesisDomainModel>>> ReadAll() 
+        {
             IEnumerable<AnamnesisDomainModel> anamnesis =  await _anamnesisService.ReadAll();
             return Ok(anamnesis);
         }

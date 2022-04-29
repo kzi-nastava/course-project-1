@@ -3,10 +3,12 @@ using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HealthCareAPI.Controllers {
+namespace HealthCareAPI.Controllers 
+{
     [ApiController]
     [Route("api/[controller]")]
-    public class CredentialsController : ControllerBase {
+    public class CredentialsController : ControllerBase 
+    {
         private ICredentialsService _credentialsService;
 
         public CredentialsController(ICredentialsService credentialsService)

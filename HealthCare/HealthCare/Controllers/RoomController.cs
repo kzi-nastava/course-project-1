@@ -52,7 +52,8 @@ namespace HealthCareAPI.Controllers
         // https://localhost:7195/api/room/delete
         [HttpPost]
         [Route("delete/{id}")]
-        public async Task<ActionResult<RoomDomainModel>> DeleteRoom(decimal id) {
+        public async Task<ActionResult<RoomDomainModel>> DeleteRoom(decimal id) 
+        {
             RoomDomainModel deletedRoomModel = await _roomService.Delete(id);
             return Ok(deletedRoomModel);
         }

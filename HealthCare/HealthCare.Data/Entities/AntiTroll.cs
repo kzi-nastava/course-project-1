@@ -5,10 +5,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HealthCare.Data.Entities {
+namespace HealthCare.Data.Entities 
+{
 
     [Table("anti_troll")]
-    public class AntiTroll {
+    public class AntiTroll 
+    {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("id")]
         public decimal Id { get; set; }

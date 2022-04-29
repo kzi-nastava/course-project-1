@@ -5,11 +5,15 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class EquipmentService : IEquipmentService{
+public class EquipmentService : IEquipmentService
+{
     private IEquipmentRepository _equipmentRepository;
     private IInventoryRepository _inventoryRepository;
     private IRoomRepository _roomRepository;
-    public EquipmentService(IEquipmentRepository equipmentRepository, IInventoryRepository inventoryRepository, IRoomRepository roomRepository) {
+    public EquipmentService(IEquipmentRepository equipmentRepository, 
+                            IInventoryRepository inventoryRepository, 
+                            IRoomRepository roomRepository) 
+    {
         _equipmentRepository = equipmentRepository;
         _inventoryRepository = inventoryRepository;
         _roomRepository = roomRepository;
@@ -46,11 +50,15 @@ public class EquipmentService : IEquipmentService{
                 Name = item.Name,
             };
             if (item.EquipmentType != null)
-                equipmentModel.EquipmentType = new EquipmentTypeDomainModel {
+            {
+                equipmentModel.EquipmentType = new EquipmentTypeDomainModel
+                {
                     Id = item.EquipmentType.Id,
                     Name = item.EquipmentType.Name,
                     IsDeleted = item.EquipmentType.IsDeleted,
                 };
+            }
+
             results.Add(equipmentModel);
         }
 
@@ -76,7 +84,8 @@ public class EquipmentService : IEquipmentService{
 
     private EquipmentDomainModel parseToModel(Equipment item)
     {
-        EquipmentDomainModel equipmentModel = new EquipmentDomainModel {
+        EquipmentDomainModel equipmentModel = new EquipmentDomainModel 
+        {
             Id = item.Id,
             EquipmentTypeId = item.equipmentTypeId,
             Name = item.Name,
@@ -106,9 +115,9 @@ public class EquipmentService : IEquipmentService{
         {
             filterResult = filterResult.Where(e => e.equipmentTypeId == equipmentTypeId);
         }
-            
 
-        if(minAmount != -1 || maxAmount != -1)
+
+        if (minAmount != -1 || maxAmount != -1)
         {
             IEnumerable<Inventory> inventories = await _inventoryRepository.GetAll();
             // group inventories by equipment and sum the amount
@@ -121,7 +130,7 @@ public class EquipmentService : IEquipmentService{
             //filter #2
             if (minAmount != -1)
             {
-                var minFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount > minAmount)
+                IEnumerable<decimal> minFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount > minAmount)
                     .Select(group => group.EquipmentId);
 
                 filterResult = filterResult.Where(x => minFilteredEquipmentIds.Contains(x.Id));
@@ -130,7 +139,7 @@ public class EquipmentService : IEquipmentService{
             // filter #3
             if (maxAmount != -1)
             {
-                var maxFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount < maxAmount)
+                IEnumerable<decimal> maxFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount < maxAmount)
                     .Select(group => group.EquipmentId);
 
                 filterResult = filterResult.Where(x => maxFilteredEquipmentIds.Contains(x.Id));

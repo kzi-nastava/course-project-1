@@ -11,7 +11,8 @@ public class AnamnesisService : IAnamnesisService
     private IAnamnesisRepository _anamnesisRepository;
     private IExaminationRepository _examinationRepository;
 
-    public AnamnesisService(IAnamnesisRepository anamnesisRepository, IExaminationRepository examinationRepository) {
+    public AnamnesisService(IAnamnesisRepository anamnesisRepository, IExaminationRepository examinationRepository) 
+    {
         _anamnesisRepository = anamnesisRepository;
         _examinationRepository = examinationRepository;
     }

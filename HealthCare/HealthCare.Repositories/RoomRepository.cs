@@ -8,8 +8,10 @@ using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace HealthCare.Repositories {
-    public interface IRoomRepository : IRepository<Room> {
+namespace HealthCare.Repositories 
+{
+    public interface IRoomRepository : IRepository<Room> 
+    {
         public Task<IEnumerable<Room>> GetAllExaminationRooms();
 
         public Task<IEnumerable<Room>> GetAllAppointmentRooms(string roomPurpose);
@@ -19,13 +21,16 @@ namespace HealthCare.Repositories {
         public Room Update(Room r);
     }
 
-    public class RoomRepository : IRoomRepository {
+    public class RoomRepository : IRoomRepository 
+    {
         private readonly HealthCareContext _healthCareContext;
 
-        public RoomRepository(HealthCareContext healthCareContext) {
+        public RoomRepository(HealthCareContext healthCareContext) 
+        {
             _healthCareContext = healthCareContext;
         }
-        public async Task<IEnumerable<Room>> GetAll() {
+        public async Task<IEnumerable<Room>> GetAll() 
+        {
             return await _healthCareContext.Rooms
                 .Include(x => x.RoomType)
                 .Include(x => x.Inventories).ThenInclude(x => x.Equipment).ThenInclude(x => x.EquipmentType)
@@ -34,7 +39,8 @@ namespace HealthCare.Repositories {
         }
 
         // Argument roomPurpose differantiates if the fetched rooms should be rooms for operation/examination
-        public async Task<IEnumerable<Room>> GetAllAppointmentRooms(string roomPurpose) {
+        public async Task<IEnumerable<Room>> GetAllAppointmentRooms(string roomPurpose) 
+        {
             return await _healthCareContext.Rooms
                 .Include(x => x.RoomType)
                 .Where(x => x.RoomType.Purpose == roomPurpose)

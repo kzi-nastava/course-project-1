@@ -5,10 +5,12 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class DoctorService : IDoctorService{
+public class DoctorService : IDoctorService
+{
     private IDoctorRepository _doctorRepository;
 
-    public DoctorService(IDoctorRepository doctorRepository) {
+    public DoctorService(IDoctorRepository doctorRepository) 
+    {
         _doctorRepository = doctorRepository;
     }
     
@@ -22,8 +24,10 @@ public class DoctorService : IDoctorService{
 
         List<DoctorDomainModel> results = new List<DoctorDomainModel>();
         DoctorDomainModel doctorModel;
-        foreach (Doctor item in data) {
-            doctorModel = new DoctorDomainModel {
+        foreach (Doctor item in data) 
+        {
+            doctorModel = new DoctorDomainModel 
+            {
                 isDeleted = item.IsDeleted,
                 BirthDate = item.BirthDate,
                 //Credentials = item.Credentials,
@@ -33,8 +37,10 @@ public class DoctorService : IDoctorService{
                 Phone = item.Phone,
                 Surname = item.Surname
             };
-            if (item.Credentials != null) {
-                doctorModel.Credentials = new CredentialsDomainModel {
+            if (item.Credentials != null) 
+            {
+                doctorModel.Credentials = new CredentialsDomainModel 
+                {
                     Id = item.Credentials.Id,
                     Username = item.Credentials.Username,
                     Password = item.Credentials.Password,
@@ -45,8 +51,10 @@ public class DoctorService : IDoctorService{
                     UserRoleId = item.Credentials.UserRoleId
 
                 };
-                if (item.Credentials.UserRole != null) {
-                    doctorModel.Credentials.UserRole = new UserRoleDomainModel {
+                if (item.Credentials.UserRole != null) 
+                {
+                    doctorModel.Credentials.UserRole = new UserRoleDomainModel 
+                    {
                         Id = item.Credentials.UserRole.Id,
                         RoleName = item.Credentials.UserRole.RoleName,
                         IsDeleted = item.Credentials.UserRole.IsDeleted
@@ -55,9 +63,12 @@ public class DoctorService : IDoctorService{
             }
             doctorModel.Examinations = new List<ExaminationDomainModel>();
             doctorModel.Operations = new List<OperationDomainModel>();
-            if (item.Examinations != null) {
-                foreach (Examination examination in item.Examinations) {
-                    ExaminationDomainModel examinationModel = new ExaminationDomainModel {
+            if (item.Examinations != null) 
+            {
+                foreach (Examination examination in item.Examinations) 
+                {
+                    ExaminationDomainModel examinationModel = new ExaminationDomainModel 
+                    {
                         DoctorId = examination.DoctorId,
                         RoomId = examination.RoomId,
                         PatientId = examination.PatientId,
@@ -80,9 +91,12 @@ public class DoctorService : IDoctorService{
 
                 }
             }
-            if(item.Operations != null) {
-                foreach (Operation operation in item.Operations) {
-                    OperationDomainModel operationModel = new OperationDomainModel {
+            if(item.Operations != null) 
+            {
+                foreach (Operation operation in item.Operations) 
+                {
+                    OperationDomainModel operationModel = new OperationDomainModel 
+                    {
                         DoctorId = operation.DoctorId,
                         RoomId = operation.RoomId,
                         PatientId = operation.PatientId,

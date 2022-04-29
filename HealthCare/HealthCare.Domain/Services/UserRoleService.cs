@@ -5,10 +5,12 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class UserRoleService : IUserRoleService{
+public class UserRoleService : IUserRoleService
+{
     private IUserRoleRepository _userRoleRepository;
 
-    public UserRoleService(IUserRoleRepository userRoleRepository) {
+    public UserRoleService(IUserRoleRepository userRoleRepository) 
+    {
         _userRoleRepository = userRoleRepository;
     }
 

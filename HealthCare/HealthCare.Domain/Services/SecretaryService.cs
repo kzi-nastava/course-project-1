@@ -5,10 +5,12 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class SecretaryService : ISecretaryService{
+public class SecretaryService : ISecretaryService
+{
     private ISecretaryRepository _secretaryRepository;
 
-    public SecretaryService(ISecretaryRepository secretaryRepository) {
+    public SecretaryService(ISecretaryRepository secretaryRepository) 
+    {
         _secretaryRepository = secretaryRepository;
     }
     
@@ -45,8 +47,10 @@ public class SecretaryService : ISecretaryService{
                 Phone = item.Phone,
                 Surname = item.Surname
             };
-            if (item.Credentials != null) {
-                secretaryModel.Credentials = new CredentialsDomainModel {
+            if (item.Credentials != null) 
+            {
+                secretaryModel.Credentials = new CredentialsDomainModel 
+                {
                     Id = item.Credentials.Id,
                     Username = item.Credentials.Username,
                     Password = item.Credentials.Password,
@@ -57,8 +61,10 @@ public class SecretaryService : ISecretaryService{
                     UserRoleId = item.Credentials.UserRoleId
 
                 };
-                if (item.Credentials.UserRole != null) {
-                    secretaryModel.Credentials.UserRole = new UserRoleDomainModel {
+                if (item.Credentials.UserRole != null) 
+                {
+                    secretaryModel.Credentials.UserRole = new UserRoleDomainModel 
+                    {
                         Id = item.Credentials.UserRole.Id,
                         RoleName = item.Credentials.UserRole.RoleName,
                         IsDeleted = item.Credentials.UserRole.IsDeleted

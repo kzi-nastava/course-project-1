@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace HealthCare.Domain.Models {
-    public class CredentialsDomainModel {
+namespace HealthCare.Domain.Models 
+{
+    public class CredentialsDomainModel 
+    {
         public decimal Id { get; set; }
 
         public string Username { get; set; }

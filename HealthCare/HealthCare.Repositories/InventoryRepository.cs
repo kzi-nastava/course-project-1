@@ -8,20 +8,24 @@ using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace HealthCare.Repositories {
+namespace HealthCare.Repositories 
+{
     public interface IInventoryRepository : IRepository<Inventory>
     {
         public Task<Inventory> GetInventoryById(decimal roomId, decimal equipmentId);
         public Inventory Update(Inventory updatedInventory);
         public Inventory Post(Inventory newInventory);
     }
-    public class InventioryRepository : IInventoryRepository {
+    public class InventioryRepository : IInventoryRepository 
+    {
         private readonly HealthCareContext _healthCareContext;
 
-        public InventioryRepository(HealthCareContext healthCareContext) {
+        public InventioryRepository(HealthCareContext healthCareContext) 
+        {
             _healthCareContext = healthCareContext;
         }
-        public async Task<IEnumerable<Inventory>> GetAll() {
+        public async Task<IEnumerable<Inventory>> GetAll() 
+        {
             return await _healthCareContext.Inventories
                 .Include(x => x.Equipment)
                 .ToListAsync();

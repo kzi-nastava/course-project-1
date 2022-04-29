@@ -4,10 +4,12 @@ using HealthCare.Data.Entities;
 
 namespace HealthCare.Domain.Interfaces;
 
-public class MedicalRecordService : IMedicalRecordService {
+public class MedicalRecordService : IMedicalRecordService 
+{
     private IMedicalRecordRepository _medicalRecordRepository;
 
-    public MedicalRecordService(IMedicalRecordRepository medicalRecordRepository) {
+    public MedicalRecordService(IMedicalRecordRepository medicalRecordRepository) 
+    {
         _medicalRecordRepository = medicalRecordRepository;
     }
 
@@ -82,7 +84,8 @@ public class MedicalRecordService : IMedicalRecordService {
 
     private MedicalRecordDomainModel parseToModel(MedicalRecord medicalRecord)
     {
-        MedicalRecordDomainModel medicalRecordModel = new MedicalRecordDomainModel {
+        MedicalRecordDomainModel medicalRecordModel = new MedicalRecordDomainModel 
+        {
             Height = medicalRecord.Height,
             Weight = medicalRecord.Weight,
             BedriddenDiseases = medicalRecord.BedriddenDiseases,
@@ -95,7 +98,8 @@ public class MedicalRecordService : IMedicalRecordService {
 
     private MedicalRecord parseFromModel(MedicalRecordDomainModel medicalRecordModel)
     {
-        MedicalRecord medicalRecord = new MedicalRecord {
+        MedicalRecord medicalRecord = new MedicalRecord 
+        {
             Height = medicalRecordModel.Height,
             Weight = medicalRecordModel.Weight,
             BedriddenDiseases = medicalRecordModel.BedriddenDiseases,

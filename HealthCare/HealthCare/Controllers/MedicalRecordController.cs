@@ -3,26 +3,31 @@ using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HealthCareAPI.Controllers {
+namespace HealthCareAPI.Controllers 
+{
     [ApiController]
     [Route("api/[controller]")]
-    public class MedicalRecordController : ControllerBase {
+    public class MedicalRecordController : ControllerBase 
+    {
         private IMedicalRecordService _medicalRecordService;
 
-        public MedicalRecordController(IMedicalRecordService medicalRecordService) {
+        public MedicalRecordController(IMedicalRecordService medicalRecordService) 
+        {
             _medicalRecordService = medicalRecordService;
         }
 
         // https://localhost:7195/api/medicalRecord
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MedicalRecordDomainModel>>> GetAll() {
+        public async Task<ActionResult<IEnumerable<MedicalRecordDomainModel>>> GetAll() 
+        {
             IEnumerable<MedicalRecordDomainModel> medicalRecords = await _medicalRecordService.GetAll();
             return Ok(medicalRecords);
         }
         
         [HttpGet]
         [Route("read")]
-        public async Task<ActionResult<IEnumerable<MedicalRecordDomainModel>>> ReadAll() {
+        public async Task<ActionResult<IEnumerable<MedicalRecordDomainModel>>> ReadAll() 
+        {
             IEnumerable<MedicalRecordDomainModel> medicalRecords = await _medicalRecordService.ReadAll();
             return Ok(medicalRecords);
         }

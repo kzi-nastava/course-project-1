@@ -5,11 +5,13 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class RoomService : IRoomService{
+public class RoomService : IRoomService
+{
     private IRoomRepository _roomRepository;
     private IRoomTypeRepository _roomTypeRepository;
 
-    public RoomService(IRoomRepository roomRepository, IRoomTypeRepository roomTypeRepository) {
+    public RoomService(IRoomRepository roomRepository, IRoomTypeRepository roomTypeRepository) 
+    {
         _roomRepository = roomRepository;
         _roomTypeRepository = roomTypeRepository;
     }
@@ -42,8 +44,10 @@ public class RoomService : IRoomService{
                 RoomName = item.RoomName,
                 RoomTypeId = item.RoomTypeId,
             };
-            if(item.RoomType != null) {
-                roomModel.RoomType = new RoomTypeDomainModel {
+            if(item.RoomType != null) 
+            {
+                roomModel.RoomType = new RoomTypeDomainModel 
+                {
                     IsDeleted = item.RoomType.IsDeleted,
                     Id = item.RoomType.Id,
                     RoleName = item.RoomType.RoleName,
@@ -52,32 +56,43 @@ public class RoomService : IRoomService{
             }
             roomModel.Inventories = new List<InventoryDomainModel>();
             roomModel.Operations = new List<OperationDomainModel>();
-            if (item.Inventories != null) {
-                foreach (Inventory inventory in item.Inventories) {
-                    InventoryDomainModel inventoryModel = new InventoryDomainModel {
+            if (item.Inventories != null) 
+            {
+                foreach (Inventory inventory in item.Inventories) 
+                {
+                    InventoryDomainModel inventoryModel = new InventoryDomainModel 
+                    {
                         IsDeleted = inventory.IsDeleted,
                         RoomId = inventory.RoomId,
                         Amount = inventory.Amount,
                         EquipmentId = inventory.RquipmentId,
                     };
-                    inventoryModel.Equipment = new EquipmentDomainModel {
+                    inventoryModel.Equipment = new EquipmentDomainModel 
+                    {
                         Id = inventory.Equipment.Id,
                         EquipmentTypeId = inventory.Equipment.equipmentTypeId,
                         IsDeleted = inventory.Equipment.IsDeleted,
                         Name = inventory.Equipment.Name,
                     };
                     if (inventoryModel.Equipment.EquipmentType != null)
-                        inventoryModel.Equipment.EquipmentType = new EquipmentTypeDomainModel {
+                    {
+                        inventoryModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
+                        {
                             Id = inventory.Equipment.EquipmentType.Id,
                             Name = inventory.Equipment.EquipmentType.Name,
                             IsDeleted = inventory.Equipment.EquipmentType.IsDeleted
                         };
+                    }
+
                     roomModel.Inventories.Add(inventoryModel);
                 }
             }
-            if (item.Operations != null) {
-                foreach (Operation operation in item.Operations) {
-                    OperationDomainModel operationModel = new OperationDomainModel {
+            if (item.Operations != null) 
+            {
+                foreach (Operation operation in item.Operations) 
+                {
+                    OperationDomainModel operationModel = new OperationDomainModel 
+                    {
                         DoctorId = operation.DoctorId,
                         RoomId = operation.DoctorId,
                         PatientId = operation.DoctorId,
@@ -89,8 +104,6 @@ public class RoomService : IRoomService{
             }
             results.Add(roomModel);
         }
-       
-
         return results;
     }
 
@@ -133,7 +146,8 @@ public class RoomService : IRoomService{
 
     private RoomDomainModel parseToModel(Room room)
     {
-        RoomDomainModel roomModel = new RoomDomainModel {
+        RoomDomainModel roomModel = new RoomDomainModel 
+        {
             Id = room.Id,
             RoomName = room.RoomName,
             RoomTypeId = room.RoomTypeId,

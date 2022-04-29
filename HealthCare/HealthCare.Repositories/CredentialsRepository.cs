@@ -11,7 +11,8 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 namespace HealthCare.Repositories
 {
 
-    public interface ICredentialsRepository : IRepository<Credentials> {
+    public interface ICredentialsRepository : IRepository<Credentials> 
+    {
         public Credentials Post(Credentials credentials);
         public Task<Credentials> GetCredentialsById(decimal id);
         public Task<Credentials> GetCredentialsByPatientId(decimal id);

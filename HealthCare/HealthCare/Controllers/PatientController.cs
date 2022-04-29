@@ -4,26 +4,31 @@ using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
-namespace HealthCareAPI.Controllers {
+namespace HealthCareAPI.Controllers 
+{
     [ApiController]
     [Route("api/[controller]")]
-    public class PatientController : ControllerBase {
+    public class PatientController : ControllerBase 
+    {
         private IPatientService _patientService;
 
-        public PatientController(IPatientService patientService) {
+        public PatientController(IPatientService patientService) 
+        {
             _patientService = patientService;
         }
 
         // https://localhost:7195/api/patient
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<PatientDomainModel>>> GetAll() {
+        public async Task<ActionResult<IEnumerable<PatientDomainModel>>> GetAll() 
+        {
             IEnumerable<PatientDomainModel> patients = await _patientService.GetAll();
             return Ok(patients);
         }
         
         [HttpGet]
         [Route("read")]
-        public async Task<ActionResult<IEnumerable<PatientDomainModel>>> ReadAll() {
+        public async Task<ActionResult<IEnumerable<PatientDomainModel>>> ReadAll() 
+        {
             IEnumerable<PatientDomainModel> patients = await _patientService.ReadAll();
             return Ok(patients);
         }
@@ -57,9 +62,9 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/patient/delete
         [HttpPut]
         [Route("delete/{id}")]
-        public async Task<ActionResult<PatientDomainModel>> DeletePatient(decimal id)
+        public async Task<ActionResult<PatientDomainModel>> DeletePatient([FromBody] PatientDomainModel patientModel)
         {
-            PatientDomainModel deletedPatientModel = await _patientService.Delete(id);
+            PatientDomainModel deletedPatientModel = await _patientService.Delete(patientModel);
             return Ok(deletedPatientModel);
         }
         

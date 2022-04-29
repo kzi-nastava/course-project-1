@@ -5,11 +5,14 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class ExaminationApprovalService : IExaminationApprovalService{
+public class ExaminationApprovalService : IExaminationApprovalService
+{
     private IExaminationApprovalRepository _examinationApprovalRepository;
     private IExaminationRepository _examinationRepository;
 
-    public ExaminationApprovalService(IExaminationApprovalRepository examinationApprovalRepository, IExaminationRepository examinationRepository) {
+    public ExaminationApprovalService(IExaminationApprovalRepository examinationApprovalRepository, 
+                                      IExaminationRepository examinationRepository) 
+    {
         _examinationApprovalRepository = examinationApprovalRepository;
         _examinationRepository = examinationRepository;
     }
@@ -18,7 +21,7 @@ public class ExaminationApprovalService : IExaminationApprovalService{
     // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<ExaminationApprovalDomainModel>> GetAll()
     {
-        var data = await _examinationApprovalRepository.GetAll();
+        IEnumerable<ExaminationApproval> data = await _examinationApprovalRepository.GetAll();
         if (data == null)
             return null;
 

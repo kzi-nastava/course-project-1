@@ -8,18 +8,23 @@ using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace HealthCare.Repositories {
-    public interface IAnamnesisRepository : IRepository<Anamnesis> {
+namespace HealthCare.Repositories 
+{
+    public interface IAnamnesisRepository : IRepository<Anamnesis> 
+    {
         public Anamnesis Post(Anamnesis anamensis);
         public Anamnesis Update(Anamnesis anamnesis);
     }
-    public class AnamnesisRepository : IAnamnesisRepository {
+    public class AnamnesisRepository : IAnamnesisRepository 
+    {
         private readonly HealthCareContext _healthCareContext;
 
-        public AnamnesisRepository(HealthCareContext healthCareContext) {
+        public AnamnesisRepository(HealthCareContext healthCareContext) 
+        {
             _healthCareContext = healthCareContext;
         }
-        public async Task<IEnumerable<Anamnesis>> GetAll() {
+        public async Task<IEnumerable<Anamnesis>> GetAll() 
+        {
             return await _healthCareContext.Anamneses.ToListAsync();
         }
 

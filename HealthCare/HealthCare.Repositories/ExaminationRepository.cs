@@ -108,14 +108,9 @@ namespace HealthCare.Repositories
             EntityEntry<Examination> result = _healthCareContext.Examinations.Add(examination);
             return result.Entity;
         }
-
-        
-
         public void Save()
         {
             _healthCareContext.SaveChanges();
         }
-
-
     }
 }

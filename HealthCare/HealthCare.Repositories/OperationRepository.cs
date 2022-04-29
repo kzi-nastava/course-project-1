@@ -8,8 +8,10 @@ using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace HealthCare.Repositories {
-    public interface IOperationRepository : IRepository<Operation> {
+namespace HealthCare.Repositories 
+{
+    public interface IOperationRepository : IRepository<Operation> 
+    {
         public Task<Operation> GetById(decimal id);
         public Task<Operation> GetByParams(decimal patientId, decimal doctorId, decimal roomId, DateTime startTime);
         public Task<IEnumerable<Operation>> GetAllByDoctorId(decimal id);
@@ -19,17 +21,21 @@ namespace HealthCare.Repositories {
         public Operation Post(Operation operation);
         public Operation Update(Operation operation);
     }
-    public class OperationRepository : IOperationRepository {
+    public class OperationRepository : IOperationRepository 
+    {
         private readonly HealthCareContext _healthCareContext;
 
-        public OperationRepository(HealthCareContext healthCareContext) {
+        public OperationRepository(HealthCareContext healthCareContext) 
+        {
             _healthCareContext = healthCareContext;
         }
-        public async Task<IEnumerable<Operation>> GetAll() {
+        public async Task<IEnumerable<Operation>> GetAll() 
+        {
             return await _healthCareContext.Operations.ToListAsync();
         }
 
-        public async Task<Operation> GetById(decimal id) {
+        public async Task<Operation> GetById(decimal id) 
+        {
             return await _healthCareContext.Operations
                 .Where(x => x.Id == id)
                 .Where(x => x.IsDeleted == false)
@@ -37,7 +43,8 @@ namespace HealthCare.Repositories {
         }
 
 
-        public async Task<IEnumerable<Operation>> GetAllByDoctorId(decimal id) {
+        public async Task<IEnumerable<Operation>> GetAllByDoctorId(decimal id) 
+        {
             return await _healthCareContext.Operations
                 .Where(x => x.DoctorId == id)
                 .Where(x => x.IsDeleted == false)

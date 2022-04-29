@@ -5,10 +5,12 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class RoomTypeService : IRoomTypeService{
+public class RoomTypeService : IRoomTypeService
+{
     private IRoomTypeRepository _roomTypeRepository;
 
-    public RoomTypeService(IRoomTypeRepository roomTypeRepository) {
+    public RoomTypeService(IRoomTypeRepository roomTypeRepository) 
+    {
         _roomTypeRepository = roomTypeRepository;
     }
 

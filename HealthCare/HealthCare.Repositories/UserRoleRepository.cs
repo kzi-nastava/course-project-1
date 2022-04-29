@@ -7,14 +7,18 @@ using HealthCare.Data.Context;
 using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace HealthCare.Repositories {
-    public interface IUserRoleRepository : IRepository<UserRole> {
+namespace HealthCare.Repositories 
+{
+    public interface IUserRoleRepository : IRepository<UserRole> 
+    {
         public Task<UserRole> GetById(decimal id);
     }
-    public class UserRoleRepository : IUserRoleRepository {
+    public class UserRoleRepository : IUserRoleRepository 
+    {
         private readonly HealthCareContext _healthCareContext;
 
-        public UserRoleRepository(HealthCareContext healthCareContext) {
+        public UserRoleRepository(HealthCareContext healthCareContext) 
+        {
             _healthCareContext = healthCareContext;
         }
         public async Task<IEnumerable<UserRole>> GetAll() {

@@ -6,12 +6,16 @@ using Microsoft.OpenApi.Any;
 
 namespace HealthCare.Domain.Interfaces;
 
-public class OperationService : IOperationService {
+public class OperationService : IOperationService 
+{
     private IOperationRepository _operationRepository;
     private IRoomRepository _roomRepository;
     private IExaminationRepository _examinationRepository;
 
-    public OperationService(IOperationRepository operationRepository, IRoomRepository roomRepository, IExaminationRepository examinationRepository) {
+    public OperationService(IOperationRepository operationRepository, 
+                            IRoomRepository roomRepository, 
+                            IExaminationRepository examinationRepository) 
+    {
         _operationRepository = operationRepository;
         _roomRepository = roomRepository;
         _examinationRepository = examinationRepository;
@@ -212,7 +216,7 @@ public class OperationService : IOperationService {
         bool doctorAvailable = await IsDoctorAvailable(operationModel);
         bool patientAvailable = await IsPatientAvailable(operationModel);
         if (!doctorAvailable || !patientAvailable)
-            //TODO: Think about the return value if doctor is not available
+            //TODO: throw exception 
             return null;
 
         decimal roomId = await GetAvailableRoomId(operationModel);

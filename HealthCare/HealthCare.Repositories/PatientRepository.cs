@@ -8,21 +8,26 @@ using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace HealthCare.Repositories {
-    public interface IPatientRepository : IRepository<Patient> {
+namespace HealthCare.Repositories 
+{
+    public interface IPatientRepository : IRepository<Patient> 
+    {
         public Patient Post(Patient patient);
         public Patient Update(Patient patient);
         public Patient Delete(Patient patient);
         public Task<Patient> GetPatientById(decimal id);
         public Task<Patient> GetWithMedicalRecord(decimal id);
     }
-    public class PatientRepository : IPatientRepository {
+    public class PatientRepository : IPatientRepository 
+    {
         private readonly HealthCareContext _healthCareContext;
 
-        public PatientRepository(HealthCareContext healthCareContext) {
+        public PatientRepository(HealthCareContext healthCareContext) 
+        {
             _healthCareContext = healthCareContext;
         }
-        public async Task<IEnumerable<Patient>> GetAll() {
+        public async Task<IEnumerable<Patient>> GetAll() 
+        {
             return await _healthCareContext.Patients
                 .Include(x => x.Credentials)
                 .Include(x => x.MedicalRecord)
