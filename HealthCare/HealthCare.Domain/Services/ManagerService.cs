@@ -1,3 +1,4 @@
+using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -17,7 +18,7 @@ public class ManagerService : IManagerService{
     {
         IEnumerable<ManagerDomainModel> managers = await GetAll();
         List<ManagerDomainModel> result = new List<ManagerDomainModel>();
-        foreach (var item in managers)
+        foreach (ManagerDomainModel item in managers)
         {
             if (!item.IsDeleted) result.Add(item);
         }
@@ -31,7 +32,7 @@ public class ManagerService : IManagerService{
 
         List<ManagerDomainModel> results = new List<ManagerDomainModel>();
         ManagerDomainModel managerModel;
-        foreach (var item in data)
+        foreach (Manager item in data)
         {
             managerModel = new ManagerDomainModel
             {

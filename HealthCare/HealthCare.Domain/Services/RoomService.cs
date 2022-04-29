@@ -18,7 +18,7 @@ public class RoomService : IRoomService{
     {
         IEnumerable<RoomDomainModel> rooms = await GetAll();
         List<RoomDomainModel> result = new List<RoomDomainModel>();
-        foreach (var item in rooms)
+        foreach (RoomDomainModel item in rooms)
         {
             if(!item.IsDeleted) result.Add(item);
         }
@@ -102,7 +102,7 @@ public class RoomService : IRoomService{
         RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);
         newRoom.RoomType = roomType;
         newRoom.RoomTypeId = roomType.Id;
-        Room insertedRoom = _roomRepository.Post(newRoom);
+        _ = _roomRepository.Post(newRoom);
         _roomRepository.Save();
 
         return roomModel;
@@ -120,8 +120,6 @@ public class RoomService : IRoomService{
         _roomRepository.Save();
 
         return roomModel;
-
-
     }
 
     public async Task<RoomDomainModel> Delete(decimal id)

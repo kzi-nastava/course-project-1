@@ -20,13 +20,13 @@ public class AnamnesisService : IAnamnesisService
     // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<AnamnesisDomainModel>> GetAll()
     {
-        var data = await _anamnesisRepository.GetAll();
+        IEnumerable<Anamnesis> data = await _anamnesisRepository.GetAll();
         if (data == null)
             return null;
 
         List<AnamnesisDomainModel> results = new List<AnamnesisDomainModel>();
         AnamnesisDomainModel anamnesisModel;
-        foreach (var item in data)
+        foreach (Anamnesis item in data)
         {
             anamnesisModel = new AnamnesisDomainModel
             {
@@ -45,7 +45,7 @@ public class AnamnesisService : IAnamnesisService
     {
         IEnumerable<AnamnesisDomainModel> anamnesis = await GetAll();
         List<AnamnesisDomainModel> result = new List<AnamnesisDomainModel>();
-        foreach (var item in anamnesis)
+        foreach (AnamnesisDomainModel item in anamnesis)
         {
             if (!item.IsDeleted) result.Add(item);
         }
@@ -68,7 +68,7 @@ public class AnamnesisService : IAnamnesisService
 
     private AnamnesisDomainModel parseToModel(Anamnesis anamnesis)
     {
-        AnamnesisDomainModel model = new AnamnesisDomainModel
+        AnamnesisDomainModel anamnesisModel = new AnamnesisDomainModel
         {
             Id = anamnesis.Id,
             Description = anamnesis.Description,
@@ -76,6 +76,6 @@ public class AnamnesisService : IAnamnesisService
             IsDeleted = anamnesis.IsDeleted,
         };
 
-        return model;
+        return anamnesisModel;
     }
 }

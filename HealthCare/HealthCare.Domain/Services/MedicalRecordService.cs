@@ -17,7 +17,7 @@ public class MedicalRecordService : IMedicalRecordService {
     {
         IEnumerable<MedicalRecordDomainModel> medicalRecords = await GetAll();
         List<MedicalRecordDomainModel> result = new List<MedicalRecordDomainModel>();
-        foreach (var item in medicalRecords)
+        foreach (MedicalRecordDomainModel item in medicalRecords)
         {
             if (!item.IsDeleted) result.Add(item);
         }
@@ -25,13 +25,13 @@ public class MedicalRecordService : IMedicalRecordService {
     } 
     public async Task<IEnumerable<MedicalRecordDomainModel>> GetAll()
     {
-        var data = await _medicalRecordRepository.GetAll();
+        IEnumerable<MedicalRecord> data = await _medicalRecordRepository.GetAll();
         if (data == null)
             return null;
 
         List<MedicalRecordDomainModel> results = new List<MedicalRecordDomainModel>();
         MedicalRecordDomainModel medicalRecordModel;
-        foreach (var item in data)
+        foreach (MedicalRecord item in data)
         {
             medicalRecordModel = new MedicalRecordDomainModel
             {
@@ -50,7 +50,7 @@ public class MedicalRecordService : IMedicalRecordService {
 
     public async Task<MedicalRecordDomainModel> GetForPatient(decimal id)
     {
-        var data =  await _medicalRecordRepository.GetByPatientId(id);
+        MedicalRecord data =  await _medicalRecordRepository.GetByPatientId(id);
 
         if (data != null)
         {
@@ -64,14 +64,8 @@ public class MedicalRecordService : IMedicalRecordService {
                 Weight = data.Weight
             };
             return medicalRecordModel;
-        } else
-        {
-            return null; 
-        }
-
-        
-
-        
+        } 
+        return null; 
     }
 
     public async Task<MedicalRecordDomainModel> Update(MedicalRecordDomainModel medicalRecordModel)
@@ -82,16 +76,13 @@ public class MedicalRecordService : IMedicalRecordService {
         if (medicalRecord != null)
         {
             return parseToModel(medicalRecord);
-        } else
-        {
-            return null;
-        }
+        } 
+        return null;
     }
 
     private MedicalRecordDomainModel parseToModel(MedicalRecord medicalRecord)
     {
-        return new MedicalRecordDomainModel
-        {
+        MedicalRecordDomainModel medicalRecordModel = new MedicalRecordDomainModel {
             Height = medicalRecord.Height,
             Weight = medicalRecord.Weight,
             BedriddenDiseases = medicalRecord.BedriddenDiseases,
@@ -99,12 +90,12 @@ public class MedicalRecordService : IMedicalRecordService {
             Allergies = medicalRecord.Allergies,
             IsDeleted = medicalRecord.IsDeleted
         };
+        return medicalRecordModel;
     }
 
     private MedicalRecord parseFromModel(MedicalRecordDomainModel medicalRecordModel)
     {
-        return new MedicalRecord
-        {
+        MedicalRecord medicalRecord = new MedicalRecord {
             Height = medicalRecordModel.Height,
             Weight = medicalRecordModel.Weight,
             BedriddenDiseases = medicalRecordModel.BedriddenDiseases,
@@ -112,5 +103,6 @@ public class MedicalRecordService : IMedicalRecordService {
             Allergies = medicalRecordModel.Allergies,
             IsDeleted = medicalRecordModel.IsDeleted
         };
+        return medicalRecord;
     }
 }

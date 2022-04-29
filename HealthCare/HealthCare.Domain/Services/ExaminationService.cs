@@ -36,10 +36,10 @@ public class ExaminationService : IExaminationService{
 
 
     private async Task<bool> AntiTrollCheck(decimal patientId, bool isCreate) {
-        var antiTrollHistory = await _antiTrollRepository.GetByPatientId(patientId);
+        IEnumerable<AntiTroll> antiTrollHistory = await _antiTrollRepository.GetByPatientId(patientId);
         int createCounter = 0;
         int updateCounter = 0;
-        foreach (var item in antiTrollHistory) {
+        foreach (AntiTroll item in antiTrollHistory) {
             double difference = (DateTime.Now - item.DateCreated).TotalDays;
             if (difference < 30) {
                 if (item.State.Equals("create"))
@@ -71,34 +71,33 @@ public class ExaminationService : IExaminationService{
         return examinationModel;
     }
 
-    private Examination parseFromModel(ExaminationDomainModel examination) {
-        Examination examinationModel = new Examination {
-            Id = examination.Id,
-            StartTime = examination.StartTime,
-            DoctorId = examination.DoctorId,
-            IsDeleted = examination.IsDeleted,
-            PatientId = examination.PatientId,
-            RoomId = examination.RoomId
+    private Examination parseFromModel(ExaminationDomainModel examinationModel) {
+        Examination examination = new Examination {
+            Id = examinationModel.Id,
+            StartTime = examinationModel.StartTime,
+            DoctorId = examinationModel.DoctorId,
+            IsDeleted = examinationModel.IsDeleted,
+            PatientId = examinationModel.PatientId,
+            RoomId = examinationModel.RoomId
         };
         if (examination.Anamnesis != null) {
-            examinationModel.Anamnesis = new Anamnesis {
-                Id = examination.Anamnesis.Id,
-                Description = examination.Anamnesis.Description,
-                ExaminationId = examination.Anamnesis.ExaminationId,
-                IsDeleted = examination.Anamnesis.IsDeleted
+            examination.Anamnesis = new Anamnesis {
+                Id = examinationModel.Anamnesis.Id,
+                Description = examinationModel.Anamnesis.Description,
+                ExaminationId = examinationModel.Anamnesis.ExaminationId,
+                IsDeleted = examinationModel.Anamnesis.IsDeleted
             };
         }
-        return examinationModel;
+        return examination;
     }
     public async Task<IEnumerable<ExaminationDomainModel>> GetAll()
     {
         var data = await _examinationRepository.GetAll();
         if (data == null)
             return null;
-
-        List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
         
-        foreach (var item in data)
+        List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
+        foreach (Examination item in data)
         {           
             results.Add(parseToModel(item));
         }
@@ -110,7 +109,7 @@ public class ExaminationService : IExaminationService{
     {
         IEnumerable<ExaminationDomainModel> examinations = await GetAll();
         List<ExaminationDomainModel> result = new List<ExaminationDomainModel>();
-        foreach (var item in examinations)
+        foreach (ExaminationDomainModel item in examinations)
         {           
             if (!item.IsDeleted) result.Add(item);
         }
@@ -118,13 +117,12 @@ public class ExaminationService : IExaminationService{
     }
 
     public async Task<IEnumerable<ExaminationDomainModel>> GetAllForPatient(decimal id) {
-        var data = await _examinationRepository.GetAllByPatientId(id);
+        IEnumerable<Examination> data = await _examinationRepository.GetAllByPatientId(id);
         if (data == null)
             return null;
 
         List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
-
-        foreach (var item in data) {
+        foreach (Examination item in data) {
             results.Add(parseToModel(item));
         }
 
@@ -133,13 +131,12 @@ public class ExaminationService : IExaminationService{
 
     public async Task<IEnumerable<ExaminationDomainModel>> GetAllForDoctor(decimal id)
     {
-        var data = await _examinationRepository.GetAllByDoctorId(id);
+        IEnumerable<Examination> data = await _examinationRepository.GetAllByDoctorId(id);
         if (data == null)
             return null;
 
         List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
-
-        foreach (var item in data)
+        foreach (Examination item in data)
         {
             results.Add(parseToModel(item));
         }
@@ -150,8 +147,8 @@ public class ExaminationService : IExaminationService{
     public async Task<ExaminationDomainModel> Delete(ExaminationDomainModel examinationModel, bool isPatient) {
         if(isPatient && await AntiTrollCheck(examinationModel.PatientId, false))
             return null;
-        var examination = await _examinationRepository.GetExamination(examinationModel.Id);
-        var daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
+        Examination examination = await _examinationRepository.GetExamination(examinationModel.Id);
+        double daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
       
         if(daysUntilExamination > 1 || !isPatient) {
             examination.IsDeleted = true;
@@ -159,7 +156,6 @@ public class ExaminationService : IExaminationService{
             _examinationRepository.Save();
 
             // anamnesis can't exist without its examination
-            
             // check if anamnesis exists
             if (examination.Anamnesis != null)
             {
@@ -191,12 +187,11 @@ public class ExaminationService : IExaminationService{
             _antiTrollRepository.Save();
         }
         return parseToModel(examination);
-       
     }
 
     private async Task<bool> IsPatientOnExaminationAsync(ExaminationDomainModel examinationModel)
     {
-        var patientsExaminations = await _examinationRepository.GetAllByPatientId(examinationModel.PatientId);
+        IEnumerable<Examination> patientsExaminations = await _examinationRepository.GetAllByPatientId(examinationModel.PatientId);
         foreach (Examination examination in patientsExaminations)
         {
             if (examination.Id != examinationModel.Id)
@@ -213,7 +208,7 @@ public class ExaminationService : IExaminationService{
 
     private async Task<bool> IsPatientOnOperationAsync(ExaminationDomainModel examinationModel)
     {
-        var patientsOperations = await _operationRepository.GetAllByPatientId(examinationModel.PatientId);
+        IEnumerable<Operation> patientsOperations = await _operationRepository.GetAllByPatientId(examinationModel.PatientId);
         foreach (Operation operation in patientsOperations)
         {
             double difference = (examinationModel.StartTime - operation.StartTime).TotalMinutes;
@@ -226,7 +221,7 @@ public class ExaminationService : IExaminationService{
     }
 
     private async Task<bool> IsDoctorOnExaminationAsync(ExaminationDomainModel examinationModel) {
-        var doctorsExaminations = await _examinationRepository.GetAllByDoctorId(examinationModel.DoctorId);
+        IEnumerable<Examination> doctorsExaminations = await _examinationRepository.GetAllByDoctorId(examinationModel.DoctorId);
         if (doctorsExaminations == null) {
             return false;
         }
@@ -244,7 +239,7 @@ public class ExaminationService : IExaminationService{
     }
 
     private async Task<bool> IsDoctorOnOperationAsync(ExaminationDomainModel examinationModel) {
-        var doctorsOperations = await _operationRepository.GetAllByDoctorId(examinationModel.DoctorId);
+        IEnumerable<Operation> doctorsOperations = await _operationRepository.GetAllByDoctorId(examinationModel.DoctorId);
         foreach (Operation operation in doctorsOperations) {
             double difference = (examinationModel.StartTime - operation.StartTime).TotalMinutes;
             if (difference <= (double) operation.Duration && difference >= -15) {
@@ -255,10 +250,10 @@ public class ExaminationService : IExaminationService{
     }
 
     private async Task<decimal> GetAvailableRoomId(ExaminationDomainModel examinationModel) {
-        var rooms = await _roomRepository.GetAllAppointmentRooms("examination");
+        IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms("examination");
         foreach (Room room in rooms) {
             bool isRoomAvailable = true;
-            var examinations = await _examinationRepository.GetAllByRoomId(room.Id);
+            IEnumerable<Examination> examinations = await _examinationRepository.GetAllByRoomId(room.Id);
             foreach (Examination examination in examinations) {
                 double difference = (examinationModel.StartTime - examination.StartTime).TotalMinutes;
                 if (difference <= 15 && difference >= -15) {

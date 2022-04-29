@@ -30,19 +30,19 @@ namespace HealthCare.Domain.Services {
             List<CredentialsDomainModel> result = new List<CredentialsDomainModel>();
             foreach (var item in credentials)
             {
-                if(!item.IsDeleted) result.Add(item);
+                if (!item.IsDeleted) result.Add(item);
             }
             return result;
         }
         public async Task<IEnumerable<CredentialsDomainModel>> GetAll()
         {
-            var data = await _credentialsRepository.GetAll();
+            IEnumerable<Credentials> data = await _credentialsRepository.GetAll();
             if (data == null)
                 return null;
 
             List<CredentialsDomainModel> results = new List<CredentialsDomainModel>();
             CredentialsDomainModel credentialsModel;
-            foreach (var item in data)
+            foreach (Credentials item in data)
             {
                 credentialsModel = new CredentialsDomainModel {
                     Id = item.Id,
@@ -75,7 +75,6 @@ namespace HealthCare.Domain.Services {
             return true;
         }
 
-        // TODO: Fix this method in the future
         public async Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(string username, string password)
         {
             var data = await ReadAll();
@@ -84,8 +83,7 @@ namespace HealthCare.Domain.Services {
                 {
                     if (item.PatientId != null)
                     {
-                        Boolean blocked = await IsBlocked(item);
-                        if (!blocked) return item;
+                        if (!await IsBlocked(item)) return item;
                         return null;
                     }
                     return item;

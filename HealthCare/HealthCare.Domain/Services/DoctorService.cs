@@ -1,3 +1,4 @@
+using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -15,13 +16,13 @@ public class DoctorService : IDoctorService{
     // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<DoctorDomainModel>> GetAll()
     {
-        var data = await _doctorRepository.GetAll();
+        IEnumerable<Doctor> data = await _doctorRepository.GetAll();
         if (data == null)
             return null;
 
         List<DoctorDomainModel> results = new List<DoctorDomainModel>();
         DoctorDomainModel doctorModel;
-        foreach (var item in data) {
+        foreach (Doctor item in data) {
             doctorModel = new DoctorDomainModel {
                 isDeleted = item.IsDeleted,
                 BirthDate = item.BirthDate,
@@ -55,8 +56,8 @@ public class DoctorService : IDoctorService{
             doctorModel.Examinations = new List<ExaminationDomainModel>();
             doctorModel.Operations = new List<OperationDomainModel>();
             if (item.Examinations != null) {
-                foreach (var examination in item.Examinations) {
-                    ExaminationDomainModel examinationDomainModel = new ExaminationDomainModel {
+                foreach (Examination examination in item.Examinations) {
+                    ExaminationDomainModel examinationModel = new ExaminationDomainModel {
                         DoctorId = examination.DoctorId,
                         RoomId = examination.RoomId,
                         PatientId = examination.PatientId,
@@ -65,7 +66,7 @@ public class DoctorService : IDoctorService{
                     };
                     if (examination.Anamnesis != null)
                     {
-                        AnamnesisDomainModel anamnesisDomainModel = new AnamnesisDomainModel
+                        AnamnesisDomainModel anamnesisModel = new AnamnesisDomainModel
                         {
                             Id = examination.Anamnesis.Id,
                             Description = examination.Anamnesis.Description,
@@ -73,28 +74,26 @@ public class DoctorService : IDoctorService{
                             IsDeleted = examination.Anamnesis.IsDeleted
 
                         };
-                    examinationDomainModel.Anamnesis = anamnesisDomainModel;
+                    examinationModel.Anamnesis = anamnesisModel;
                     }
-                    doctorModel.Examinations.Add(examinationDomainModel);
+                    doctorModel.Examinations.Add(examinationModel);
 
                 }
             }
             if(item.Operations != null) {
-                foreach (var operation in item.Operations) {
-                    OperationDomainModel operationDomainModel = new OperationDomainModel {
+                foreach (Operation operation in item.Operations) {
+                    OperationDomainModel operationModel = new OperationDomainModel {
                         DoctorId = operation.DoctorId,
                         RoomId = operation.RoomId,
                         PatientId = operation.PatientId,
                         Duration = operation.Duration,
                         IsDeleted = operation.IsDeleted
                     };
-                    doctorModel.Operations.Add(operationDomainModel);
+                    doctorModel.Operations.Add(operationModel);
                 }
                 results.Add(doctorModel);
             }
         }
-        
-
         return results;
     }
     

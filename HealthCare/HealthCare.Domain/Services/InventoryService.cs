@@ -53,9 +53,9 @@ public class InventoryService : IInventoryService {
     {
         IEnumerable<InventoryDomainModel> inventory = await GetAll();
         List<InventoryDomainModel> result = new List<InventoryDomainModel>();
-        foreach (var item in inventory)
+        foreach (InventoryDomainModel item in inventory)
         {
-            if(!item.IsDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     }    

@@ -27,27 +27,24 @@ public class AntiTrollService : IAntiTrollService {
     }
 
     public async Task<IEnumerable<AntiTrollDomainModel>> GetAll() {
-        var data = await _antiTrollRepository.GetAll();
+        IEnumerable<AntiTroll> data = await _antiTrollRepository.GetAll();
         if (data == null)
             return null;
 
         List<AntiTrollDomainModel> results = new List<AntiTrollDomainModel>();
-        AntiTrollDomainModel antiTrollModel;
-        foreach (var item in data) {
+        foreach (AntiTroll item in data) {
             results.Add(parseToModel(item));
         }
-
         return results;
     }
 
     public async Task<IEnumerable<AntiTrollDomainModel>> GetByPatientId(decimal patientId) {
-        var data = await _antiTrollRepository.GetByPatientId(patientId);
+        IEnumerable<AntiTroll> data = await _antiTrollRepository.GetByPatientId(patientId);
         if (data == null)
             return null;
 
         List<AntiTrollDomainModel> results = new List<AntiTrollDomainModel>();
-        AntiTrollDomainModel antiTrollModel;
-        foreach (var item in data) {
+        foreach (AntiTroll item in data) {
             results.Add(parseToModel(item));
         }
 
