@@ -271,19 +271,24 @@ public class ExaminationService : IExaminationService
         return false;
     }
 
-    private async Task<decimal> GetAvailableRoomId(ExaminationDomainModel examinationModel) {
+    private async Task<decimal> GetAvailableRoomId(ExaminationDomainModel examinationModel) 
+    {
         IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms("examination");
-        foreach (Room room in rooms) {
+        foreach (Room room in rooms) 
+        {
             bool isRoomAvailable = true;
             IEnumerable<Examination> examinations = await _examinationRepository.GetAllByRoomId(room.Id);
-            foreach (Examination examination in examinations) {
+            foreach (Examination examination in examinations) 
+            {
                 double difference = (examinationModel.StartTime - examination.StartTime).TotalMinutes;
-                if (difference <= 15 && difference >= -15) {
+                if (difference <= 15 && difference >= -15) 
+                {
                     isRoomAvailable = false;
                     break;
                 }
             }
-            if (isRoomAvailable) {
+            if (isRoomAvailable) 
+            {
                 return room.Id;
             }
         }
@@ -303,7 +308,6 @@ public class ExaminationService : IExaminationService
                  await IsPatientOnOperationAsync(examinationModel));
     }
 
-    // TODO: throw Exception
     public async Task<ExaminationDomainModel> Create(ExaminationDomainModel examinationModel, bool isPatient)
     {
         if (isPatient && await AntiTrollCheck(examinationModel.PatientId, true))
