@@ -30,37 +30,7 @@ public class TransferService : ITransferService
         TransferDomainModel transferModel;
         foreach (Transfer item in transfers)
         {
-            transferModel = new TransferDomainModel
-            {
-                Id = item.Id,
-                IsDeleted = item.IsDeleted,
-                Amount = item.Amount,
-                EquipmentId = item.EquipmentId,
-                RoomIdOut = item.RoomIdOut,
-                RoomIdIn = item.RoomIdIn,
-                TransferTime = item.TransferTime,
-                Executed = item.Executed
-            };
-            if (item.Equipment != null) 
-            {
-                transferModel.Equipment = new EquipmentDomainModel 
-                {
-                    Id = item.Equipment.Id,
-                    EquipmentTypeId = item.Equipment.equipmentTypeId,
-                    IsDeleted = item.Equipment.IsDeleted,
-                    Name = item.Equipment.Name
-                };
-                if (item.Equipment.EquipmentType != null)
-                {
-                    transferModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
-                    {
-                        Id = item.Equipment.EquipmentType.Id,
-                        Name = item.Equipment.EquipmentType.Name,
-                        IsDeleted = item.Equipment.EquipmentType.IsDeleted
-                    };
-                }
-            }
-            results.Add(transferModel);
+            results.Add(parseToModel(item));
         }
 
         return results;
@@ -78,7 +48,7 @@ public class TransferService : ITransferService
             inRoomInventory = new Inventory
             {
                 Amount = transferModel.Amount,
-                RquipmentId = transferModel.EquipmentId,
+                EquipmentId = transferModel.EquipmentId,
                 RoomId = transferModel.RoomIdIn,
                 IsDeleted = false
             };               
@@ -121,6 +91,25 @@ public class TransferService : ITransferService
             EquipmentId = transfer.EquipmentId,
             Executed = transfer.Executed
         };
+        if (transfer.Equipment != null)
+        {
+            transferModel.Equipment = new EquipmentDomainModel
+            {
+                Id = transfer.Equipment.Id,
+                EquipmentTypeId = transfer.Equipment.equipmentTypeId,
+                IsDeleted = transfer.Equipment.IsDeleted,
+                Name = transfer.Equipment.Name
+            };
+            if (transfer.Equipment.EquipmentType != null)
+            {
+                transferModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
+                {
+                    Id = transfer.Equipment.EquipmentType.Id,
+                    Name = transfer.Equipment.EquipmentType.Name,
+                    IsDeleted = transfer.Equipment.EquipmentType.IsDeleted
+                };
+            }
+        }
         return transferModel;
     }
 

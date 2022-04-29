@@ -65,7 +65,7 @@ public class RoomService : IRoomService
                         IsDeleted = inventory.IsDeleted,
                         RoomId = inventory.RoomId,
                         Amount = inventory.Amount,
-                        EquipmentId = inventory.RquipmentId,
+                        EquipmentId = inventory.EquipmentId,
                     };
                     inventoryModel.Equipment = new EquipmentDomainModel 
                     {
@@ -74,7 +74,7 @@ public class RoomService : IRoomService
                         IsDeleted = inventory.Equipment.IsDeleted,
                         Name = inventory.Equipment.Name,
                     };
-                    if (inventoryModel.Equipment.EquipmentType != null)
+                    if (inventory.Equipment.EquipmentType != null)
                     {
                         inventoryModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
                         {

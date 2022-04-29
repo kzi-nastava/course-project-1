@@ -61,4 +61,10 @@ namespace HealthCare.Domain.Interfaces
         {
         }
     }
+    public class DateInPastExeption : Exception
+    {
+        public DateInPastExeption() : base("Entered date is in past")
+        {
+        }
+    }
 }

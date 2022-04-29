@@ -15,12 +15,12 @@ public class ExaminationService : IExaminationService
     private IAnamnesisRepository _anamnesisRepository;
     private IPatientRepository _patientRepository;
 
-    public ExaminationService(IExaminationRepository examinationRepository, 
-                              IExaminationApprovalRepository examinationApprovalRepository, 
-                              IOperationRepository operationRepository, 
-                              IRoomRepository roomRepository, 
-                              IAntiTrollRepository antiTrollRepository, 
-                              IAnamnesisRepository anamnesisRepository, 
+    public ExaminationService(IExaminationRepository examinationRepository,
+                              IExaminationApprovalRepository examinationApprovalRepository,
+                              IOperationRepository operationRepository,
+                              IRoomRepository roomRepository,
+                              IAntiTrollRepository antiTrollRepository,
+                              IAnamnesisRepository anamnesisRepository,
                               IPatientRepository patientRepository)
     {
         _examinationRepository = examinationRepository;
@@ -32,15 +32,15 @@ public class ExaminationService : IExaminationService
         _patientRepository = patientRepository;
     }
 
-    private async Task<bool> AntiTrollCheck(decimal patientId, bool isCreate) 
+    private async Task<bool> AntiTrollCheck(decimal patientId, bool isCreate)
     {
         IEnumerable<AntiTroll> antiTrollHistory = await _antiTrollRepository.GetByPatientId(patientId);
         int createCounter = 0;
         int updateCounter = 0;
-        foreach (AntiTroll item in antiTrollHistory) 
+        foreach (AntiTroll item in antiTrollHistory)
         {
             double difference = (DateTime.Now - item.DateCreated).TotalDays;
-            if (difference < 30) 
+            if (difference < 30)
             {
                 if (item.State.Equals("create"))
                     createCounter++;
@@ -51,9 +51,9 @@ public class ExaminationService : IExaminationService
         return isCreate ? createCounter > 8 : updateCounter > 5;
     }
 
-    private ExaminationDomainModel parseToModel(Examination examination) 
+    private ExaminationDomainModel parseToModel(Examination examination)
     {
-        ExaminationDomainModel examinationModel = new ExaminationDomainModel 
+        ExaminationDomainModel examinationModel = new ExaminationDomainModel
         {
             Id = examination.Id,
             StartTime = examination.StartTime,
@@ -62,9 +62,9 @@ public class ExaminationService : IExaminationService
             PatientId = examination.PatientId,
             RoomId = examination.RoomId
         };
-        if (examination.Anamnesis != null) 
+        if (examination.Anamnesis != null)
         {
-            examinationModel.Anamnesis = new AnamnesisDomainModel 
+            examinationModel.Anamnesis = new AnamnesisDomainModel
             {
                 Id = examination.Anamnesis.Id,
                 Description = examination.Anamnesis.Description,
@@ -75,9 +75,9 @@ public class ExaminationService : IExaminationService
         return examinationModel;
     }
 
-    private Examination parseFromModel(ExaminationDomainModel examinationModel) 
+    private Examination parseFromModel(ExaminationDomainModel examinationModel)
     {
-        Examination examination = new Examination 
+        Examination examination = new Examination
         {
             Id = examinationModel.Id,
             StartTime = examinationModel.StartTime,
@@ -86,9 +86,9 @@ public class ExaminationService : IExaminationService
             PatientId = examinationModel.PatientId,
             RoomId = examinationModel.RoomId
         };
-        if (examination.Anamnesis != null) 
+        if (examination.Anamnesis != null)
         {
-            examination.Anamnesis = new Anamnesis 
+            examination.Anamnesis = new Anamnesis
             {
                 Id = examinationModel.Anamnesis.Id,
                 Description = examinationModel.Anamnesis.Description,
@@ -103,35 +103,35 @@ public class ExaminationService : IExaminationService
         IEnumerable<Examination> data = await _examinationRepository.GetAll();
         if (data == null)
             return new List<ExaminationDomainModel>();
-        
+
         List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
         foreach (Examination item in data)
-        {           
+        {
             results.Add(parseToModel(item));
         }
 
         return results;
     }
-    
+
     public async Task<IEnumerable<ExaminationDomainModel>> ReadAll()
     {
         IEnumerable<ExaminationDomainModel> examinations = await GetAll();
         List<ExaminationDomainModel> result = new List<ExaminationDomainModel>();
         foreach (ExaminationDomainModel item in examinations)
-        {           
+        {
             if (!item.IsDeleted) result.Add(item);
         }
         return result;
     }
 
-    public async Task<IEnumerable<ExaminationDomainModel>> GetAllForPatient(decimal id) 
+    public async Task<IEnumerable<ExaminationDomainModel>> GetAllForPatient(decimal id)
     {
         IEnumerable<Examination> data = await _examinationRepository.GetAllByPatientId(id);
         if (data == null)
             throw new DataIsNullException();
 
         List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
-        foreach (Examination item in data) 
+        foreach (Examination item in data)
         {
             results.Add(parseToModel(item));
         }
@@ -160,8 +160,8 @@ public class ExaminationService : IExaminationService
             throw new DataIsNullException();
         Examination examination = await _examinationRepository.GetExamination(examinationModel.Id);
         double daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
-      
-        if(daysUntilExamination > 1 || !isPatient) 
+
+        if (daysUntilExamination > 1 || !isPatient)
         {
             examination.IsDeleted = true;
             _ = _examinationRepository.Update(examination);
@@ -176,10 +176,10 @@ public class ExaminationService : IExaminationService
                 _anamnesisRepository.Save();
             }
 
-        } 
-        else 
+        }
+        else
         {
-            ExaminationApproval examinationApproval = new ExaminationApproval 
+            ExaminationApproval examinationApproval = new ExaminationApproval
             {
                 State = "created",
                 IsDeleted = false,
@@ -191,9 +191,9 @@ public class ExaminationService : IExaminationService
             _examinationApprovalRepository.Save();
         }
 
-        if (isPatient) 
+        if (isPatient)
         {
-            AntiTroll antiTrollItem = new AntiTroll 
+            AntiTroll antiTrollItem = new AntiTroll
             {
                 PatientId = examination.PatientId,
                 State = "delete",
@@ -237,10 +237,10 @@ public class ExaminationService : IExaminationService
         return false;
     }
 
-    private async Task<bool> IsDoctorOnExaminationAsync(ExaminationDomainModel examinationModel) 
+    private async Task<bool> IsDoctorOnExaminationAsync(ExaminationDomainModel examinationModel)
     {
         IEnumerable<Examination> doctorsExaminations = await _examinationRepository.GetAllByDoctorId(examinationModel.DoctorId);
-        if (doctorsExaminations == null) 
+        if (doctorsExaminations == null)
         {
             return false;
         }
@@ -257,13 +257,13 @@ public class ExaminationService : IExaminationService
         return false;
     }
 
-    private async Task<bool> IsDoctorOnOperationAsync(ExaminationDomainModel examinationModel) 
+    private async Task<bool> IsDoctorOnOperationAsync(ExaminationDomainModel examinationModel)
     {
         IEnumerable<Operation> doctorsOperations = await _operationRepository.GetAllByDoctorId(examinationModel.DoctorId);
-        foreach (Operation operation in doctorsOperations) 
+        foreach (Operation operation in doctorsOperations)
         {
             double difference = (examinationModel.StartTime - operation.StartTime).TotalMinutes;
-            if (difference <= (double) operation.Duration && difference >= -15) 
+            if (difference <= (double)operation.Duration && difference >= -15)
             {
                 return true;
             }
@@ -271,23 +271,23 @@ public class ExaminationService : IExaminationService
         return false;
     }
 
-    private async Task<decimal> GetAvailableRoomId(ExaminationDomainModel examinationModel) 
+    private async Task<decimal> GetAvailableRoomId(ExaminationDomainModel examinationModel)
     {
         IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms("examination");
-        foreach (Room room in rooms) 
+        foreach (Room room in rooms)
         {
             bool isRoomAvailable = true;
             IEnumerable<Examination> examinations = await _examinationRepository.GetAllByRoomId(room.Id);
-            foreach (Examination examination in examinations) 
+            foreach (Examination examination in examinations)
             {
                 double difference = (examinationModel.StartTime - examination.StartTime).TotalMinutes;
-                if (difference <= 15 && difference >= -15) 
+                if (difference <= 15 && difference >= -15)
                 {
                     isRoomAvailable = false;
                     break;
                 }
             }
-            if (isRoomAvailable) 
+            if (isRoomAvailable)
             {
                 return room.Id;
             }
@@ -304,7 +304,7 @@ public class ExaminationService : IExaminationService
 
     public async Task<bool> IsPatientAvailable(ExaminationDomainModel examinationModel)
     {
-        return !(await IsPatientOnExaminationAsync(examinationModel) &&
+        return !(await IsPatientOnExaminationAsync(examinationModel) ||
                  await IsPatientOnOperationAsync(examinationModel));
     }
 
@@ -312,6 +312,8 @@ public class ExaminationService : IExaminationService
     {
         if (isPatient && await AntiTrollCheck(examinationModel.PatientId, true))
             throw new AntiTrollException();
+        if (examinationModel.StartTime <= DateTime.Now)
+            throw new DateInPastExeption();
         bool doctorAvailable = await IsDoctorAvailable(examinationModel);
         bool patientAvailable = await IsPatientAvailable(examinationModel);
         if (!doctorAvailable)
@@ -323,20 +325,13 @@ public class ExaminationService : IExaminationService
         if (roomId == -1)
             throw new NoFreeRoomsException();
 
-        int year = examinationModel.StartTime.Year;
-        int month = examinationModel.StartTime.Month;
-        int day = examinationModel.StartTime.Day;
-        int hour = examinationModel.StartTime.Hour;
-        int minute = examinationModel.StartTime.Minute;
-        int second = 0;
-        DateTime startTime = new DateTime(year, month, day, hour, minute, second);
 
         Examination newExamination = new Examination 
         {
             PatientId = examinationModel.PatientId,
             RoomId = roomId,
             DoctorId = examinationModel.DoctorId,
-            StartTime = startTime,
+            StartTime = removeSeconds(examinationModel.StartTime),
             IsDeleted = false,
             Anamnesis = null,
             //ExaminationApproval = null
@@ -361,6 +356,17 @@ public class ExaminationService : IExaminationService
         return examinationModel;
     }
 
+    private DateTime removeSeconds(DateTime dateTime)
+    {
+        int year = dateTime.Year;
+        int month = dateTime.Month;
+        int day = dateTime.Day;
+        int hour = dateTime.Hour;
+        int minute = dateTime.Minute;
+        int second = 0;
+        return new DateTime(year, month, day, hour, minute, second);
+    }
+
     public async Task<ExaminationDomainModel> Update(ExaminationDomainModel examinationModel, bool isPatient) 
     {
         // One patient can't change other patient's appointment
@@ -369,7 +375,8 @@ public class ExaminationService : IExaminationService
             throw new AntiTrollException();
         Examination examination = await _examinationRepository.GetExaminationWithoutAnamnesis(examinationModel.Id);
         double daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
-
+        if (examinationModel.StartTime <= DateTime.Now)
+            throw new DateInPastExeption();
         bool doctorAvailable = await IsDoctorAvailable(examinationModel);
         bool patientAvailable = await IsPatientAvailable(examinationModel);
         if (!doctorAvailable)
@@ -381,13 +388,15 @@ public class ExaminationService : IExaminationService
         if (roomId == -1)
             throw new NoFreeRoomsException();
 
+
+
         if (daysUntilExamination > 1 || !isPatient) 
         { 
             
             examination.RoomId = roomId;
             examination.DoctorId = examinationModel.DoctorId;
             examination.PatientId = examinationModel.PatientId;
-            examination.StartTime = examinationModel.StartTime;
+            examination.StartTime = removeSeconds(examinationModel.StartTime);
             //update
             _ = _examinationRepository.Update(examination);
             _examinationRepository.Save();

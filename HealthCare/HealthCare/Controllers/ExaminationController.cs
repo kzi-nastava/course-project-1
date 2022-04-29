@@ -63,7 +63,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                ExaminationDomainModel deletedExaminationModel = await _examinationService.Delete(examinationModel, true);
+                ExaminationDomainModel deletedExaminationModel = await _examinationService.Delete(examinationModel, isPatient);
                 return Ok(deletedExaminationModel);
             }
             catch (Exception exception)
@@ -76,8 +76,15 @@ namespace HealthCareAPI.Controllers
         [Route("create")]
         public async Task<ActionResult<ExaminationDomainModel>> CreateExamination([FromBody] ExaminationDomainModel examinationModel, bool isPatient) 
         {
-            ExaminationDomainModel createdExaminationModel = await _examinationService.Create(examinationModel, isPatient);
-            return Ok(createdExaminationModel);
+            try
+            {
+                ExaminationDomainModel createdExaminationModel = await _examinationService.Create(examinationModel, isPatient);
+                return Ok(createdExaminationModel);
+            }
+            catch(Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
         [HttpPut]

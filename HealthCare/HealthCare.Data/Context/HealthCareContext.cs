@@ -43,7 +43,6 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<Anamnesis>()
                 .HasOne(x => x.Examination)
                 .WithOne(x => x.Anamnesis)
-                .HasForeignKey<Examination>(x => new { x.Id })
                 .IsRequired();
             modelBuilder.Entity<Examination>()
                 .HasOne(x => x.Anamnesis)
@@ -53,10 +52,12 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<Anamnesis>().HasKey(x => x.Id);
             modelBuilder.Entity<Examination>().HasKey(x => x.Id);
             modelBuilder.Entity<ExaminationApproval>().HasKey(x => x.Id);
-            modelBuilder.Entity<Inventory>().HasKey(x => new {x.RoomId, x.RquipmentId });
+            modelBuilder.Entity<Inventory>().HasKey(x => new {x.RoomId, x.EquipmentId });
             modelBuilder.Entity<Transfer>().HasKey(x => new {x.Id});
             modelBuilder.Entity<Operation>().HasKey(x => new {x.Id});
             modelBuilder.Entity<MedicalRecord>().HasKey(x => x.PatientId);
+            modelBuilder.Entity<EquipmentType>().HasKey(x => x.Id);
+            modelBuilder.Entity<Equipment>().HasKey(x => x.Id);
         }
     }
 }

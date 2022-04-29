@@ -40,16 +40,7 @@ public class OperationService : IOperationService
         OperationDomainModel operationModel;
         foreach (Operation item in data)
         {
-            operationModel = new OperationDomainModel
-            {
-                IsDeleted = item.IsDeleted,
-                PatientId = item.PatientId,
-                DoctorId = item.DoctorId,
-                Duration = item.Duration,
-                StartTime = item.StartTime,
-                RoomId = item.RoomId
-            };
-            results.Add(operationModel);
+            results.Add(parseToModel(item));
         }
 
         return results;
@@ -173,6 +164,17 @@ public class OperationService : IOperationService
                  await IsPatientOnExaminationAsync(operationModel));
     }
 
+    private DateTime removeSeconds(DateTime dateTime)
+    {
+        int year = dateTime.Year;
+        int month = dateTime.Month;
+        int day = dateTime.Day;
+        int hour = dateTime.Hour;
+        int minute = dateTime.Minute;
+        int second = 0;
+        return new DateTime(year, month, day, hour, minute, second);
+    }
+
 
     public async Task<OperationDomainModel> Create(OperationDomainModel operationModel)
     {
@@ -192,7 +194,7 @@ public class OperationService : IOperationService
             PatientId = operationModel.PatientId,
             RoomId = roomId,
             DoctorId = operationModel.DoctorId,
-            StartTime = operationModel.StartTime,
+            StartTime = removeSeconds(operationModel.StartTime),
             Duration = operationModel.Duration,
             IsDeleted = false
         };
@@ -225,7 +227,7 @@ public class OperationService : IOperationService
         operation.PatientId = operationModel.PatientId;
         operation.DoctorId = operationModel.DoctorId;
         operation.Duration = operationModel.Duration;
-        operation.StartTime = operationModel.StartTime;
+        operation.StartTime = removeSeconds(operationModel.StartTime);
 
         _ = _operationRepository.Update(operation);
         _operationRepository.Save();

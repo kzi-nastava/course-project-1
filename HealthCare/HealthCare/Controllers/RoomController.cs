@@ -42,7 +42,7 @@ namespace HealthCareAPI.Controllers
 
         // https://localhost:7195/api/room/update
         [HttpPut]
-        [Route("update/{id}")]
+        [Route("update")]
         public async Task<ActionResult<RoomDomainModel>> UpdateRoom([FromBody] RoomDomainModel roomModel)
         {
             try
