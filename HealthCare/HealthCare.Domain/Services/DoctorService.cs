@@ -20,7 +20,7 @@ public class DoctorService : IDoctorService
     {
         IEnumerable<Doctor> data = await _doctorRepository.GetAll();
         if (data == null)
-            return null;
+            throw new DataIsNullException();
 
         List<DoctorDomainModel> results = new List<DoctorDomainModel>();
         DoctorDomainModel doctorModel;

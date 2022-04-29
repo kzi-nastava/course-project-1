@@ -18,7 +18,7 @@ public class EquipmentTypeService : IEquipmentTypeService
     {
         IEnumerable<EquipmentType> equipmentTypes = await _equipmentTypeRepository.GetAll();
         if (equipmentTypes == null)
-            return null;
+            throw new DataIsNullException();
 
         List<EquipmentTypeDomainModel> results = new List<EquipmentTypeDomainModel>();
         EquipmentTypeDomainModel equipmentTypeModel;

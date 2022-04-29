@@ -11,7 +11,7 @@ public class AnamnesisService : IAnamnesisService
     private IAnamnesisRepository _anamnesisRepository;
     private IExaminationRepository _examinationRepository;
 
-    public AnamnesisService(IAnamnesisRepository anamnesisRepository, IExaminationRepository examinationRepository) 
+    public AnamnesisService(IAnamnesisRepository anamnesisRepository, IExaminationRepository examinationRepository)
     {
         _anamnesisRepository = anamnesisRepository;
         _examinationRepository = examinationRepository;
@@ -23,7 +23,7 @@ public class AnamnesisService : IAnamnesisService
     {
         IEnumerable<Anamnesis> data = await _anamnesisRepository.GetAll();
         if (data == null)
-            return null;
+            throw new DataIsNullException();
 
         List<AnamnesisDomainModel> results = new List<AnamnesisDomainModel>();
         AnamnesisDomainModel anamnesisModel;
@@ -41,7 +41,7 @@ public class AnamnesisService : IAnamnesisService
 
         return results;
     }
-    
+
     public async Task<IEnumerable<AnamnesisDomainModel>> ReadAll()
     {
         IEnumerable<AnamnesisDomainModel> anamnesis = await GetAll();
@@ -50,6 +50,7 @@ public class AnamnesisService : IAnamnesisService
         {
             if (!item.IsDeleted) result.Add(item);
         }
+
         return result;
     }
 

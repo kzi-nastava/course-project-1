@@ -31,7 +31,7 @@ public class SecretaryService : ISecretaryService
     {
         IEnumerable<Secretary> data = await _secretaryRepository.GetAll();
         if (data == null)
-            return null;
+            throw new DataIsNullException();
 
         List<SecretaryDomainModel> results = new List<SecretaryDomainModel>();
         SecretaryDomainModel secretaryModel;

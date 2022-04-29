@@ -221,7 +221,7 @@ public class PatientService : IPatientService
     {
         IEnumerable<Patient> data = await _patientRepository.GetAll();
         if (data == null)
-            return null;
+            throw new DataIsNullException();
 
         List<PatientDomainModel> results = new List<PatientDomainModel>();
         foreach (Patient item in data)
@@ -372,38 +372,36 @@ public class PatientService : IPatientService
     public async Task<PatientDomainModel> GetWithMedicalRecord(decimal id)
     {
         Patient patient = await _patientRepository.GetWithMedicalRecord(id);
+        if (patient == null)
+            throw new DataIsNullException();
 
-        if (patient != null)
+        PatientDomainModel patientModel = new PatientDomainModel
         {
-            PatientDomainModel patientModel = new PatientDomainModel
+            IsDeleted = patient.IsDeleted,
+            BirthDate = patient.BirthDate,
+            BlockedBy = patient.BlockedBy,
+            BlockingCounter = patient.BlockingCounter,
+            Email = patient.Email,
+            Id = patient.Id,
+            Name = patient.Name,
+            Surname = patient.Surname,
+            Phone = patient.Phone
+        };
+
+
+        if (patient.MedicalRecord != null)
+        {
+            patientModel.MedicalRecord = new MedicalRecordDomainModel
             {
-                IsDeleted = patient.IsDeleted,
-                BirthDate = patient.BirthDate,
-                BlockedBy = patient.BlockedBy,
-                BlockingCounter = patient.BlockingCounter,
-                Email = patient.Email,
-                Id = patient.Id,
-                Name = patient.Name,
-                Surname = patient.Surname,
-                Phone = patient.Phone
+                IsDeleted = patient.MedicalRecord.IsDeleted,
+                Allergies = patient.MedicalRecord.Allergies,
+                BedriddenDiseases = patient.MedicalRecord.BedriddenDiseases,
+                Height = patient.MedicalRecord.Height,
+                PatientId = patient.MedicalRecord.PatientId,
+                Weight = patient.MedicalRecord.Weight
             };
+        }
 
-
-            if (patient.MedicalRecord != null)
-            {
-                patientModel.MedicalRecord = new MedicalRecordDomainModel
-                {
-                    IsDeleted = patient.MedicalRecord.IsDeleted,
-                    Allergies = patient.MedicalRecord.Allergies,
-                    BedriddenDiseases = patient.MedicalRecord.BedriddenDiseases,
-                    Height = patient.MedicalRecord.Height,
-                    PatientId = patient.MedicalRecord.PatientId,
-                    Weight = patient.MedicalRecord.Weight
-                };
-            }
-
-            return patientModel;
-        } 
-        return null; 
+        return patientModel;
     }
 }

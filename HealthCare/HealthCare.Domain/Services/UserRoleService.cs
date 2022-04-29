@@ -20,7 +20,7 @@ public class UserRoleService : IUserRoleService
     {
         IEnumerable<UserRole> data = await _userRoleRepository.GetAll();
         if (data == null)
-            return null;
+            throw new DataIsNullException();
 
         List<UserRoleDomainModel> results = new List<UserRoleDomainModel>();
         UserRoleDomainModel userRoleModel;

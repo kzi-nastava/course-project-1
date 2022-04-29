@@ -29,7 +29,7 @@ public class MedicalRecordService : IMedicalRecordService
     {
         IEnumerable<MedicalRecord> data = await _medicalRecordRepository.GetAll();
         if (data == null)
-            return null;
+            throw new DataIsNullException();
 
         List<MedicalRecordDomainModel> results = new List<MedicalRecordDomainModel>();
         MedicalRecordDomainModel medicalRecordModel;
@@ -54,32 +54,25 @@ public class MedicalRecordService : IMedicalRecordService
     {
         MedicalRecord data =  await _medicalRecordRepository.GetByPatientId(id);
 
-        if (data != null)
+        if (data == null) 
+            throw new DataIsNullException();
+        MedicalRecordDomainModel medicalRecordModel = new MedicalRecordDomainModel
         {
-            MedicalRecordDomainModel medicalRecordModel = new MedicalRecordDomainModel
-            {
-                IsDeleted = data.IsDeleted,
-                Allergies = data.Allergies,
-                BedriddenDiseases = data.BedriddenDiseases,
-                Height = data.Height,
-                PatientId = data.PatientId,
-                Weight = data.Weight
-            };
-            return medicalRecordModel;
-        } 
-        return null; 
+            IsDeleted = data.IsDeleted,
+            Allergies = data.Allergies,
+            BedriddenDiseases = data.BedriddenDiseases,
+            Height = data.Height,
+            PatientId = data.PatientId,
+            Weight = data.Weight
+        };
+        return medicalRecordModel;
     }
 
     public async Task<MedicalRecordDomainModel> Update(MedicalRecordDomainModel medicalRecordModel)
     {
         MedicalRecord medicalRecord = _medicalRecordRepository.Update(parseFromModel(medicalRecordModel));
         _medicalRecordRepository.Save();
-
-        if (medicalRecord != null)
-        {
-            return parseToModel(medicalRecord);
-        } 
-        return null;
+        return parseToModel(medicalRecord);
     }
 
     private MedicalRecordDomainModel parseToModel(MedicalRecord medicalRecord)

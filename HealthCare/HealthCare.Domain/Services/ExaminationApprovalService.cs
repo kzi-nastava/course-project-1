@@ -23,7 +23,7 @@ public class ExaminationApprovalService : IExaminationApprovalService
     {
         IEnumerable<ExaminationApproval> data = await _examinationApprovalRepository.GetAll();
         if (data == null)
-            return null;
+            throw new DataIsNullException();
 
         List<ExaminationApprovalDomainModel> results = new List<ExaminationApprovalDomainModel>();
         ExaminationApprovalDomainModel examinationApprovalModel;
@@ -55,7 +55,8 @@ public class ExaminationApprovalService : IExaminationApprovalService
 
     public async Task<ExaminationApprovalDomainModel> Reject(ExaminationApprovalDomainModel examinationApprovalModel)
     {
-        if (!examinationApprovalModel.State.Equals("created")) return null;
+        if (!examinationApprovalModel.State.Equals("created")) 
+            throw new AlreadyHandledException();
         ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationApprovalModel.Id);
         examinationApproval.State = "rejected";
         _ = _examinationApprovalRepository.Update(examinationApproval);
@@ -66,7 +67,8 @@ public class ExaminationApprovalService : IExaminationApprovalService
 
     public async Task<ExaminationApprovalDomainModel> Approve(ExaminationApprovalDomainModel examinationApprovalModel)
     {
-        if (!examinationApprovalModel.State.Equals("created")) return null;
+        if (!examinationApprovalModel.State.Equals("created"))
+            throw new AlreadyHandledException();
         
         ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationApprovalModel.Id);
         examinationApproval.State = "approved";
