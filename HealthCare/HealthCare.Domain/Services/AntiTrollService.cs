@@ -34,7 +34,7 @@ public class AntiTrollService : IAntiTrollService
     {
         IEnumerable<AntiTroll> data = await _antiTrollRepository.GetAll();
         if (data == null)
-            throw new DataIsNullException();
+            return new List<AntiTrollDomainModel>();
 
         List<AntiTrollDomainModel> results = new List<AntiTrollDomainModel>();
         foreach (AntiTroll item in data) 

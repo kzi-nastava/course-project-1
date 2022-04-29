@@ -30,7 +30,7 @@ public class ManagerService : IManagerService
     {
         IEnumerable<Manager> data = await _managerRepository.GetAll();
         if (data == null)
-            throw new DataIsNullException();
+            return new List<ManagerDomainModel>();
 
         List<ManagerDomainModel> results = new List<ManagerDomainModel>();
         ManagerDomainModel managerModel;

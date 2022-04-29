@@ -21,8 +21,6 @@ public class OperationService : IOperationService
         _examinationRepository = examinationRepository;
     }
 
-    // Async awaits info from database
-    // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<OperationDomainModel>> ReadAll()
     {
         IEnumerable<OperationDomainModel> operations = await GetAll();
@@ -37,7 +35,7 @@ public class OperationService : IOperationService
     {
         IEnumerable<Operation> data = await _operationRepository.GetAll();
         if (data == null)
-            throw new DataIsNullException();
+            return new List<OperationDomainModel>();
         List<OperationDomainModel> results = new List<OperationDomainModel>();
         OperationDomainModel operationModel;
         foreach (Operation item in data)

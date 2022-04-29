@@ -21,9 +21,9 @@ namespace HealthCare.Domain.Services
             _operationRepository = operationRepoaitory;
         }
 
-        public Task<IEnumerable<AppointmentDomainModel>> GetAll()
+        public async Task<IEnumerable<AppointmentDomainModel>> GetAll()
         {
-            throw new NotImplementedException();
+            return new List<AppointmentDomainModel>();
         }
 
         public async Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(decimal id, DateTime date)

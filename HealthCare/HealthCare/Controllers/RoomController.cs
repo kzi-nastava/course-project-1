@@ -45,8 +45,15 @@ namespace HealthCareAPI.Controllers
         [Route("update/{id}")]
         public async Task<ActionResult<RoomDomainModel>> UpdateRoom([FromBody] RoomDomainModel roomModel)
         {
-            RoomDomainModel updatedRoomModel = await _roomService.Update(roomModel);
-            return Ok(updatedRoomModel);
+            try
+            {
+                RoomDomainModel updatedRoomModel = await _roomService.Update(roomModel);
+                return Ok(updatedRoomModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
         // https://localhost:7195/api/room/delete
@@ -54,10 +61,15 @@ namespace HealthCareAPI.Controllers
         [Route("delete/{id}")]
         public async Task<ActionResult<RoomDomainModel>> DeleteRoom(decimal id) 
         {
-            RoomDomainModel deletedRoomModel = await _roomService.Delete(id);
-            return Ok(deletedRoomModel);
+            try
+            {
+                RoomDomainModel deletedRoomModel = await _roomService.Delete(id);
+                return Ok(deletedRoomModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
-
-
     }
 }

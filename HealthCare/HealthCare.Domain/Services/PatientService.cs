@@ -221,7 +221,7 @@ public class PatientService : IPatientService
     {
         IEnumerable<Patient> data = await _patientRepository.GetAll();
         if (data == null)
-            throw new DataIsNullException();
+            return new List<PatientDomainModel>();
 
         List<PatientDomainModel> results = new List<PatientDomainModel>();
         foreach (Patient item in data)

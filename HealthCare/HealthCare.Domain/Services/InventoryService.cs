@@ -18,7 +18,7 @@ public class InventoryService : IInventoryService
     {
         IEnumerable<Inventory> inventories = await _inventoryRepository.GetAll();
         if (inventories == null)
-            throw new DataIsNullException();
+            return new List<InventoryDomainModel>();
 
         List<InventoryDomainModel> results = new List<InventoryDomainModel>();
         InventoryDomainModel inventoryModel;

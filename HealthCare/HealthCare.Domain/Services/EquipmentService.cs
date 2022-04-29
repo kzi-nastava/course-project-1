@@ -25,7 +25,7 @@ public class EquipmentService : IEquipmentService
     {
         IEnumerable<EquipmentDomainModel> equipment = await GetAll();
         List<EquipmentDomainModel> result = new List<EquipmentDomainModel>();
-        foreach (var item in equipment)
+        foreach (EquipmentDomainModel item in equipment)
         {
             if (!item.IsDeleted) result.Add(item);
         }
@@ -36,7 +36,7 @@ public class EquipmentService : IEquipmentService
     {
         IEnumerable<Equipment> equipment = await _equipmentRepository.GetAll();
         if (equipment == null)
-            throw new DataIsNullException();
+            return new List<EquipmentDomainModel>();
 
         List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
         EquipmentDomainModel equipmentModel;

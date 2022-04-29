@@ -18,7 +18,7 @@ public class RoomTypeService : IRoomTypeService
     {
         IEnumerable<RoomType> roomTypes = await _roomTypeRepository.GetAll();
         if (roomTypes == null)
-            throw new DataIsNullException();
+            return new List<RoomTypeDomainModel>();
 
         List<RoomTypeDomainModel> results = new List<RoomTypeDomainModel>();
         RoomTypeDomainModel roomTypeModel;

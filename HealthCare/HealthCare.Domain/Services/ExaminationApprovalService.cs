@@ -23,7 +23,7 @@ public class ExaminationApprovalService : IExaminationApprovalService
     {
         IEnumerable<ExaminationApproval> data = await _examinationApprovalRepository.GetAll();
         if (data == null)
-            throw new DataIsNullException();
+            return new List<ExaminationApprovalDomainModel>();
 
         List<ExaminationApprovalDomainModel> results = new List<ExaminationApprovalDomainModel>();
         ExaminationApprovalDomainModel examinationApprovalModel;

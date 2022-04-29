@@ -102,7 +102,7 @@ public class ExaminationService : IExaminationService
     {
         IEnumerable<Examination> data = await _examinationRepository.GetAll();
         if (data == null)
-            throw new DataIsNullException();
+            return new List<ExaminationDomainModel>();
         
         List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
         foreach (Examination item in data)

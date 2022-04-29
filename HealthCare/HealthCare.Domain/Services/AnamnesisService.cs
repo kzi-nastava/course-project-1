@@ -23,7 +23,7 @@ public class AnamnesisService : IAnamnesisService
     {
         IEnumerable<Anamnesis> data = await _anamnesisRepository.GetAll();
         if (data == null)
-            throw new DataIsNullException();
+            return new List<AnamnesisDomainModel>();
 
         List<AnamnesisDomainModel> results = new List<AnamnesisDomainModel>();
         AnamnesisDomainModel anamnesisModel;

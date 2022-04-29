@@ -48,5 +48,17 @@ namespace HealthCare.Domain.Interfaces
         }
     }
     
+    public class UserNotFoundException : Exception
+    {
+        public UserNotFoundException() : base("User was not found")
+        {
+        }
+    }
     
+    public class UserIsBlockedException : Exception
+    {
+        public UserIsBlockedException() : base("User is blocked")
+        {
+        }
+    }
 }
