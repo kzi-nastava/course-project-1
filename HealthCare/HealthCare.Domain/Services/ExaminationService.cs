@@ -206,7 +206,7 @@ public class ExaminationService : IExaminationService
         return parseToModel(examination);
     }
 
-    private async Task<bool> IsPatientOnExaminationAsync(ExaminationDomainModel examinationModel)
+    private async Task<bool> isPatientOnExamination(ExaminationDomainModel examinationModel)
     {
         IEnumerable<Examination> patientsExaminations = await _examinationRepository.GetAllByPatientId(examinationModel.PatientId);
         foreach (Examination examination in patientsExaminations)
@@ -223,7 +223,7 @@ public class ExaminationService : IExaminationService
         return false;
     }
 
-    private async Task<bool> IsPatientOnOperationAsync(ExaminationDomainModel examinationModel)
+    private async Task<bool> isPatientOnOperation(ExaminationDomainModel examinationModel)
     {
         IEnumerable<Operation> patientsOperations = await _operationRepository.GetAllByPatientId(examinationModel.PatientId);
         foreach (Operation operation in patientsOperations)
@@ -237,7 +237,7 @@ public class ExaminationService : IExaminationService
         return false;
     }
 
-    private async Task<bool> IsDoctorOnExaminationAsync(ExaminationDomainModel examinationModel)
+    private async Task<bool> isDoctorOnExamination(ExaminationDomainModel examinationModel)
     {
         IEnumerable<Examination> doctorsExaminations = await _examinationRepository.GetAllByDoctorId(examinationModel.DoctorId);
         if (doctorsExaminations == null)
@@ -257,7 +257,7 @@ public class ExaminationService : IExaminationService
         return false;
     }
 
-    private async Task<bool> IsDoctorOnOperationAsync(ExaminationDomainModel examinationModel)
+    private async Task<bool> isDoctorOnOperation(ExaminationDomainModel examinationModel)
     {
         IEnumerable<Operation> doctorsOperations = await _operationRepository.GetAllByDoctorId(examinationModel.DoctorId);
         foreach (Operation operation in doctorsOperations)
@@ -271,7 +271,7 @@ public class ExaminationService : IExaminationService
         return false;
     }
 
-    private async Task<decimal> GetAvailableRoomId(ExaminationDomainModel examinationModel)
+    private async Task<decimal> getAvailableRoomId(ExaminationDomainModel examinationModel)
     {
         IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms("examination");
         foreach (Room room in rooms)
@@ -296,16 +296,16 @@ public class ExaminationService : IExaminationService
     }
 
 
-    public async Task<bool> IsDoctorAvailable(ExaminationDomainModel examinationModel)
+    private async Task<bool> isDoctorAvailable(ExaminationDomainModel examinationModel)
     {
-        return !(await IsDoctorOnExaminationAsync(examinationModel) ||
-                 await IsDoctorOnOperationAsync(examinationModel));
+        return !(await isDoctorOnExamination(examinationModel) ||
+                 await isDoctorOnOperation(examinationModel));
     }
 
-    public async Task<bool> IsPatientAvailable(ExaminationDomainModel examinationModel)
+    private async Task<bool> isPatientAvailable(ExaminationDomainModel examinationModel)
     {
-        return !(await IsPatientOnExaminationAsync(examinationModel) ||
-                 await IsPatientOnOperationAsync(examinationModel));
+        return !(await isPatientOnExamination(examinationModel) ||
+                 await isPatientOnOperation(examinationModel));
     }
 
     public async Task<ExaminationDomainModel> Create(ExaminationDomainModel examinationModel, bool isPatient)
@@ -314,14 +314,14 @@ public class ExaminationService : IExaminationService
             throw new AntiTrollException();
         if (examinationModel.StartTime <= DateTime.Now)
             throw new DateInPastExeption();
-        bool doctorAvailable = await IsDoctorAvailable(examinationModel);
-        bool patientAvailable = await IsPatientAvailable(examinationModel);
+        bool doctorAvailable = await isDoctorAvailable(examinationModel);
+        bool patientAvailable = await isPatientAvailable(examinationModel);
         if (!doctorAvailable)
             throw new DoctorNotAvailableException();
         if (!patientAvailable)
             throw new PatientNotAvailableException();
 
-        decimal roomId = await GetAvailableRoomId(examinationModel);
+        decimal roomId = await getAvailableRoomId(examinationModel);
         if (roomId == -1)
             throw new NoFreeRoomsException();
 
@@ -377,14 +377,14 @@ public class ExaminationService : IExaminationService
         double daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
         if (examinationModel.StartTime <= DateTime.Now)
             throw new DateInPastExeption();
-        bool doctorAvailable = await IsDoctorAvailable(examinationModel);
-        bool patientAvailable = await IsPatientAvailable(examinationModel);
+        bool doctorAvailable = await isDoctorAvailable(examinationModel);
+        bool patientAvailable = await isPatientAvailable(examinationModel);
         if (!doctorAvailable)
             throw new DoctorNotAvailableException();
         if (!patientAvailable)
             throw new PatientNotAvailableException();
 
-        decimal roomId = await GetAvailableRoomId(examinationModel);
+        decimal roomId = await getAvailableRoomId(examinationModel);
         if (roomId == -1)
             throw new NoFreeRoomsException();
 

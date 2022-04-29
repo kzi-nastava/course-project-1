@@ -86,7 +86,7 @@ public class OperationService : IOperationService
         return -1;
     }
 
-    private async Task<bool> IsPatientOnExaminationAsync(OperationDomainModel operationModel)
+    private async Task<bool> isPatientOnExamination(OperationDomainModel operationModel)
     {
         IEnumerable<Examination> patientsExaminations = await _examinationRepository.GetAllByPatientId(operationModel.PatientId);
         foreach (Examination examination in patientsExaminations)
@@ -100,7 +100,7 @@ public class OperationService : IOperationService
         return false;
     }
 
-    private async Task<bool> IsPatientOnOperationAsync(OperationDomainModel operationModel)
+    private async Task<bool> isPatientOnOperation(OperationDomainModel operationModel)
     {
         IEnumerable<Operation> patientsOperations = await _operationRepository.GetAllByPatientId(operationModel.PatientId);
         foreach (Operation operation in patientsOperations)
@@ -117,7 +117,7 @@ public class OperationService : IOperationService
         return false;
     }
 
-    private async Task<bool> IsDoctorOnExaminationAsync(OperationDomainModel operationModel)
+    private async Task<bool> isDoctorOnExamination(OperationDomainModel operationModel)
     {
         IEnumerable<Examination> doctorsExaminations = await _examinationRepository.GetAllByDoctorId(operationModel.DoctorId);
         if (doctorsExaminations == null)
@@ -134,7 +134,7 @@ public class OperationService : IOperationService
         return false;
     }
 
-    private async Task<bool> IsDoctorOnOperationAsync(OperationDomainModel operationModel)
+    private async Task<bool> isDoctorOnOperation(OperationDomainModel operationModel)
     {
         IEnumerable<Operation> doctorsOperations = await _operationRepository.GetAllByDoctorId(operationModel.DoctorId);
         foreach (Operation operation in doctorsOperations)
@@ -152,16 +152,16 @@ public class OperationService : IOperationService
         return false;
     }
 
-    public async Task<bool> IsDoctorAvailable(OperationDomainModel operationModel)
+    private async Task<bool> isDoctorAvailable(OperationDomainModel operationModel)
     {
-        return !(await IsDoctorOnOperationAsync(operationModel) ||
-                 await IsDoctorOnExaminationAsync(operationModel));
+        return !(await isDoctorOnOperation(operationModel) ||
+                 await isDoctorOnExamination(operationModel));
     }
 
-    public async Task<bool> IsPatientAvailable(OperationDomainModel operationModel)
+    private async Task<bool> isPatientAvailable(OperationDomainModel operationModel)
     {
-        return !(await IsPatientOnOperationAsync(operationModel) ||
-                 await IsPatientOnExaminationAsync(operationModel));
+        return !(await isPatientOnOperation(operationModel) ||
+                 await isPatientOnExamination(operationModel));
     }
 
     private DateTime removeSeconds(DateTime dateTime)
@@ -175,11 +175,24 @@ public class OperationService : IOperationService
         return new DateTime(year, month, day, hour, minute, second);
     }
 
+    private async Task validateUserInput(OperationDomainModel operationModel)
+    {
+        if (operationModel.StartTime <= DateTime.UtcNow)
+            throw new DateInPastExeption();
+        bool doctorAvailable = await isDoctorAvailable(operationModel);
+        bool patientAvailable = await isPatientAvailable(operationModel);
+        if (!doctorAvailable)
+            throw new DoctorNotAvailableException();
+        if (!patientAvailable)
+            throw new PatientNotAvailableException();
+    }
 
     public async Task<OperationDomainModel> Create(OperationDomainModel operationModel)
     {
-        bool doctorAvailable = await IsDoctorAvailable(operationModel);
-        bool patientAvailable = await IsPatientAvailable(operationModel);
+        if (operationModel.StartTime <= DateTime.UtcNow)
+            throw new DateInPastExeption();
+        bool doctorAvailable = await isDoctorAvailable(operationModel);
+        bool patientAvailable = await isPatientAvailable(operationModel);
         if (!doctorAvailable)
             throw new DoctorNotAvailableException();
         if (!patientAvailable)
@@ -207,18 +220,18 @@ public class OperationService : IOperationService
 
     public async Task<OperationDomainModel> Update(OperationDomainModel operationModel)
     {
-        Operation operation = await _operationRepository.GetById(operationModel.Id);
-
-        if (operation == null)
-            throw new DataIsNullException();
-
-        // to be able to use the validation of availability methods:
-        bool doctorAvailable = await IsDoctorAvailable(operationModel);
-        bool patientAvailable = await IsPatientAvailable(operationModel);
+        if (operationModel.StartTime <= DateTime.UtcNow)
+            throw new DateInPastExeption();
+        bool doctorAvailable = await isDoctorAvailable(operationModel);
+        bool patientAvailable = await isPatientAvailable(operationModel);
         if (!doctorAvailable)
             throw new DoctorNotAvailableException();
         if (!patientAvailable)
             throw new PatientNotAvailableException();
+        Operation operation = await _operationRepository.GetById(operationModel.Id);
+
+        if (operation == null)
+            throw new DataIsNullException();
 
         decimal roomId = await GetAvailableRoomId(operationModel);
         if (roomId == -1)
