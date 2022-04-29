@@ -37,8 +37,5 @@ namespace HealthCare.Data.Entities
         public bool Executed { get; set; }
 
         public Equipment Equipment { get; set; }
-
-        //public Room RoomFrom { get; set; }
-        //public Room RoomTo { get; set; }
     }
 }

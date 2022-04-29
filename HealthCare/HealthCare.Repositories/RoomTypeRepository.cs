@@ -7,15 +7,18 @@ using HealthCare.Data.Context;
 using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace HealthCare.Repositories {
+namespace HealthCare.Repositories 
+{
     public interface IRoomTypeRepository : IRepository<RoomType>
     {
         public Task<RoomType> GetById(decimal roomTypeId);
     }
-    public class RoomTypeRepository : IRoomTypeRepository {
+    public class RoomTypeRepository : IRoomTypeRepository 
+    {
         private readonly HealthCareContext _healthCareContext;
 
-        public RoomTypeRepository(HealthCareContext healthCareContext) {
+        public RoomTypeRepository(HealthCareContext healthCareContext) 
+        {
             _healthCareContext = healthCareContext;
         }
         public async Task<IEnumerable<RoomType>> GetAll() {

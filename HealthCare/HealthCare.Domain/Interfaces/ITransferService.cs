@@ -3,7 +3,8 @@ using HealthCare.Domain.Models;
 
 namespace HealthCare.Domain.Interfaces;
 
-public interface ITransferService : IService<TransferDomainModel> {
+public interface ITransferService : IService<TransferDomainModel> 
+{
     public Task<TransferDomainModel> Add(TransferDomainModel transferModel);
     public Task<IEnumerable<TransferDomainModel>> DoTransfers();
     public Task<IEnumerable<TransferDomainModel>> ReadAll();

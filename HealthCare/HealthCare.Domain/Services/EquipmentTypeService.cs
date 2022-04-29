@@ -5,7 +5,8 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class EquipmentTypeService : IEquipmentTypeService {
+public class EquipmentTypeService : IEquipmentTypeService 
+{
     private IEquipmentTypeRepository _equipmentTypeRepository;
 
     public EquipmentTypeService(IEquipmentTypeRepository equipmentTypeRepository)

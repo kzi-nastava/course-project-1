@@ -10,6 +10,4 @@ public class ExaminationApprovalDomainModel
     public decimal NewExaminationId { get; set; }
     public bool IsDeleted { get; set; }
 
-    //public ExaminationDomainModel Examination { get; set; }
-
 }

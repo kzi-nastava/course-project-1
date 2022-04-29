@@ -1,13 +1,16 @@
+using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class SecretaryService : ISecretaryService{
+public class SecretaryService : ISecretaryService
+{
     private ISecretaryRepository _secretaryRepository;
 
-    public SecretaryService(ISecretaryRepository secretaryRepository) {
+    public SecretaryService(ISecretaryRepository secretaryRepository) 
+    {
         _secretaryRepository = secretaryRepository;
     }
     
@@ -15,9 +18,9 @@ public class SecretaryService : ISecretaryService{
     {
         IEnumerable<SecretaryDomainModel> secretaries = await GetAll();
         List<SecretaryDomainModel> result = new List<SecretaryDomainModel>();
-        foreach (var item in secretaries)
+        foreach (SecretaryDomainModel item in secretaries)
         {
-            if(!item.IsDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     } 
@@ -26,13 +29,13 @@ public class SecretaryService : ISecretaryService{
     // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<SecretaryDomainModel>> GetAll()
     {
-        var data = await _secretaryRepository.GetAll();
+        IEnumerable<Secretary> data = await _secretaryRepository.GetAll();
         if (data == null)
             return null;
 
         List<SecretaryDomainModel> results = new List<SecretaryDomainModel>();
         SecretaryDomainModel secretaryModel;
-        foreach (var item in data)
+        foreach (Secretary item in data)
         {
             secretaryModel = new SecretaryDomainModel
             {
@@ -44,8 +47,10 @@ public class SecretaryService : ISecretaryService{
                 Phone = item.Phone,
                 Surname = item.Surname
             };
-            if (item.Credentials != null) {
-                secretaryModel.Credentials = new CredentialsDomainModel {
+            if (item.Credentials != null) 
+            {
+                secretaryModel.Credentials = new CredentialsDomainModel 
+                {
                     Id = item.Credentials.Id,
                     Username = item.Credentials.Username,
                     Password = item.Credentials.Password,
@@ -56,8 +61,10 @@ public class SecretaryService : ISecretaryService{
                     UserRoleId = item.Credentials.UserRoleId
 
                 };
-                if (item.Credentials.UserRole != null) {
-                    secretaryModel.Credentials.UserRole = new UserRoleDomainModel {
+                if (item.Credentials.UserRole != null) 
+                {
+                    secretaryModel.Credentials.UserRole = new UserRoleDomainModel 
+                    {
                         Id = item.Credentials.UserRole.Id,
                         RoleName = item.Credentials.UserRole.RoleName,
                         IsDeleted = item.Credentials.UserRole.IsDeleted

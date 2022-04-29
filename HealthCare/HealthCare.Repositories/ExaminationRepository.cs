@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using HealthCare.Data.Context;
 using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HealthCare.Repositories
 {
@@ -83,7 +84,7 @@ namespace HealthCare.Repositories
 
         public Examination Update(Examination examination)
         {
-            var updatedEntry = _healthCareContext.Examinations.Attach(examination);
+            EntityEntry<Examination> updatedEntry = _healthCareContext.Examinations.Attach(examination);
             _healthCareContext.Entry(examination).State = EntityState.Modified;
             return updatedEntry.Entity;
         }
@@ -104,17 +105,12 @@ namespace HealthCare.Repositories
 
         public Examination Post(Examination examination)
         {
-            var result = _healthCareContext.Examinations.Add(examination);
+            EntityEntry<Examination> result = _healthCareContext.Examinations.Add(examination);
             return result.Entity;
         }
-
-        
-
         public void Save()
         {
             _healthCareContext.SaveChanges();
         }
-
-
     }
 }

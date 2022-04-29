@@ -8,8 +8,10 @@ using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
 
-namespace HealthCare.Domain.Services {
-    public class CredentialsService : ICredentialsService{
+namespace HealthCare.Domain.Services 
+{
+    public class CredentialsService : ICredentialsService
+    {
 
         private ICredentialsRepository _credentialsRepository;
         private IUserRoleRepository _userRoleRepository;
@@ -18,7 +20,8 @@ namespace HealthCare.Domain.Services {
         private ISecretaryRepository _secretaryRepository;
         private IDoctorRepository _doctorRepository;
 
-        public CredentialsService(ICredentialsRepository credentialsRepository) {
+        public CredentialsService(ICredentialsRepository credentialsRepository) 
+        {
             _credentialsRepository = credentialsRepository;
         }
         
@@ -30,19 +33,19 @@ namespace HealthCare.Domain.Services {
             List<CredentialsDomainModel> result = new List<CredentialsDomainModel>();
             foreach (var item in credentials)
             {
-                if(!item.IsDeleted) result.Add(item);
+                if (!item.IsDeleted) result.Add(item);
             }
             return result;
         }
         public async Task<IEnumerable<CredentialsDomainModel>> GetAll()
         {
-            var data = await _credentialsRepository.GetAll();
+            IEnumerable<Credentials> data = await _credentialsRepository.GetAll();
             if (data == null)
                 return null;
 
             List<CredentialsDomainModel> results = new List<CredentialsDomainModel>();
             CredentialsDomainModel credentialsModel;
-            foreach (var item in data)
+            foreach (Credentials item in data)
             {
                 credentialsModel = new CredentialsDomainModel {
                     Id = item.Id,
@@ -75,17 +78,15 @@ namespace HealthCare.Domain.Services {
             return true;
         }
 
-        // TODO: Fix this method in the future
         public async Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(string username, string password)
         {
-            var data = await ReadAll();
-            foreach (var item in data) {
+            IEnumerable<CredentialsDomainModel> data = await ReadAll();
+            foreach (CredentialsDomainModel item in data) {
                 if (item.Username.Equals(username) && item.Password.Equals(password))
                 {
                     if (item.PatientId != null)
                     {
-                        Boolean blocked = await IsBlocked(item);
-                        if (!blocked) return item;
+                        if (!await IsBlocked(item)) return item;
                         return null;
                     }
                     return item;

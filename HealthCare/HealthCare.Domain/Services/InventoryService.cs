@@ -5,10 +5,12 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class InventoryService : IInventoryService {
+public class InventoryService : IInventoryService 
+{
     private IInventoryRepository _inventoryRepository;
 
-    public InventoryService(IInventoryRepository inventoryRepository) {
+    public InventoryService(IInventoryRepository inventoryRepository) 
+    {
         _inventoryRepository = inventoryRepository;
     }
 
@@ -29,19 +31,24 @@ public class InventoryService : IInventoryService {
                 Amount = item.Amount,
                 EquipmentId = item.RquipmentId,
             };
-            if (item.Equipment != null) {
-                inventoryModel.Equipment = new EquipmentDomainModel {
+            if (item.Equipment != null) 
+            {
+                inventoryModel.Equipment = new EquipmentDomainModel 
+                {
                     Id = item.Equipment.Id,
                     EquipmentTypeId = item.Equipment.equipmentTypeId,
                     IsDeleted = item.Equipment.IsDeleted,
                     Name = item.Equipment.Name,
                 };
                 if (inventoryModel.Equipment.EquipmentType != null)
-                    inventoryModel.Equipment.EquipmentType = new EquipmentTypeDomainModel {
+                {
+                    inventoryModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
+                    {
                         Id = item.Equipment.EquipmentType.Id,
                         Name = item.Equipment.EquipmentType.Name,
                         IsDeleted = item.Equipment.EquipmentType.IsDeleted
                     };
+                }
             }
             results.Add(inventoryModel);
         }
@@ -53,9 +60,9 @@ public class InventoryService : IInventoryService {
     {
         IEnumerable<InventoryDomainModel> inventory = await GetAll();
         List<InventoryDomainModel> result = new List<InventoryDomainModel>();
-        foreach (var item in inventory)
+        foreach (InventoryDomainModel item in inventory)
         {
-            if(!item.IsDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     }    

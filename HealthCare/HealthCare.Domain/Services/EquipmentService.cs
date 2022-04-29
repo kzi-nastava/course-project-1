@@ -5,11 +5,15 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class EquipmentService : IEquipmentService{
+public class EquipmentService : IEquipmentService
+{
     private IEquipmentRepository _equipmentRepository;
     private IInventoryRepository _inventoryRepository;
     private IRoomRepository _roomRepository;
-    public EquipmentService(IEquipmentRepository equipmentRepository, IInventoryRepository inventoryRepository, IRoomRepository roomRepository) {
+    public EquipmentService(IEquipmentRepository equipmentRepository, 
+                            IInventoryRepository inventoryRepository, 
+                            IRoomRepository roomRepository) 
+    {
         _equipmentRepository = equipmentRepository;
         _inventoryRepository = inventoryRepository;
         _roomRepository = roomRepository;
@@ -46,11 +50,15 @@ public class EquipmentService : IEquipmentService{
                 Name = item.Name,
             };
             if (item.EquipmentType != null)
-                equipmentModel.EquipmentType = new EquipmentTypeDomainModel {
+            {
+                equipmentModel.EquipmentType = new EquipmentTypeDomainModel
+                {
                     Id = item.EquipmentType.Id,
                     Name = item.EquipmentType.Name,
                     IsDeleted = item.EquipmentType.IsDeleted,
                 };
+            }
+
             results.Add(equipmentModel);
         }
 
@@ -67,20 +75,18 @@ public class EquipmentService : IEquipmentService{
 
         foreach (Equipment item in equipment)
         {
-            Console.WriteLine(item.EquipmentType.Name);
             // added equipment type to search review
             if(item.Name.ToLower().Contains(substring) || item.EquipmentType.Name.ToLower().Contains(substring))
                 results.Add(parseToModel(item));
         }
-
         return results;
     }
 
     private EquipmentDomainModel parseToModel(Equipment item)
     {
-        EquipmentDomainModel equipmentModel = new EquipmentDomainModel {
+        EquipmentDomainModel equipmentModel = new EquipmentDomainModel 
+        {
             Id = item.Id,
-            //EquipmentType = item.EquipmentType,
             EquipmentTypeId = item.equipmentTypeId,
             Name = item.Name,
             IsDeleted = item.IsDeleted,
@@ -88,17 +94,17 @@ public class EquipmentService : IEquipmentService{
         return equipmentModel;
     }
 
-    private IEnumerable<EquipmentDomainModel> parseToModels(IEnumerable<Equipment> input)
+    private IEnumerable<EquipmentDomainModel> parseToModels(IEnumerable<Equipment> equipments)
     {
         List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
-        foreach (Equipment equipment in input)
+        foreach (Equipment equipment in equipments)
         {
             results.Add(parseToModel(equipment));
         }
         return results;
     }
 
-    public async Task<IEnumerable<EquipmentDomainModel>> Filter(decimal equipmentTypeId, int minAmmount, int maxAmmount, decimal roomTypeId)
+    public async Task<IEnumerable<EquipmentDomainModel>> Filter(decimal equipmentTypeId, int minAmount, int maxAmount, decimal roomTypeId)
     {
         IEnumerable<Equipment> filterResult = await _equipmentRepository.GetAll();
         if (filterResult == null || filterResult.Count() < 1)
@@ -109,12 +115,12 @@ public class EquipmentService : IEquipmentService{
         {
             filterResult = filterResult.Where(e => e.equipmentTypeId == equipmentTypeId);
         }
-            
 
-        if(minAmmount != -1 || maxAmmount != -1)
+
+        if (minAmount != -1 || maxAmount != -1)
         {
             IEnumerable<Inventory> inventories = await _inventoryRepository.GetAll();
-            // group inventories by equipment and sum the ammount
+            // group inventories by equipment and sum the amount
             var summedEquipment = inventories.GroupBy(inventory => inventory.RquipmentId)
                 .Select(group => new
                 {
@@ -122,18 +128,18 @@ public class EquipmentService : IEquipmentService{
                     TotalAmount = group.Sum(i => i.Amount),
                 });
             //filter #2
-            if (minAmmount != -1)
+            if (minAmount != -1)
             {
-                var minFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount > minAmmount)
+                IEnumerable<decimal> minFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount > minAmount)
                     .Select(group => group.EquipmentId);
 
                 filterResult = filterResult.Where(x => minFilteredEquipmentIds.Contains(x.Id));
             }
 
             // filter #3
-            if (maxAmmount != -1)
+            if (maxAmount != -1)
             {
-                var maxFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount < maxAmmount)
+                IEnumerable<decimal> maxFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount < maxAmount)
                     .Select(group => group.EquipmentId);
 
                 filterResult = filterResult.Where(x => maxFilteredEquipmentIds.Contains(x.Id));
@@ -152,7 +158,6 @@ public class EquipmentService : IEquipmentService{
             IEnumerable<decimal> equipmentIds = inventories.Where(i => roomIds.Contains(i.RoomId)).Select(x => x.RquipmentId); 
 
             // return equipment with those ids
-            IEnumerable<Equipment> equipment = await _equipmentRepository.GetAll();
             filterResult = filterResult.Where(x => equipmentIds.Contains(x.Id));
 
         }

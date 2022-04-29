@@ -6,21 +6,27 @@ using System.Threading.Tasks;
 using HealthCare.Data.Context;
 using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace HealthCare.Repositories {
-    public interface IDoctorRepository : IRepository<Doctor> {
+namespace HealthCare.Repositories 
+{
+    public interface IDoctorRepository : IRepository<Doctor> 
+    {
         public Doctor Post(Doctor doctor);
         public Doctor Update(Doctor doctor);
         public Doctor Delete(Doctor doctor);
         public Task<Doctor> GetDoctortById(decimal id);
     }
-    public class DoctorRepository : IDoctorRepository {
+    public class DoctorRepository : IDoctorRepository 
+    {
         private readonly HealthCareContext _healthCareContext;
 
-        public DoctorRepository(HealthCareContext healthCareContext) {
+        public DoctorRepository(HealthCareContext healthCareContext) 
+        {
             _healthCareContext = healthCareContext;
         }
-        public async Task<IEnumerable<Doctor>> GetAll() {
+        public async Task<IEnumerable<Doctor>> GetAll() 
+        {
             return await _healthCareContext.Doctors
                 .Include(x => x.Credentials).ThenInclude(x => x.UserRole)
                 .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
@@ -35,7 +41,7 @@ namespace HealthCare.Repositories {
 
         public Doctor Delete(Doctor doctor)
         {
-            var deletedDoctor = Update(doctor);
+            Doctor deletedDoctor = Update(doctor);
             return deletedDoctor;
         }
 
@@ -46,13 +52,13 @@ namespace HealthCare.Repositories {
 
         public Doctor Post(Doctor doctor)
         {
-            var result = _healthCareContext.Doctors.Add(doctor);
+            EntityEntry<Doctor> result = _healthCareContext.Doctors.Add(doctor);
             return result.Entity;
         }
 
         public Doctor Update(Doctor doctor)
         {
-            var updatedEntry = _healthCareContext.Doctors.Attach(doctor);
+            EntityEntry<Doctor> updatedEntry = _healthCareContext.Doctors.Attach(doctor);
             _healthCareContext.Entry(doctor).State = EntityState.Modified;
             return updatedEntry.Entity;
         }

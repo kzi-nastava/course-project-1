@@ -69,7 +69,8 @@ builder.Services.AddDbContext<HealthCareContext>(x => x.UseSqlServer(connectionS
 builder.Services.AddDbContext<HealthCareContext>(x => x.EnableSensitiveDataLogging());
 
 
-builder.Services.AddCors(options => {
+builder.Services.AddCors(options => 
+{
     options.AddPolicy("CorsPolicy", 
         corsBuilder => corsBuilder.WithOrigins("http://localhost:43022").AllowAnyMethod()
            .AllowAnyHeader()
@@ -87,7 +88,8 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
     
 }
-else {
+else 
+{
     app.UseSwagger();
     //app.UseSwaggerUI();
     app.UseSwaggerUI(options =>

@@ -5,10 +5,12 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class RoomTypeService : IRoomTypeService{
+public class RoomTypeService : IRoomTypeService
+{
     private IRoomTypeRepository _roomTypeRepository;
 
-    public RoomTypeService(IRoomTypeRepository roomTypeRepository) {
+    public RoomTypeService(IRoomTypeRepository roomTypeRepository) 
+    {
         _roomTypeRepository = roomTypeRepository;
     }
 
@@ -38,9 +40,9 @@ public class RoomTypeService : IRoomTypeService{
     {
         IEnumerable<RoomTypeDomainModel> roomTypes = await GetAll();
         List<RoomTypeDomainModel> result = new List<RoomTypeDomainModel>();
-        foreach (var item in roomTypes)
+        foreach (RoomTypeDomainModel item in roomTypes)
         {
-            if(!item.IsDeleted) result.Add(item);
+            if (!item.IsDeleted) result.Add(item);
         }
         return result;
     } 

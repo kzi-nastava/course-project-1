@@ -1,19 +1,21 @@
 using HealthCare.Data.Entities;
 using HealthCare.Domain.Models;
-using HealthCare.Domain.Models.ModelsForCreate;
-using HealthCare.Domain.Models.ModelsForUpdate;
 using HealthCare.Repositories;
 using Microsoft.AspNetCore.Mvc.Razor.TagHelpers;
 using Microsoft.OpenApi.Any;
 
 namespace HealthCare.Domain.Interfaces;
 
-public class OperationService : IOperationService {
+public class OperationService : IOperationService 
+{
     private IOperationRepository _operationRepository;
     private IRoomRepository _roomRepository;
     private IExaminationRepository _examinationRepository;
 
-    public OperationService(IOperationRepository operationRepository, IRoomRepository roomRepository, IExaminationRepository examinationRepository) {
+    public OperationService(IOperationRepository operationRepository, 
+                            IRoomRepository roomRepository, 
+                            IExaminationRepository examinationRepository) 
+    {
         _operationRepository = operationRepository;
         _roomRepository = roomRepository;
         _examinationRepository = examinationRepository;
@@ -25,7 +27,7 @@ public class OperationService : IOperationService {
     {
         IEnumerable<OperationDomainModel> operations = await GetAll();
         List<OperationDomainModel> result = new List<OperationDomainModel>();
-        foreach (var item in operations)
+        foreach (OperationDomainModel item in operations)
         {
             if (!item.IsDeleted) result.Add(item);
         }
@@ -33,24 +35,21 @@ public class OperationService : IOperationService {
     }
     public async Task<IEnumerable<OperationDomainModel>> GetAll()
     {
-        var data = await _operationRepository.GetAll();
+        IEnumerable<Operation> data = await _operationRepository.GetAll();
         if (data == null)
             return null;
 
         List<OperationDomainModel> results = new List<OperationDomainModel>();
         OperationDomainModel operationModel;
-        foreach (var item in data)
+        foreach (Operation item in data)
         {
             operationModel = new OperationDomainModel
             {
                 IsDeleted = item.IsDeleted,
-                //Patient = item.Patient,
                 PatientId = item.PatientId,
-                //Doctor = item.Doctor,
                 DoctorId = item.DoctorId,
                 Duration = item.Duration,
                 StartTime = item.StartTime,
-                //Room = item.Room,
                 RoomId = item.RoomId
             };
             results.Add(operationModel);
@@ -61,13 +60,12 @@ public class OperationService : IOperationService {
 
     public async Task<IEnumerable<OperationDomainModel>> GetAllForDoctor(decimal id)
     {
-        var data = await _operationRepository.GetAllByDoctorId(id);
+        IEnumerable<Operation> data = await _operationRepository.GetAllByDoctorId(id);
         if (data == null)
             return null;
 
         List<OperationDomainModel> results = new List<OperationDomainModel>();
-
-        foreach (var item in data)
+        foreach (Operation item in data)
         {
             results.Add(parseToModel(item));
         }
@@ -76,13 +74,13 @@ public class OperationService : IOperationService {
     }
 
 
-    private async Task<decimal> GetAvailableRoomId(CreateOperationDomainModel operationModel)
+    private async Task<decimal> GetAvailableRoomId(OperationDomainModel operationModel)
     {
-        var rooms = await _roomRepository.GetAllAppointmentRooms("operation");
+        IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms("operation");
         foreach (Room room in rooms)
         {
             bool isRoomAvailable = true;
-            var operations = await _operationRepository.GetAllByRoomId(room.Id);
+            IEnumerable<Operation> operations = await _operationRepository.GetAllByRoomId(room.Id);
             foreach (Operation operation in operations)
             {
                 double difference = (operationModel.StartTime - operation.StartTime).TotalMinutes;
@@ -100,9 +98,9 @@ public class OperationService : IOperationService {
         return -1;
     }
 
-    private async Task<bool> IsPatientOnExaminationAsync(CreateOperationDomainModel operationModel)
+    private async Task<bool> IsPatientOnExaminationAsync(OperationDomainModel operationModel)
     {
-        var patientsExaminations = await _examinationRepository.GetAllByPatientId(operationModel.PatientId);
+        IEnumerable<Examination> patientsExaminations = await _examinationRepository.GetAllByPatientId(operationModel.PatientId);
         foreach (Examination examination in patientsExaminations)
         {
             double difference = (operationModel.StartTime - examination.StartTime).TotalMinutes;
@@ -114,9 +112,9 @@ public class OperationService : IOperationService {
         return false;
     }
 
-    private async Task<bool> IsPatientOnOperationAsync(CreateOperationDomainModel operationModel)
+    private async Task<bool> IsPatientOnOperationAsync(OperationDomainModel operationModel)
     {
-        var patientsOperations = await _operationRepository.GetAllByPatientId(operationModel.PatientId);
+        IEnumerable<Operation> patientsOperations = await _operationRepository.GetAllByPatientId(operationModel.PatientId);
         foreach (Operation operation in patientsOperations)
         {
             if (operation.Id != operationModel.Id)
@@ -131,16 +129,14 @@ public class OperationService : IOperationService {
         return false;
     }
 
-    private async Task<bool> IsDoctorOnExaminationAsync(CreateOperationDomainModel operationModel)
+    private async Task<bool> IsDoctorOnExaminationAsync(OperationDomainModel operationModel)
     {
-        var doctorsExaminations = await _examinationRepository.GetAllByDoctorId(operationModel.DoctorId);
+        IEnumerable<Examination> doctorsExaminations = await _examinationRepository.GetAllByDoctorId(operationModel.DoctorId);
         if (doctorsExaminations == null)
-        {
             return false;
-        }
+        
         foreach (Examination examination in doctorsExaminations)
         {
-
             double difference = (operationModel.StartTime - examination.StartTime).TotalMinutes;
             if (difference <= 15 && difference >= -(double)operationModel.Duration)
             {
@@ -150,9 +146,9 @@ public class OperationService : IOperationService {
         return false;
     }
 
-    private async Task<bool> IsDoctorOnOperationAsync(CreateOperationDomainModel operationModel)
+    private async Task<bool> IsDoctorOnOperationAsync(OperationDomainModel operationModel)
     {
-        var doctorsOperations = await _operationRepository.GetAllByDoctorId(operationModel.DoctorId);
+        IEnumerable<Operation> doctorsOperations = await _operationRepository.GetAllByDoctorId(operationModel.DoctorId);
         foreach (Operation operation in doctorsOperations)
         {
             if (operation.Id != operationModel.Id)
@@ -168,54 +164,30 @@ public class OperationService : IOperationService {
         return false;
     }
 
-    public async Task<bool> IsDoctorAvailable(CreateOperationDomainModel operationModel)
+    public async Task<bool> IsDoctorAvailable(OperationDomainModel operationModel)
     {
-        bool isDoctorAvailable = true;
-        if (await IsDoctorOnExaminationAsync(operationModel))
-            isDoctorAvailable = false;
-        if (await IsDoctorOnOperationAsync(operationModel))
-            isDoctorAvailable = false;
-
-        if (!isDoctorAvailable)
-        {
-            //TODO: Think about the return value if doctor is not available
-            return false;
-        }
-
-        return true;
+        return !(await IsDoctorOnOperationAsync(operationModel) ||
+                 await IsDoctorOnExaminationAsync(operationModel));
     }
 
-    public async Task<bool> IsPatientAvailable(CreateOperationDomainModel operationModel)
+    public async Task<bool> IsPatientAvailable(OperationDomainModel operationModel)
     {
-        bool isPatientAvailable = true;
-        if (await IsPatientOnExaminationAsync(operationModel))
-            isPatientAvailable = false;
-        if (await IsPatientOnOperationAsync(operationModel))
-            isPatientAvailable = false;
-
-        if (!isPatientAvailable)
-        {
-            return false;
-        }
-
-        return true;
+        return !(await IsPatientOnOperationAsync(operationModel) ||
+                 await IsPatientOnExaminationAsync(operationModel));
     }
 
 
-    public async Task<CreateOperationDomainModel> Create(CreateOperationDomainModel operationModel)
+    public async Task<OperationDomainModel> Create(OperationDomainModel operationModel)
     {
-
         bool doctorAvailable = await IsDoctorAvailable(operationModel);
         bool patientAvailable = await IsPatientAvailable(operationModel);
         if (!doctorAvailable || !patientAvailable)
-            //TODO: Think about the return value if doctor is not available
+            //TODO: throw exception 
             return null;
 
         decimal roomId = await GetAvailableRoomId(operationModel);
         if (roomId == -1)
-        {
             return null;
-        }
 
         Operation newOperation = new Operation
         {
@@ -233,41 +205,30 @@ public class OperationService : IOperationService {
         return operationModel;
     }
 
-    public async Task<UpdateOperationDomainModel> Update(UpdateOperationDomainModel operationModel)
+    public async Task<OperationDomainModel> Update(OperationDomainModel operationModel)
     {
-        var operation = await _operationRepository.GetById(operationModel.OldOperationId);
+        Operation operation = await _operationRepository.GetById(operationModel.Id);
 
         if (operation == null)
-        {
             return null;
-        }
 
         // to be able to use the validation of availability methods:
-        CreateOperationDomainModel createOperationDomainModel = new CreateOperationDomainModel
-        {
-            Id = operationModel.OldOperationId,
-            DoctorId = operationModel.NewDoctorId,
-            PatientId = operationModel.NewPatientId,
-            StartTime = operationModel.NewStartTime,
-            Duration = operationModel.NewDuration
-        };
-
-        bool doctorAvailable = await IsDoctorAvailable(createOperationDomainModel);
-        bool patientAvailable = await IsPatientAvailable(createOperationDomainModel);
+        bool doctorAvailable = await IsDoctorAvailable(operationModel);
+        bool patientAvailable = await IsPatientAvailable(operationModel);
         if (!doctorAvailable || !patientAvailable)
-            //TODO: Think about the return value if doctor is not available
+            //TODO: throw exception 
             return null;
 
-        decimal roomId = await GetAvailableRoomId(createOperationDomainModel);
+        decimal roomId = await GetAvailableRoomId(operationModel);
         if (roomId == -1)
         {
             return null;
         }
 
-        operation.PatientId = operationModel.NewPatientId;
-        operation.DoctorId = operationModel.NewDoctorId;
-        operation.Duration = operationModel.NewDuration;
-        operation.StartTime = operationModel.NewStartTime;
+        operation.PatientId = operationModel.PatientId;
+        operation.DoctorId = operationModel.DoctorId;
+        operation.Duration = operationModel.Duration;
+        operation.StartTime = operationModel.StartTime;
 
         _ = _operationRepository.Update(operation);
         _operationRepository.Save();
@@ -275,15 +236,13 @@ public class OperationService : IOperationService {
         return operationModel;
     }
 
-    public async Task<OperationDomainModel> Delete(decimal id)
+    public async Task<OperationDomainModel> Delete(OperationDomainModel operationModel)
     {
-        var operation = await _operationRepository.GetById(id);
+        Operation operation = await _operationRepository.GetById(operationModel.Id);
 
         if (operation == null)
-        {
             return null;
-        }
-
+        
         // logical delete
         operation.IsDeleted = true;
         _ = _operationRepository.Update(operation);
@@ -294,7 +253,7 @@ public class OperationService : IOperationService {
 
     private OperationDomainModel parseToModel(Operation operation)
     {
-        OperationDomainModel examinationModel = new OperationDomainModel
+        OperationDomainModel operationModel = new OperationDomainModel
         {
             Id = operation.Id,
             StartTime = operation.StartTime,
@@ -305,7 +264,7 @@ public class OperationService : IOperationService {
             IsDeleted = operation.IsDeleted
         };
 
-        return examinationModel;
+        return operationModel;
     }
 
 }

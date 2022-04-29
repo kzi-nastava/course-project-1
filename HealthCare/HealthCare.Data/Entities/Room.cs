@@ -24,8 +24,6 @@ namespace HealthCare.Data.Entities
         public bool IsDeleted { get; set; }
 
         public List<Inventory> Inventories { get; set; }
-        //public List<Transfer> TransfersFrom { get; set; }
-        //public List<Transfer> TransfersTo { get; set; }
         public RoomType RoomType { get; set; }
         public List<Operation> Operations { get; set; }
 

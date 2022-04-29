@@ -16,5 +16,4 @@ public class MedicalRecordDomainModel
 
     public bool IsDeleted { get; set; }
 
-    //public Patient Patient { get; set; }
 }

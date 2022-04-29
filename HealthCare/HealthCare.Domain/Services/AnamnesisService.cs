@@ -2,7 +2,6 @@ using System.Data;
 using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
-using HealthCare.Domain.Models.ModelsForCreate;
 using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
@@ -12,7 +11,8 @@ public class AnamnesisService : IAnamnesisService
     private IAnamnesisRepository _anamnesisRepository;
     private IExaminationRepository _examinationRepository;
 
-    public AnamnesisService(IAnamnesisRepository anamnesisRepository, IExaminationRepository examinationRepository) {
+    public AnamnesisService(IAnamnesisRepository anamnesisRepository, IExaminationRepository examinationRepository) 
+    {
         _anamnesisRepository = anamnesisRepository;
         _examinationRepository = examinationRepository;
     }
@@ -21,13 +21,13 @@ public class AnamnesisService : IAnamnesisService
     // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<AnamnesisDomainModel>> GetAll()
     {
-        var data = await _anamnesisRepository.GetAll();
+        IEnumerable<Anamnesis> data = await _anamnesisRepository.GetAll();
         if (data == null)
             return null;
 
         List<AnamnesisDomainModel> results = new List<AnamnesisDomainModel>();
         AnamnesisDomainModel anamnesisModel;
-        foreach (var item in data)
+        foreach (Anamnesis item in data)
         {
             anamnesisModel = new AnamnesisDomainModel
             {
@@ -46,20 +46,20 @@ public class AnamnesisService : IAnamnesisService
     {
         IEnumerable<AnamnesisDomainModel> anamnesis = await GetAll();
         List<AnamnesisDomainModel> result = new List<AnamnesisDomainModel>();
-        foreach (var item in anamnesis)
+        foreach (AnamnesisDomainModel item in anamnesis)
         {
             if (!item.IsDeleted) result.Add(item);
         }
         return result;
     }
 
-    public async Task<AnamnesisDomainModel> Create(CreateAnamnesisDomainModel createAnamnesisModel)
+    public async Task<AnamnesisDomainModel> Create(AnamnesisDomainModel anamnesisModel)
     {
         Anamnesis anamesis = new Anamnesis
         {
-            ExaminationId = createAnamnesisModel.ExaminationId,
+            ExaminationId = anamnesisModel.ExaminationId,
             IsDeleted = false,
-            Description = createAnamnesisModel.Description
+            Description = anamnesisModel.Description
         };
         _ = _anamnesisRepository.Post(anamesis);
         _anamnesisRepository.Save();
@@ -69,7 +69,7 @@ public class AnamnesisService : IAnamnesisService
 
     private AnamnesisDomainModel parseToModel(Anamnesis anamnesis)
     {
-        AnamnesisDomainModel model = new AnamnesisDomainModel
+        AnamnesisDomainModel anamnesisModel = new AnamnesisDomainModel
         {
             Id = anamnesis.Id,
             Description = anamnesis.Description,
@@ -77,6 +77,6 @@ public class AnamnesisService : IAnamnesisService
             IsDeleted = anamnesis.IsDeleted,
         };
 
-        return model;
+        return anamnesisModel;
     }
 }

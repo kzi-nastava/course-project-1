@@ -28,18 +28,15 @@ namespace HealthCare.Domain.Services
 
         public async Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(decimal id, DateTime date)
         {
-            var examinationData = await _examinationRepository.GetAllByDoctorId(id, date);
-
+            IEnumerable<Examination> examinationData = await _examinationRepository.GetAllByDoctorId(id, date);
             List<AppointmentDomainModel> results = new List<AppointmentDomainModel>();
-
-            foreach (var item in examinationData)
+            foreach (Examination item in examinationData)
             {
                 results.Add(parseToModel(item));
             }
 
-            var operationData = await _operationRepository.GetAllByDoctorId(id, date);
-
-            foreach (var item in operationData)
+            IEnumerable<Operation> operationData = await _operationRepository.GetAllByDoctorId(id, date);
+            foreach (Operation item in operationData)
             {
                 results.Add(parseToModel(item));
             }
@@ -90,7 +87,5 @@ namespace HealthCare.Domain.Services
 
             return appointmentModel;
         }
-
-
     }
 }

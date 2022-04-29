@@ -37,7 +37,5 @@ namespace HealthCare.Data.Entities
         public List<Examination> Examinations { get; set; }
 
         public Credentials Credentials { get; set; }
-
-
     }
 }

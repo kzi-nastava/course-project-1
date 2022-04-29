@@ -5,11 +5,14 @@ using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
 
-public class ExaminationApprovalService : IExaminationApprovalService{
+public class ExaminationApprovalService : IExaminationApprovalService
+{
     private IExaminationApprovalRepository _examinationApprovalRepository;
     private IExaminationRepository _examinationRepository;
 
-    public ExaminationApprovalService(IExaminationApprovalRepository examinationApprovalRepository, IExaminationRepository examinationRepository) {
+    public ExaminationApprovalService(IExaminationApprovalRepository examinationApprovalRepository, 
+                                      IExaminationRepository examinationRepository) 
+    {
         _examinationApprovalRepository = examinationApprovalRepository;
         _examinationRepository = examinationRepository;
     }
@@ -18,13 +21,13 @@ public class ExaminationApprovalService : IExaminationApprovalService{
     // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<ExaminationApprovalDomainModel>> GetAll()
     {
-        var data = await _examinationApprovalRepository.GetAll();
+        IEnumerable<ExaminationApproval> data = await _examinationApprovalRepository.GetAll();
         if (data == null)
             return null;
 
         List<ExaminationApprovalDomainModel> results = new List<ExaminationApprovalDomainModel>();
         ExaminationApprovalDomainModel examinationApprovalModel;
-        foreach (var item in data)
+        foreach (ExaminationApproval item in data)
         {
             examinationApprovalModel = new ExaminationApprovalDomainModel
             {
@@ -34,14 +37,6 @@ public class ExaminationApprovalService : IExaminationApprovalService{
                 NewExaminationId = item.NewExaminationId,
                 OldExaminationId = item.OldExaminationId
             };
-            //if (item.Examination != null)
-            //    examinationApprovalModel.Examination = new ExaminationDomainModel {
-            //        doctorId = item.Examination.doctorId,
-            //        roomId = item.Examination.roomId,
-            //        patientId = item.Examination.patientId,
-            //        StartTime = item.Examination.StartTime,
-            //        IsDeleted = item.Examination.IsDeleted
-            //    };
             results.Add(examinationApprovalModel);
         }
 
@@ -51,11 +46,10 @@ public class ExaminationApprovalService : IExaminationApprovalService{
     {
         IEnumerable<ExaminationApprovalDomainModel> examinationApprovals = await GetAll();
         List<ExaminationApprovalDomainModel> result = new List<ExaminationApprovalDomainModel>();
-        foreach (var item in examinationApprovals)
+        foreach (ExaminationApprovalDomainModel item in examinationApprovals)
         {
             if (!item.IsDeleted) result.Add(item);
         }
-
         return result;
     }
 
@@ -81,14 +75,13 @@ public class ExaminationApprovalService : IExaminationApprovalService{
         examinationApprovalModel.State = "approved";
 
         Examination oldExamination = await _examinationRepository.GetExamination(examinationApprovalModel.OldExaminationId);
-        
         if (examinationApproval.OldExaminationId != examinationApproval.NewExaminationId)
         {
             Examination newExamination = await _examinationRepository.GetExamination(examinationApprovalModel.NewExaminationId);
             newExamination.IsDeleted = false;
             _ = _examinationRepository.Update(newExamination);
         }
-        // Delete request
+        
         oldExamination.IsDeleted = true;
         _ = _examinationRepository.Update(oldExamination);
         _examinationRepository.Save();

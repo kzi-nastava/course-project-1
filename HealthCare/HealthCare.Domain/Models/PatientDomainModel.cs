@@ -27,6 +27,7 @@ public class PatientDomainModel
     public List<ExaminationDomainModel> Examinations { get; set; }
 
     public MedicalRecordDomainModel MedicalRecord { get; set; }
+    
     public CredentialsDomainModel Credentials { get; set; }
 
 }
