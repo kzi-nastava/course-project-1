@@ -2,8 +2,6 @@
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
-using HealthCare.Domain.Models.ModelsForCreate;
-using HealthCare.Domain.Models.ModelsForUpdate;
 
 namespace HealthCareAPI.Controllers {
     [ApiController]
@@ -42,23 +40,23 @@ namespace HealthCareAPI.Controllers {
 
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<OperationDomainModel>> Create([FromBody] CreateOperationDomainModel operationModel) {
+        public async Task<ActionResult<OperationDomainModel>> Create([FromBody] OperationDomainModel operationModel) {
             var createdOperationModel = await _operationService.Create(operationModel);
             return Ok(createdOperationModel);
         }
 
         [HttpPut]
         [Route("update")]
-        public async Task<ActionResult<UpdateOperationDomainModel>>  Update([FromBody] UpdateOperationDomainModel operationModel) {
+        public async Task<ActionResult<OperationDomainModel>>  Update([FromBody] OperationDomainModel operationModel) {
             var updatedOperationModel = await _operationService.Update(operationModel);
             return Ok(updatedOperationModel);
         }
 
         [HttpPut]
         [Route("delete/operationId={id}")]
-        public async Task<ActionResult<OperationDomainModel>> DeleteExamination(decimal id)
+        public async Task<ActionResult<OperationDomainModel>> DeleteExamination([FromBody] OperationDomainModel operationModel)
         {
-            var deletedOperationModel = await _operationService.Delete(id);
+            var deletedOperationModel = await _operationService.Delete(operationModel);
             return Ok(deletedOperationModel);
         }
     }

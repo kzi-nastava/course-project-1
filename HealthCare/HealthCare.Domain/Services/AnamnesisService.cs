@@ -2,7 +2,6 @@ using System.Data;
 using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
-using HealthCare.Domain.Models.ModelsForCreate;
 using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
@@ -53,13 +52,13 @@ public class AnamnesisService : IAnamnesisService
         return result;
     }
 
-    public async Task<AnamnesisDomainModel> Create(CreateAnamnesisDomainModel createAnamnesisModel)
+    public async Task<AnamnesisDomainModel> Create(AnamnesisDomainModel anamnesisModel)
     {
         Anamnesis anamesis = new Anamnesis
         {
-            ExaminationId = createAnamnesisModel.ExaminationId,
+            ExaminationId = anamnesisModel.ExaminationId,
             IsDeleted = false,
-            Description = createAnamnesisModel.Description
+            Description = anamnesisModel.Description
         };
         _ = _anamnesisRepository.Post(anamesis);
         _anamnesisRepository.Save();

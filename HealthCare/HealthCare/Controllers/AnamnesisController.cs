@@ -1,7 +1,6 @@
 ﻿using System.Diagnostics.Eventing.Reader;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
-using HealthCare.Domain.Models.ModelsForCreate;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareAPI.Controllers {
@@ -23,9 +22,9 @@ namespace HealthCareAPI.Controllers {
 
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<AnamnesisDomainModel>> Create([FromBody] CreateAnamnesisDomainModel model)
+        public async Task<ActionResult<AnamnesisDomainModel>> Create([FromBody] AnamnesisDomainModel anamnesisModel)
         {
-            AnamnesisDomainModel domainModel = await _anamnesisService.Create(model);
+            AnamnesisDomainModel domainModel = await _anamnesisService.Create(anamnesisModel);
             return Ok(domainModel);
         }
         

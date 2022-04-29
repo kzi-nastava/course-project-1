@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics.Eventing.Reader;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
-using HealthCare.Domain.Models.ModelsForCreate;
-using HealthCare.Domain.Models.ModelsForUpdate;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,7 +39,7 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/patient/create
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<CreatePatientDomainModel>> CreatePatient([FromBody] CreatePatientDomainModel patientModel)
+        public async Task<ActionResult<PatientDomainModel>> CreatePatient([FromBody] PatientDomainModel patientModel)
         {
             var insertedPatientModel = await _patientService.Add(patientModel);
             return Ok(insertedPatientModel);
@@ -50,9 +48,9 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/patient/update
         [HttpPut]
         [Route("update/{id}")]
-        public async Task<ActionResult<PatientDomainModel>> UpdatePatient(decimal id, UpdatePatientDomainModel patientModel)
+        public async Task<ActionResult<PatientDomainModel>> UpdatePatient(PatientDomainModel patientModel)
         {
-            var updatedPatientModel = await _patientService.Update(patientModel, id);
+            var updatedPatientModel = await _patientService.Update(patientModel);
             return Ok(updatedPatientModel);
         }
         

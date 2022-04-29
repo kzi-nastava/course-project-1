@@ -2,8 +2,6 @@ using System.Collections;
 using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
-using HealthCare.Domain.Models.ModelsForCreate;
-using HealthCare.Domain.Models.ModelsForUpdate;
 using HealthCare.Repositories;
 using Microsoft.AspNetCore.JsonPatch;
 
@@ -93,8 +91,8 @@ public class PatientService : IPatientService {
             foreach (var operation in item.Operations) {
                 OperationDomainModel operationDomainModel = new OperationDomainModel {
                     DoctorId = operation.DoctorId,
-                    RoomId = operation.DoctorId,
-                    PatientId = operation.DoctorId,
+                    RoomId = operation.RoomId,
+                    PatientId = operation.PatientId,
                     Duration = operation.Duration,
                     IsDeleted = operation.IsDeleted
                 };
@@ -177,8 +175,8 @@ public class PatientService : IPatientService {
             foreach (var operation in item.Operations) {
                 Operation operationDomainModel = new Operation {
                     DoctorId = operation.DoctorId,
-                    RoomId = operation.DoctorId,
-                    PatientId = operation.DoctorId,
+                    RoomId = operation.RoomId,
+                    PatientId = operation.PatientId,
                     Duration = operation.Duration,
                     IsDeleted = operation.IsDeleted
                 };
@@ -242,7 +240,7 @@ public class PatientService : IPatientService {
         return parseToModel(patient);
     }
 
-    public async Task<CreatePatientDomainModel> Add(CreatePatientDomainModel patientModel)
+    public async Task<PatientDomainModel> Add(PatientDomainModel patientModel)
     {
         Patient newPatient = new Patient();
         newPatient.BlockedBy = null;
@@ -286,22 +284,22 @@ public class PatientService : IPatientService {
         return patientModel;
     }
 
-    public async Task<PatientDomainModel> Update(UpdatePatientDomainModel patientModel, decimal id)
+    public async Task<PatientDomainModel> Update(PatientDomainModel patientModel)
     {
 
-        Patient patient = await _patientRepository.GetPatientById(id);
+        Patient patient = await _patientRepository.GetPatientById(patientModel.Id);
         patient.Name = patientModel.Name;
         patient.Surname = patientModel.Surname;
         patient.Email = patientModel.Email;
         patient.BirthDate = patientModel.BirthDate;
         patient.Phone = patientModel.Phone;
-        patient.BlockedBy = patientModel.blockedBy;
-        patient.BlockingCounter = patientModel.blockingCounter;
+        patient.BlockedBy = patientModel.BlockedBy;
+        patient.BlockingCounter = patientModel.BlockingCounter;
         patient.IsDeleted = patientModel.IsDeleted;
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
 
-        MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(id);
+        MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(patient.Id);
         medicalRecord.Height = patientModel.MedicalRecord.Height;
         medicalRecord.Weight = patientModel.MedicalRecord.Weight;
         medicalRecord.BedriddenDiseases = patientModel.MedicalRecord.BedriddenDiseases;
@@ -311,7 +309,7 @@ public class PatientService : IPatientService {
         _medicalRecordRepository.Save();
 
 
-        Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(id);
+        Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(patient.Id);
         credentials.Username = patientModel.Credentials.Username;
         credentials.Password = patientModel.Credentials.Password;
         _ = _credentialsRepository.Update(credentials);

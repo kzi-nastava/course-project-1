@@ -2,8 +2,6 @@
 using System.Diagnostics.Eventing.Reader;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
-using HealthCare.Domain.Models.ModelsForCreate;
-using HealthCare.Domain.Models.ModelsForUpdate;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareAPI.Controllers

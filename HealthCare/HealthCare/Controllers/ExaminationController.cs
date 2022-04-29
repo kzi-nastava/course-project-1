@@ -1,8 +1,6 @@
 ﻿using System.Diagnostics.Eventing.Reader;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
-using HealthCare.Domain.Models.ModelsForCreate;
-using HealthCare.Domain.Models.ModelsForUpdate;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareAPI.Controllers {
@@ -55,23 +53,22 @@ namespace HealthCareAPI.Controllers {
         // https://localhost:7195/api/examination/delete
         [HttpPut]
         [Route("delete")]
-        public async Task<ActionResult<ExaminationDomainModel>> DeleteExamination([FromBody] DeleteExaminationDomainModel id) {
-            var deletedExaminationModel = await _examinationService.Delete(id, true);
+        public async Task<ActionResult<ExaminationDomainModel>> DeleteExamination([FromBody] ExaminationDomainModel examinationModel, bool isPatient) {
+            var deletedExaminationModel = await _examinationService.Delete(examinationModel, true);
             return Ok(deletedExaminationModel);
         }
 
-
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<CreateExaminationDomainModel>> CreateExamination([FromBody] CreateExaminationDomainModel examinationModel) {
-            var createdExaminationModel = await _examinationService.Create(examinationModel, true);
+        public async Task<ActionResult<ExaminationDomainModel>> CreateExamination([FromBody] ExaminationDomainModel examinationModel, bool isPatient) {
+            var createdExaminationModel = await _examinationService.Create(examinationModel, isPatient);
             return Ok(createdExaminationModel);
         }
 
         [HttpPut]
         [Route("update")]
-        public async Task<ActionResult<UpdateExaminationDomainModel>> UpdateExamination([FromBody] UpdateExaminationDomainModel examinationModel) {
-            var updatedExaminationModel = await _examinationService.Update(examinationModel);
+        public async Task<ActionResult<ExaminationDomainModel>> UpdateExamination([FromBody] ExaminationDomainModel examinationModel, bool isPatient) {
+            var updatedExaminationModel = await _examinationService.Update(examinationModel, isPatient);
             return Ok(updatedExaminationModel);
         }
 

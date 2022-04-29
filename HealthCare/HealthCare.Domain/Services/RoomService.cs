@@ -1,7 +1,6 @@
 using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
-using HealthCare.Domain.Models.ModelsForUpdate;
 using HealthCare.Repositories;
 
 namespace HealthCare.Domain.Services;
@@ -111,16 +110,13 @@ public class RoomService : IRoomService{
 
     public async Task<RoomDomainModel> Update(RoomDomainModel roomModel, decimal id)
     {
-        Room updatedRoom = await _roomRepository.GetRoomById(id);
-        updatedRoom.IsDeleted = roomModel.IsDeleted;
-        //r.Inventories = room.Inventories;
-        //r.Operations = room.Operations;
-        updatedRoom.RoomName = roomModel.RoomName;
+        Room room = await _roomRepository.GetRoomById(id);
+        room.IsDeleted = roomModel.IsDeleted;
+        room.RoomName = roomModel.RoomName;
         RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);
-        updatedRoom.RoomType = roomType;
-        updatedRoom.RoomTypeId = roomType.Id;
-        //r.RoomTypeId = room.RoomType;
-        _roomRepository.Update(updatedRoom);
+        room.RoomType = roomType;
+        room.RoomTypeId = roomType.Id;
+        _ = _roomRepository.Update(room);
         _roomRepository.Save();
 
         return roomModel;
@@ -137,16 +133,14 @@ public class RoomService : IRoomService{
         return parseToModel(deletedRoom);
     }
 
-    private RoomDomainModel parseToModel(Room deletedRoom)
+    private RoomDomainModel parseToModel(Room room)
     {
-        return new RoomDomainModel
-        {
-            Id = deletedRoom.Id,
-            RoomName = deletedRoom.RoomName,
-            RoomTypeId = deletedRoom.RoomTypeId,
-            IsDeleted = deletedRoom.IsDeleted
-
+        RoomDomainModel roomModel = new RoomDomainModel {
+            Id = room.Id,
+            RoomName = room.RoomName,
+            RoomTypeId = room.RoomTypeId,
+            IsDeleted = room.IsDeleted
         };
-        return new RoomDomainModel();
+        return roomModel;
     }
 }
