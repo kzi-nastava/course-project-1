@@ -34,20 +34,32 @@ namespace HealthCareAPI.Controllers
         // https://localhost:7195/api/equipment/search
         [HttpGet]
         [Route("search/{substring}")]
-        public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> GetByName(string substring) 
+        public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> GetByName(string substring)
         {
-            IEnumerable<EquipmentDomainModel> equipment = await _equipmentService.SearchByName(substring);
-            return Ok(equipment);
+            try
+            {
+                IEnumerable<EquipmentDomainModel> equipment = await _equipmentService.SearchByName(substring);
+                return Ok(equipment);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
         [HttpGet]
         [Route("filter/{equipmentTypeId:decimal?}/{minAmmount:int?}/{MaxAmmount:int?}/{roomTypeId:decimal?}")]
         public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> GetFilteredEquipment(decimal equipmentTypeId=-1, int minAmount=-1, int maxAmount=-1, decimal roomTypeId = -1)
         {
-            IEnumerable<EquipmentDomainModel> equipment = await _equipmentService.Filter(equipmentTypeId, minAmount, maxAmount, roomTypeId);
-            return Ok(equipment);
+            try
+            {
+                IEnumerable<EquipmentDomainModel> equipment = await _equipmentService.Filter(equipmentTypeId, minAmount, maxAmount, roomTypeId);
+                return Ok(equipment);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
-
-
     }
 }

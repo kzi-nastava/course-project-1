@@ -37,8 +37,15 @@ namespace HealthCareAPI.Controllers
         [Route("medical_record/patientId={id}")]
         public async Task<ActionResult<PatientDomainModel>> GetWithMedicalRecord(decimal id)
         {
-            PatientDomainModel patientModel = await _patientService.GetWithMedicalRecord(id);
-            return Ok(patientModel);
+            try
+            {
+                PatientDomainModel patientModel = await _patientService.GetWithMedicalRecord(id);
+                return Ok(patientModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
         // https://localhost:7195/api/patient/create
@@ -55,8 +62,15 @@ namespace HealthCareAPI.Controllers
         [Route("update/{id}")]
         public async Task<ActionResult<PatientDomainModel>> UpdatePatient([FromBody] PatientDomainModel patientModel)
         {
-            PatientDomainModel updatedPatientModel = await _patientService.Update(patientModel);
-            return Ok(updatedPatientModel);
+            try
+            {
+                PatientDomainModel updatedPatientModel = await _patientService.Update(patientModel);
+                return Ok(updatedPatientModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
         
         // https://localhost:7195/api/patient/delete
@@ -64,8 +78,15 @@ namespace HealthCareAPI.Controllers
         [Route("delete/{id}")]
         public async Task<ActionResult<PatientDomainModel>> DeletePatient([FromBody] PatientDomainModel patientModel)
         {
-            PatientDomainModel deletedPatientModel = await _patientService.Delete(patientModel);
-            return Ok(deletedPatientModel);
+            try
+            {
+                PatientDomainModel deletedPatientModel = await _patientService.Delete(patientModel);
+                return Ok(deletedPatientModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
         
         // https://localhost:7195/api/patient/block

@@ -37,8 +37,16 @@ namespace HealthCareAPI.Controllers
         [Route("login/{username}/{password}")]
         public async Task<ActionResult<CredentialsDomainModel>> GetLoggedUser(string username, string password)
         {
-            CredentialsDomainModel credentials = await _credentialsService.GetCredentialsByUsernameAndPassword(username, password);
-            return Ok(credentials);
+            try
+            {
+                CredentialsDomainModel credentials =
+                    await _credentialsService.GetCredentialsByUsernameAndPassword(username, password);
+                return Ok(credentials);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
     }
 }

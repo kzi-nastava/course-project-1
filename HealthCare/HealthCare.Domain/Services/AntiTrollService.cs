@@ -34,7 +34,7 @@ public class AntiTrollService : IAntiTrollService
     {
         IEnumerable<AntiTroll> data = await _antiTrollRepository.GetAll();
         if (data == null)
-            return null;
+            return new List<AntiTrollDomainModel>();
 
         List<AntiTrollDomainModel> results = new List<AntiTrollDomainModel>();
         foreach (AntiTroll item in data) 
@@ -48,7 +48,7 @@ public class AntiTrollService : IAntiTrollService
     {
         IEnumerable<AntiTroll> data = await _antiTrollRepository.GetByPatientId(patientId);
         if (data == null)
-            return null;
+            throw new DataIsNullException();
 
         List<AntiTrollDomainModel> results = new List<AntiTrollDomainModel>();
         foreach (AntiTroll item in data) 
@@ -58,4 +58,5 @@ public class AntiTrollService : IAntiTrollService
 
         return results;
     }
+    
 }

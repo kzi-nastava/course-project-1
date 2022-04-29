@@ -31,8 +31,8 @@ public class RoomService : IRoomService
     {
         IEnumerable<Room> rooms = await _roomRepository.GetAll();
         if (rooms == null)
-            return null;
-
+            return new List<RoomDomainModel>();
+            
         List<RoomDomainModel> results = new List<RoomDomainModel>();
         RoomDomainModel roomModel;
         foreach (Room item in rooms)

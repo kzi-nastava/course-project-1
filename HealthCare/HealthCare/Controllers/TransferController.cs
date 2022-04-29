@@ -45,8 +45,15 @@ namespace HealthCareAPI.Controllers
         [Route("doTransfer")]
         public async Task<ActionResult<TransferDomainModel>> DoTransfer()
         {
-            IEnumerable<TransferDomainModel> transfers = await _transferService.DoTransfers();
-            return Ok(transfers);
+            try
+            {
+                IEnumerable<TransferDomainModel> transfers = await _transferService.DoTransfers();
+                return Ok(transfers);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
     }
 }

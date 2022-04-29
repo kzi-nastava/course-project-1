@@ -35,12 +35,15 @@ namespace HealthCareAPI.Controllers
         [Route("doctorId={id}")]
         public async Task<ActionResult<IEnumerable<OperationDomainModel>>> GetAllOperationsForDoctor(decimal id)
         {
-            IEnumerable<OperationDomainModel> operations = await _operationService.GetAllForDoctor(id);
-            if (operations == null)
+            try
             {
-                operations = new List<OperationDomainModel>();
+                IEnumerable<OperationDomainModel> operations = await _operationService.GetAllForDoctor(id);
+                return Ok(operations);
             }
-            return Ok(operations);
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
         [HttpPost]
@@ -55,16 +58,30 @@ namespace HealthCareAPI.Controllers
         [Route("update")]
         public async Task<ActionResult<OperationDomainModel>>  Update([FromBody] OperationDomainModel operationModel) 
         {
-            OperationDomainModel updatedOperationModel = await _operationService.Update(operationModel);
-            return Ok(updatedOperationModel);
+            try
+            {
+                OperationDomainModel updatedOperationModel = await _operationService.Update(operationModel);
+                return Ok(updatedOperationModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
         [HttpPut]
         [Route("delete/operationId={id}")]
-        public async Task<ActionResult<OperationDomainModel>> DeleteExamination([FromBody] OperationDomainModel operationModel)
+        public async Task<ActionResult<OperationDomainModel>> DeleteOperation([FromBody] OperationDomainModel operationModel)
         {
-            OperationDomainModel deletedOperationModel = await _operationService.Delete(operationModel);
-            return Ok(deletedOperationModel);
+            try
+            {
+                OperationDomainModel deletedOperationModel = await _operationService.Delete(operationModel);
+                return Ok(deletedOperationModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
     }
 }

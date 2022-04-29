@@ -21,8 +21,6 @@ public class OperationService : IOperationService
         _examinationRepository = examinationRepository;
     }
 
-    // Async awaits info from database
-    // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<OperationDomainModel>> ReadAll()
     {
         IEnumerable<OperationDomainModel> operations = await GetAll();
@@ -37,8 +35,7 @@ public class OperationService : IOperationService
     {
         IEnumerable<Operation> data = await _operationRepository.GetAll();
         if (data == null)
-            return null;
-
+            return new List<OperationDomainModel>();
         List<OperationDomainModel> results = new List<OperationDomainModel>();
         OperationDomainModel operationModel;
         foreach (Operation item in data)
@@ -62,7 +59,7 @@ public class OperationService : IOperationService
     {
         IEnumerable<Operation> data = await _operationRepository.GetAllByDoctorId(id);
         if (data == null)
-            return null;
+            throw new DataIsNullException();
 
         List<OperationDomainModel> results = new List<OperationDomainModel>();
         foreach (Operation item in data)
@@ -181,13 +178,14 @@ public class OperationService : IOperationService
     {
         bool doctorAvailable = await IsDoctorAvailable(operationModel);
         bool patientAvailable = await IsPatientAvailable(operationModel);
-        if (!doctorAvailable || !patientAvailable)
-            //TODO: throw exception 
-            return null;
+        if (!doctorAvailable)
+            throw new DoctorNotAvailableException();
+        if (!patientAvailable)
+            throw new PatientNotAvailableException();
 
         decimal roomId = await GetAvailableRoomId(operationModel);
         if (roomId == -1)
-            return null;
+            throw new NoFreeRoomsException();
 
         Operation newOperation = new Operation
         {
@@ -210,20 +208,19 @@ public class OperationService : IOperationService
         Operation operation = await _operationRepository.GetById(operationModel.Id);
 
         if (operation == null)
-            return null;
+            throw new DataIsNullException();
 
         // to be able to use the validation of availability methods:
         bool doctorAvailable = await IsDoctorAvailable(operationModel);
         bool patientAvailable = await IsPatientAvailable(operationModel);
-        if (!doctorAvailable || !patientAvailable)
-            //TODO: throw exception 
-            return null;
+        if (!doctorAvailable)
+            throw new DoctorNotAvailableException();
+        if (!patientAvailable)
+            throw new PatientNotAvailableException();
 
         decimal roomId = await GetAvailableRoomId(operationModel);
         if (roomId == -1)
-        {
-            return null;
-        }
+            throw new NoFreeRoomsException();
 
         operation.PatientId = operationModel.PatientId;
         operation.DoctorId = operationModel.DoctorId;
@@ -239,9 +236,6 @@ public class OperationService : IOperationService
     public async Task<OperationDomainModel> Delete(OperationDomainModel operationModel)
     {
         Operation operation = await _operationRepository.GetById(operationModel.Id);
-
-        if (operation == null)
-            return null;
         
         // logical delete
         operation.IsDeleted = true;

@@ -24,7 +24,7 @@ public class TransferService : ITransferService
     {
         IEnumerable<Transfer> transfers = await _transferRepository.GetAll();
         if (transfers == null)
-            return null;
+            return new List<TransferDomainModel>();
 
         List<TransferDomainModel> results = new List<TransferDomainModel>();
         TransferDomainModel transferModel;
@@ -128,7 +128,7 @@ public class TransferService : ITransferService
     {
         IEnumerable<Transfer> transfers = await _transferRepository.GetAll();
         if (transfers == null)
-            return new List<TransferDomainModel>();
+            throw new DataIsNullException();
 
         List<TransferDomainModel> transfersExecuted = new List<TransferDomainModel>();
 

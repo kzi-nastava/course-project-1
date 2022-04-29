@@ -25,7 +25,7 @@ public class EquipmentService : IEquipmentService
     {
         IEnumerable<EquipmentDomainModel> equipment = await GetAll();
         List<EquipmentDomainModel> result = new List<EquipmentDomainModel>();
-        foreach (var item in equipment)
+        foreach (EquipmentDomainModel item in equipment)
         {
             if (!item.IsDeleted) result.Add(item);
         }
@@ -36,7 +36,7 @@ public class EquipmentService : IEquipmentService
     {
         IEnumerable<Equipment> equipment = await _equipmentRepository.GetAll();
         if (equipment == null)
-            return null;
+            return new List<EquipmentDomainModel>();
 
         List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
         EquipmentDomainModel equipmentModel;
@@ -69,7 +69,7 @@ public class EquipmentService : IEquipmentService
         substring = substring.ToLower();
         IEnumerable<Equipment> equipment = await _equipmentRepository.GetAll();
         if (equipment == null)
-            return null;
+            throw new DataIsNullException();
 
         List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
 
@@ -108,7 +108,7 @@ public class EquipmentService : IEquipmentService
     {
         IEnumerable<Equipment> filterResult = await _equipmentRepository.GetAll();
         if (filterResult == null || filterResult.Count() < 1)
-            return null;
+            throw new DataIsNullException();
 
         // filter #1
         if (equipmentTypeId != -1)

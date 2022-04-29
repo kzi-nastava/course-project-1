@@ -37,8 +37,15 @@ namespace HealthCareAPI.Controllers
         [Route("reject")]
         public async Task<ActionResult<IEnumerable<ExaminationApprovalDomainModel>>> Reject([FromBody] ExaminationApprovalDomainModel examinationModel) 
         {
-            ExaminationApprovalDomainModel examinationApproval = await _examinationApprovalService.Reject(examinationModel);
-            return Ok(examinationApproval);
+            try
+            {
+                ExaminationApprovalDomainModel examinationApproval = await _examinationApprovalService.Reject(examinationModel);
+                return Ok(examinationApproval);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
         
         // https://localhost:7195/api/examinationApproval/approve
@@ -46,8 +53,15 @@ namespace HealthCareAPI.Controllers
         [Route("approve")]
         public async Task<ActionResult<IEnumerable<ExaminationApprovalDomainModel>>> Approve([FromBody] ExaminationApprovalDomainModel examinationModel) 
         {
-            ExaminationApprovalDomainModel examinationApproval = await _examinationApprovalService.Approve(examinationModel);
-            return Ok(examinationApproval);
+            try
+            {
+                ExaminationApprovalDomainModel examinationApproval = await _examinationApprovalService.Approve(examinationModel);
+                return Ok(examinationApproval);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
     }
 }

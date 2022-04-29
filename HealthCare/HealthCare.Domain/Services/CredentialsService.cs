@@ -41,7 +41,7 @@ namespace HealthCare.Domain.Services
         {
             IEnumerable<Credentials> data = await _credentialsRepository.GetAll();
             if (data == null)
-                return null;
+                return new List<CredentialsDomainModel>();
 
             List<CredentialsDomainModel> results = new List<CredentialsDomainModel>();
             CredentialsDomainModel credentialsModel;
@@ -87,12 +87,12 @@ namespace HealthCare.Domain.Services
                     if (item.PatientId != null)
                     {
                         if (!await IsBlocked(item)) return item;
-                        return null;
+                        throw new UserIsBlockedException();
                     }
                     return item;
                 }
             }
-            return null;
+            throw new UserNotFoundException();
         }
     }
 }
