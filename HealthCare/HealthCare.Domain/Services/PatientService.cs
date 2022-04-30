@@ -350,6 +350,16 @@ public class PatientService : IPatientService
         patientModel.IsDeleted = true;
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
+        
+        MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(patientModel.Id);
+        medicalRecord.IsDeleted = true;
+        _ = _medicalRecordRepository.Update(medicalRecord);
+        _medicalRecordRepository.Save();
+        Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(patientModel.Id);
+        credentials.isDeleted = true;
+        _ = _credentialsRepository.Update(credentials);
+        _credentialsRepository.Save();
+        
         return patientModel;
     }
 
