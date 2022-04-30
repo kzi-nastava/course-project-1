@@ -64,7 +64,7 @@ namespace HealthCareAPI.Controllers
         }
 
         // https://localhost:7195/api/room/delete
-        [HttpPost]
+        [HttpPut]
         [Route("delete/{id}")]
         public async Task<ActionResult<RoomDomainModel>> DeleteRoom(decimal id) 
         {
