@@ -14,6 +14,7 @@ namespace HealthCare.Repositories
     {
         public Transfer Post(Transfer newTransfer);
         public Task<Transfer> GetTransferById(decimal id);
+        public Transfer Update(Transfer transfer);
     }
     public class TransferRepository : ITransferRepository 
     {
@@ -31,8 +32,15 @@ namespace HealthCare.Repositories
         }
         public Transfer Post(Transfer newTransfer)
         {
-            EntityEntry<Transfer> result = _healthCareContext.Add(newTransfer);
+            EntityEntry<Transfer> result = _healthCareContext.Transfers.Add(newTransfer);
             return result.Entity;
+        }
+
+        public Transfer Update(Transfer updatedTransfer)
+        {
+            EntityEntry<Transfer> updatedEntry = _healthCareContext.Attach(updatedTransfer);
+            _healthCareContext.Entry(updatedTransfer).State = EntityState.Modified;
+            return updatedEntry.Entity;
         }
         public void Save()
         {

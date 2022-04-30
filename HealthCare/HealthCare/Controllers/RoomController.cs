@@ -36,8 +36,15 @@ namespace HealthCareAPI.Controllers
         [Route("create")]
         public async Task<ActionResult<RoomDomainModel>> CreateRoom([FromBody] RoomDomainModel roomModel)
         {
-            RoomDomainModel insertedRoomModel = await _roomService.Create(roomModel);
-            return Ok(insertedRoomModel);
+            try
+            {
+                RoomDomainModel insertedRoomModel = await _roomService.Create(roomModel);
+                return Ok(insertedRoomModel);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         // https://localhost:7195/api/room/update

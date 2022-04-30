@@ -58,6 +58,8 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<MedicalRecord>().HasKey(x => x.PatientId);
             modelBuilder.Entity<EquipmentType>().HasKey(x => x.Id);
             modelBuilder.Entity<Equipment>().HasKey(x => x.Id);
+            modelBuilder.Entity<Room>().HasKey(x => x.Id);
+            modelBuilder.Entity<RoomType>().HasKey(x => x.Id);
         }
     }
 }

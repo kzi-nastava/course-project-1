@@ -113,6 +113,8 @@ public class RoomService : IRoomService
         newRoom.IsDeleted = roomModel.IsDeleted;
         newRoom.RoomName = roomModel.RoomName;
         RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);
+        if (roomType == null)
+            throw new RoomTypeNotFoundException();
         newRoom.RoomType = roomType;
         newRoom.RoomTypeId = roomType.Id;
         _ = _roomRepository.Post(newRoom);
@@ -127,6 +129,8 @@ public class RoomService : IRoomService
         room.IsDeleted = roomModel.IsDeleted;
         room.RoomName = roomModel.RoomName;
         RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);
+        if (roomType == null)
+            throw new RoomTypeNotFoundException();
         room.RoomType = roomType;
         room.RoomTypeId = roomType.Id;
         _ = _roomRepository.Update(room);

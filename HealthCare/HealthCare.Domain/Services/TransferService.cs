@@ -43,36 +43,32 @@ public class TransferService : ITransferService
         Inventory outRoomInventory = await _inventoryRepository.GetInventoryById(transferModel.RoomIdOut, transferModel.EquipmentId);
         _inventoryRepository.Update(outRoomInventory);
 
+        if(outRoomInventory.Amount < transferModel.Amount)
+        {
+            throw new NotEnoughResourcesForTransfer();
+        }
+
         if (inRoomInventory == null)
         {
             inRoomInventory = new Inventory
             {
-                Amount = transferModel.Amount,
+                Amount = 0,
                 EquipmentId = transferModel.EquipmentId,
                 RoomId = transferModel.RoomIdIn,
                 IsDeleted = false
             };               
             _inventoryRepository.Post(inRoomInventory);
         }
-        else
-        {      
-            _inventoryRepository.Update(inRoomInventory);
-        }
 
-
-        Transfer transfer = await _transferRepository.GetTransferById(transferModel.Id);
-        if(transfer == null)
+        Transfer transfer = new Transfer
         {
-            transfer = new Transfer
-            { 
-                RoomIdIn = transferModel.RoomIdIn,
-                RoomIdOut = transferModel.RoomIdOut,
-                TransferTime = transferModel.TransferTime,
-                Amount = transferModel.Amount,
-                EquipmentId = transferModel.EquipmentId,
-                Executed = transferModel.Executed
-            };
-        }
+            RoomIdIn = transferModel.RoomIdIn,
+            RoomIdOut = transferModel.RoomIdOut,
+            TransferTime = transferModel.TransferTime,
+            Amount = transferModel.Amount,
+            EquipmentId = transferModel.EquipmentId,
+            Executed = transferModel.Executed
+        };
         
         _transferRepository.Post(transfer);
         _inventoryRepository.Save();
@@ -123,17 +119,20 @@ public class TransferService : ITransferService
 
         foreach(Transfer transfer in transfers)
         {
-            if(transfer.TransferTime < DateTime.UtcNow)
+            if(transfer.TransferTime < DateTime.UtcNow && !transfer.Executed)
             {
                 Inventory roomIn = await _inventoryRepository.GetInventoryById(transfer.RoomIdIn, transfer.EquipmentId);
                 Inventory roomOut = await _inventoryRepository.GetInventoryById(transfer.RoomIdOut, transfer.EquipmentId);
                 roomIn.Amount += transfer.Amount;
                 roomOut.Amount -= transfer.Amount;
                 transfer.Executed = true;
+                _inventoryRepository.Update(roomIn);
+                _inventoryRepository.Update(roomOut);
+                _transferRepository.Update(transfer);
+                _transferRepository.Save();
                 transfersExecuted.Add(parseToModel(transfer));
             }
         }
-        _transferRepository.Save();
         return transfersExecuted;
     }
      
