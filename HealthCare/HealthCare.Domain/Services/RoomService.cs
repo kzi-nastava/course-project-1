@@ -107,7 +107,7 @@ public class RoomService : IRoomService
         return results;
     }
 
-    public async Task<RoomDomainModel> Add(RoomDomainModel roomModel)
+    public async Task<RoomDomainModel> Create(RoomDomainModel roomModel)
     {
         Room newRoom = new Room();
         newRoom.IsDeleted = roomModel.IsDeleted;

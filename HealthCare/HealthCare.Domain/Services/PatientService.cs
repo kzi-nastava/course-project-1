@@ -265,7 +265,7 @@ public class PatientService : IPatientService
         return parseToModel(patient);
     }
 
-    public async Task<PatientDomainModel> Add(PatientDomainModel patientModel)
+    public async Task<PatientDomainModel> Create(PatientDomainModel patientModel)
     {
         Patient newPatient = new Patient();
         newPatient.BlockedBy = null;

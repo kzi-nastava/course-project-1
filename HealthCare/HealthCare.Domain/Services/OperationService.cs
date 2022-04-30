@@ -11,14 +11,17 @@ public class OperationService : IOperationService
     private IOperationRepository _operationRepository;
     private IRoomRepository _roomRepository;
     private IExaminationRepository _examinationRepository;
+    private IPatientRepository _patientRepository;
 
     public OperationService(IOperationRepository operationRepository, 
                             IRoomRepository roomRepository, 
-                            IExaminationRepository examinationRepository) 
+                            IExaminationRepository examinationRepository,
+                            IPatientRepository patientRepository) 
     {
         _operationRepository = operationRepository;
         _roomRepository = roomRepository;
         _examinationRepository = examinationRepository;
+        _patientRepository = patientRepository;
     }
 
     public async Task<IEnumerable<OperationDomainModel>> ReadAll()
@@ -175,10 +178,21 @@ public class OperationService : IOperationService
         return new DateTime(year, month, day, hour, minute, second);
     }
 
+    private async Task<bool> isPatientBlocked(decimal patientId)
+    {
+        Patient patient = await _patientRepository.GetPatientById(patientId);
+        if (patient.BlockedBy != null && !patient.BlockedBy.Equals(""))
+            return true;
+
+        return false;
+    }
+
     private async Task validateUserInput(OperationDomainModel operationModel)
     {
         if (operationModel.StartTime <= DateTime.UtcNow)
             throw new DateInPastExeption();
+        if (await isPatientBlocked(operationModel.PatientId))
+            throw new PatientIsBlockedException();
         bool doctorAvailable = await isDoctorAvailable(operationModel);
         bool patientAvailable = await isPatientAvailable(operationModel);
         if (!doctorAvailable)
@@ -189,14 +203,7 @@ public class OperationService : IOperationService
 
     public async Task<OperationDomainModel> Create(OperationDomainModel operationModel)
     {
-        if (operationModel.StartTime <= DateTime.UtcNow)
-            throw new DateInPastExeption();
-        bool doctorAvailable = await isDoctorAvailable(operationModel);
-        bool patientAvailable = await isPatientAvailable(operationModel);
-        if (!doctorAvailable)
-            throw new DoctorNotAvailableException();
-        if (!patientAvailable)
-            throw new PatientNotAvailableException();
+        await validateUserInput(operationModel);
 
         decimal roomId = await GetAvailableRoomId(operationModel);
         if (roomId == -1)
@@ -215,19 +222,13 @@ public class OperationService : IOperationService
         _ = _operationRepository.Post(newOperation);
         _operationRepository.Save();
 
-        return operationModel;
+        return parseToModel(newOperation);
     }
 
     public async Task<OperationDomainModel> Update(OperationDomainModel operationModel)
     {
-        if (operationModel.StartTime <= DateTime.UtcNow)
-            throw new DateInPastExeption();
-        bool doctorAvailable = await isDoctorAvailable(operationModel);
-        bool patientAvailable = await isPatientAvailable(operationModel);
-        if (!doctorAvailable)
-            throw new DoctorNotAvailableException();
-        if (!patientAvailable)
-            throw new PatientNotAvailableException();
+        await validateUserInput(operationModel);
+
         Operation operation = await _operationRepository.GetById(operationModel.Id);
 
         if (operation == null)
@@ -245,7 +246,7 @@ public class OperationService : IOperationService
         _ = _operationRepository.Update(operation);
         _operationRepository.Save();
 
-        return operationModel;
+        return parseToModel(operation);
     }
 
     public async Task<OperationDomainModel> Delete(OperationDomainModel operationModel)

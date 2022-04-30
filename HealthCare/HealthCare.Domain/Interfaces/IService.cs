@@ -67,4 +67,19 @@ namespace HealthCare.Domain.Interfaces
         {
         }
     }
+    
+    public class PatientIsBlockedException : Exception
+    {
+        public PatientIsBlockedException() : base("Patient is blocked")
+        {
+        }
+    }
+
+    public class AnamnesisAlreadyExistsException : Exception
+    {
+        public AnamnesisAlreadyExistsException() : base("Examination already has anamnesis")
+        {
+        }
+    }
+
 }

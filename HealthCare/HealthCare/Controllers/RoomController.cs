@@ -36,7 +36,7 @@ namespace HealthCareAPI.Controllers
         [Route("create")]
         public async Task<ActionResult<RoomDomainModel>> CreateRoom([FromBody] RoomDomainModel roomModel)
         {
-            RoomDomainModel insertedRoomModel = await _roomService.Add(roomModel);
+            RoomDomainModel insertedRoomModel = await _roomService.Create(roomModel);
             return Ok(insertedRoomModel);
         }
 

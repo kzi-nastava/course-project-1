@@ -310,16 +310,10 @@ public class ExaminationService : IExaminationService
 
     public async Task<ExaminationDomainModel> Create(ExaminationDomainModel examinationModel, bool isPatient)
     {
+        await validateUserInput(examinationModel);
+
         if (isPatient && await AntiTrollCheck(examinationModel.PatientId, true))
             throw new AntiTrollException();
-        if (examinationModel.StartTime <= DateTime.Now)
-            throw new DateInPastExeption();
-        bool doctorAvailable = await isDoctorAvailable(examinationModel);
-        bool patientAvailable = await isPatientAvailable(examinationModel);
-        if (!doctorAvailable)
-            throw new DoctorNotAvailableException();
-        if (!patientAvailable)
-            throw new PatientNotAvailableException();
 
         decimal roomId = await getAvailableRoomId(examinationModel);
         if (roomId == -1)
@@ -353,7 +347,7 @@ public class ExaminationService : IExaminationService
         _ = _examinationRepository.Post(newExamination);
         _examinationRepository.Save();
 
-        return examinationModel;
+        return parseToModel(newExamination);
     }
 
     private DateTime removeSeconds(DateTime dateTime)
@@ -367,22 +361,38 @@ public class ExaminationService : IExaminationService
         return new DateTime(year, month, day, hour, minute, second);
     }
 
-    public async Task<ExaminationDomainModel> Update(ExaminationDomainModel examinationModel, bool isPatient) 
+    private async Task<bool> isPatientBlocked(decimal patientId)
     {
-        // One patient can't change other patient's appointment
-        // so the patient will always match examinationModel.PatientId
-        if (isPatient && await AntiTrollCheck(examinationModel.PatientId, false))
-            throw new AntiTrollException();
-        Examination examination = await _examinationRepository.GetExaminationWithoutAnamnesis(examinationModel.Id);
-        double daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
-        if (examinationModel.StartTime <= DateTime.Now)
+        Patient patient = await _patientRepository.GetPatientById(patientId);
+        if (patient.BlockedBy != null && !patient.BlockedBy.Equals(""))
+            return true;
+
+        return false;
+    }
+
+    private async Task validateUserInput(ExaminationDomainModel examinationModel)
+    {
+        if (examinationModel.StartTime <= DateTime.UtcNow)
             throw new DateInPastExeption();
+        if (await isPatientBlocked(examinationModel.PatientId))
+            throw new PatientIsBlockedException();
         bool doctorAvailable = await isDoctorAvailable(examinationModel);
         bool patientAvailable = await isPatientAvailable(examinationModel);
         if (!doctorAvailable)
             throw new DoctorNotAvailableException();
         if (!patientAvailable)
             throw new PatientNotAvailableException();
+    }
+    public async Task<ExaminationDomainModel> Update(ExaminationDomainModel examinationModel, bool isPatient) 
+    {
+        await validateUserInput(examinationModel);
+
+        // One patient can't change other patient's appointment
+        // so the patient will always match examinationModel.PatientId
+        if (isPatient && await AntiTrollCheck(examinationModel.PatientId, false))
+            throw new AntiTrollException();
+        Examination examination = await _examinationRepository.GetExaminationWithoutAnamnesis(examinationModel.Id);
+        double daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
 
         decimal roomId = await getAvailableRoomId(examinationModel);
         if (roomId == -1)
@@ -446,6 +456,6 @@ public class ExaminationService : IExaminationService
             _antiTrollRepository.Save();
         }
 
-        return examinationModel;
+        return parseToModel(examination);
     }
 }

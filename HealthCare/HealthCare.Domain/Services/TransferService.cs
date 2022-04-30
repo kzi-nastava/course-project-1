@@ -36,7 +36,7 @@ public class TransferService : ITransferService
         return results;
     }
 
-    public async Task<TransferDomainModel> Add(TransferDomainModel transferModel)
+    public async Task<TransferDomainModel> Create(TransferDomainModel transferModel)
     {
         Inventory inRoomInventory = await _inventoryRepository.GetInventoryById(transferModel.RoomIdIn, transferModel.EquipmentId);
 

@@ -36,7 +36,7 @@ namespace HealthCareAPI.Controllers
         [Route("create")]
         public async Task<ActionResult<TransferDomainModel>> CreateTransfer([FromBody] TransferDomainModel transferModel)
         {
-            TransferDomainModel newTransferModel = await _transferService.Add(transferModel);
+            TransferDomainModel newTransferModel = await _transferService.Create(transferModel);
             return Ok(newTransferModel);
         }
 

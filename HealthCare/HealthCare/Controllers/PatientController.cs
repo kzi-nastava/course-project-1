@@ -53,7 +53,7 @@ namespace HealthCareAPI.Controllers
         [Route("create")]
         public async Task<ActionResult<PatientDomainModel>> CreatePatient([FromBody] PatientDomainModel patientModel)
         {
-            PatientDomainModel insertedPatientModel = await _patientService.Add(patientModel);
+            PatientDomainModel insertedPatientModel = await _patientService.Create(patientModel);
             return Ok(insertedPatientModel);
         }
         
