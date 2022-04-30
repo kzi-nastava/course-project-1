@@ -47,6 +47,14 @@ namespace HealthCare.Domain.Interfaces
         {
         }
     }
+
+    public class RoomTypeNotFoundException : Exception
+    {
+        public RoomTypeNotFoundException() : base("There is no room type with such id")
+        {
+
+        }
+    } 
     
     public class UserNotFoundException : Exception
     {
@@ -61,4 +69,32 @@ namespace HealthCare.Domain.Interfaces
         {
         }
     }
+    public class DateInPastExeption : Exception
+    {
+        public DateInPastExeption() : base("Entered date is in past")
+        {
+        }
+    }
+    
+    public class PatientIsBlockedException : Exception
+    {
+        public PatientIsBlockedException() : base("Patient is blocked")
+        {
+        }
+    }
+
+    public class AnamnesisAlreadyExistsException : Exception
+    {
+        public AnamnesisAlreadyExistsException() : base("Examination already has anamnesis")
+        {
+        }
+    }
+
+    public class NotEnoughResourcesForTransfer : Exception
+    {
+        public NotEnoughResourcesForTransfer() : base("Not enough resources for equipment transfer")
+        {
+        }
+    }
+
 }

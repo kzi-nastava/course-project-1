@@ -56,6 +56,14 @@ public class AnamnesisService : IAnamnesisService
 
     public async Task<AnamnesisDomainModel> Create(AnamnesisDomainModel anamnesisModel)
     {
+        Examination examination = await _examinationRepository.GetExamination(anamnesisModel.ExaminationId);
+        // can't create another anamnesis for examination that already has one
+        if (examination.Anamnesis != null)
+            throw new AnamnesisAlreadyExistsException();
+        // can't create anamnesis for examinations that are more than 1 hour earlier than current time
+        if (examination.StartTime.AddHours(-1) < DateTime.UtcNow)
+            throw new DateInPastExeption();
+  
         Anamnesis anamesis = new Anamnesis
         {
             ExaminationId = anamnesisModel.ExaminationId,

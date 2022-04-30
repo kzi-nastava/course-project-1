@@ -17,7 +17,7 @@ namespace HealthCare.Data.Entities
         public decimal RoomId { get; set; }
 
         [Column("equipment_id")]
-        public decimal RquipmentId { get; set; }
+        public decimal EquipmentId { get; set; }
 
         [Column("deleted")]
         public bool IsDeleted { get; set; }

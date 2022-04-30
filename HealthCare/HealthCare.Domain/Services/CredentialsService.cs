@@ -14,15 +14,12 @@ namespace HealthCare.Domain.Services
     {
 
         private ICredentialsRepository _credentialsRepository;
-        private IUserRoleRepository _userRoleRepository;
-        private IManagerRepository _managerRepository;
         private IPatientRepository _patientRepository;
-        private ISecretaryRepository _secretaryRepository;
-        private IDoctorRepository _doctorRepository;
 
-        public CredentialsService(ICredentialsRepository credentialsRepository) 
+        public CredentialsService(ICredentialsRepository credentialsRepository, IPatientRepository patientRepository) 
         {
             _credentialsRepository = credentialsRepository;
+            _patientRepository = patientRepository;
         }
         
         // Async awaits info from database

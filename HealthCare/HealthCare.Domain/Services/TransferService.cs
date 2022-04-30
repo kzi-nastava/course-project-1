@@ -30,79 +30,45 @@ public class TransferService : ITransferService
         TransferDomainModel transferModel;
         foreach (Transfer item in transfers)
         {
-            transferModel = new TransferDomainModel
-            {
-                Id = item.Id,
-                IsDeleted = item.IsDeleted,
-                Amount = item.Amount,
-                EquipmentId = item.EquipmentId,
-                RoomIdOut = item.RoomIdOut,
-                RoomIdIn = item.RoomIdIn,
-                TransferTime = item.TransferTime,
-                Executed = item.Executed
-            };
-            if (item.Equipment != null) 
-            {
-                transferModel.Equipment = new EquipmentDomainModel 
-                {
-                    Id = item.Equipment.Id,
-                    EquipmentTypeId = item.Equipment.equipmentTypeId,
-                    IsDeleted = item.Equipment.IsDeleted,
-                    Name = item.Equipment.Name
-                };
-                if (item.Equipment.EquipmentType != null)
-                {
-                    transferModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
-                    {
-                        Id = item.Equipment.EquipmentType.Id,
-                        Name = item.Equipment.EquipmentType.Name,
-                        IsDeleted = item.Equipment.EquipmentType.IsDeleted
-                    };
-                }
-            }
-            results.Add(transferModel);
+            results.Add(parseToModel(item));
         }
 
         return results;
     }
 
-    public async Task<TransferDomainModel> Add(TransferDomainModel transferModel)
+    public async Task<TransferDomainModel> Create(TransferDomainModel transferModel)
     {
         Inventory inRoomInventory = await _inventoryRepository.GetInventoryById(transferModel.RoomIdIn, transferModel.EquipmentId);
 
         Inventory outRoomInventory = await _inventoryRepository.GetInventoryById(transferModel.RoomIdOut, transferModel.EquipmentId);
         _inventoryRepository.Update(outRoomInventory);
 
+        if(outRoomInventory.Amount < transferModel.Amount)
+        {
+            throw new NotEnoughResourcesForTransfer();
+        }
+
         if (inRoomInventory == null)
         {
             inRoomInventory = new Inventory
             {
-                Amount = transferModel.Amount,
-                RquipmentId = transferModel.EquipmentId,
+                Amount = 0,
+                EquipmentId = transferModel.EquipmentId,
                 RoomId = transferModel.RoomIdIn,
                 IsDeleted = false
             };               
             _inventoryRepository.Post(inRoomInventory);
         }
-        else
-        {      
-            _inventoryRepository.Update(inRoomInventory);
-        }
 
-
-        Transfer transfer = await _transferRepository.GetTransferById(transferModel.Id);
-        if(transfer == null)
+        Transfer transfer = new Transfer
         {
-            transfer = new Transfer
-            { 
-                RoomIdIn = transferModel.RoomIdIn,
-                RoomIdOut = transferModel.RoomIdOut,
-                TransferTime = transferModel.TransferTime,
-                Amount = transferModel.Amount,
-                EquipmentId = transferModel.EquipmentId,
-                Executed = transferModel.Executed
-            };
-        }
+            RoomIdIn = transferModel.RoomIdIn,
+            RoomIdOut = transferModel.RoomIdOut,
+            TransferTime = transferModel.TransferTime,
+            Amount = transferModel.Amount,
+            EquipmentId = transferModel.EquipmentId,
+            Executed = transferModel.Executed
+        };
         
         _transferRepository.Post(transfer);
         _inventoryRepository.Save();
@@ -121,6 +87,25 @@ public class TransferService : ITransferService
             EquipmentId = transfer.EquipmentId,
             Executed = transfer.Executed
         };
+        if (transfer.Equipment != null)
+        {
+            transferModel.Equipment = new EquipmentDomainModel
+            {
+                Id = transfer.Equipment.Id,
+                EquipmentTypeId = transfer.Equipment.equipmentTypeId,
+                IsDeleted = transfer.Equipment.IsDeleted,
+                Name = transfer.Equipment.Name
+            };
+            if (transfer.Equipment.EquipmentType != null)
+            {
+                transferModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
+                {
+                    Id = transfer.Equipment.EquipmentType.Id,
+                    Name = transfer.Equipment.EquipmentType.Name,
+                    IsDeleted = transfer.Equipment.EquipmentType.IsDeleted
+                };
+            }
+        }
         return transferModel;
     }
 
@@ -134,17 +119,20 @@ public class TransferService : ITransferService
 
         foreach(Transfer transfer in transfers)
         {
-            if(transfer.TransferTime < DateTime.UtcNow)
+            if(transfer.TransferTime < DateTime.UtcNow && !transfer.Executed)
             {
                 Inventory roomIn = await _inventoryRepository.GetInventoryById(transfer.RoomIdIn, transfer.EquipmentId);
                 Inventory roomOut = await _inventoryRepository.GetInventoryById(transfer.RoomIdOut, transfer.EquipmentId);
                 roomIn.Amount += transfer.Amount;
                 roomOut.Amount -= transfer.Amount;
                 transfer.Executed = true;
+                _inventoryRepository.Update(roomIn);
+                _inventoryRepository.Update(roomOut);
+                _transferRepository.Update(transfer);
+                _transferRepository.Save();
                 transfersExecuted.Add(parseToModel(transfer));
             }
         }
-        _transferRepository.Save();
         return transfersExecuted;
     }
      

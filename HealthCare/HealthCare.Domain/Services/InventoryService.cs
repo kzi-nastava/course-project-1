@@ -29,7 +29,7 @@ public class InventoryService : IInventoryService
                 IsDeleted = item.IsDeleted,
                 RoomId = item.RoomId,
                 Amount = item.Amount,
-                EquipmentId = item.RquipmentId,
+                EquipmentId = item.EquipmentId,
             };
             if (item.Equipment != null) 
             {

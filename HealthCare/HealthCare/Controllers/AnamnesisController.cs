@@ -28,8 +28,16 @@ namespace HealthCareAPI.Controllers
         [Route("create")]
         public async Task<ActionResult<AnamnesisDomainModel>> Create([FromBody] AnamnesisDomainModel newAnamnesisModel)
         {
-            AnamnesisDomainModel anamnesisModel = await _anamnesisService.Create(newAnamnesisModel);
-            return Ok(anamnesisModel);
+            try
+            {
+                AnamnesisDomainModel anamnesisModel = await _anamnesisService.Create(newAnamnesisModel);
+                return Ok(anamnesisModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+
         }
         
         [HttpGet]

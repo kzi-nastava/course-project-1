@@ -65,7 +65,7 @@ public class RoomService : IRoomService
                         IsDeleted = inventory.IsDeleted,
                         RoomId = inventory.RoomId,
                         Amount = inventory.Amount,
-                        EquipmentId = inventory.RquipmentId,
+                        EquipmentId = inventory.EquipmentId,
                     };
                     inventoryModel.Equipment = new EquipmentDomainModel 
                     {
@@ -74,7 +74,7 @@ public class RoomService : IRoomService
                         IsDeleted = inventory.Equipment.IsDeleted,
                         Name = inventory.Equipment.Name,
                     };
-                    if (inventoryModel.Equipment.EquipmentType != null)
+                    if (inventory.Equipment.EquipmentType != null)
                     {
                         inventoryModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
                         {
@@ -107,12 +107,14 @@ public class RoomService : IRoomService
         return results;
     }
 
-    public async Task<RoomDomainModel> Add(RoomDomainModel roomModel)
+    public async Task<RoomDomainModel> Create(RoomDomainModel roomModel)
     {
         Room newRoom = new Room();
         newRoom.IsDeleted = roomModel.IsDeleted;
         newRoom.RoomName = roomModel.RoomName;
         RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);
+        if (roomType == null)
+            throw new RoomTypeNotFoundException();
         newRoom.RoomType = roomType;
         newRoom.RoomTypeId = roomType.Id;
         _ = _roomRepository.Post(newRoom);
@@ -127,6 +129,8 @@ public class RoomService : IRoomService
         room.IsDeleted = roomModel.IsDeleted;
         room.RoomName = roomModel.RoomName;
         RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);
+        if (roomType == null)
+            throw new RoomTypeNotFoundException();
         room.RoomType = roomType;
         room.RoomTypeId = roomType.Id;
         _ = _roomRepository.Update(room);

@@ -48,7 +48,7 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpGet]
-        [Route("filter/{equipmentTypeId:decimal?}/{minAmmount:int?}/{MaxAmmount:int?}/{roomTypeId:decimal?}")]
+        [Route("filter/{equipmentTypeId:decimal?}/{minAmount:int?}/{maxAmount:int?}/{roomTypeId:decimal?}")]
         public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> GetFilteredEquipment(decimal equipmentTypeId=-1, int minAmount=-1, int maxAmount=-1, decimal roomTypeId = -1)
         {
             try

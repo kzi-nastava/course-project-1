@@ -33,7 +33,7 @@ namespace HealthCareAPI.Controllers
 
         [HttpGet]
         [Route("doctorId={id}")]
-        public async Task<ActionResult<IEnumerable<OperationDomainModel>>> GetAllOperationsForDoctor(decimal id)
+        public async Task<ActionResult<IEnumerable<OperationDomainModel>>> GetAllForDoctor(decimal id)
         {
             try
             {
@@ -50,8 +50,16 @@ namespace HealthCareAPI.Controllers
         [Route("create")]
         public async Task<ActionResult<OperationDomainModel>> Create([FromBody] OperationDomainModel operationModel) 
         {
-            OperationDomainModel createdOperationModel = await _operationService.Create(operationModel);
-            return Ok(createdOperationModel);
+            try
+            {
+                OperationDomainModel createdOperationModel = await _operationService.Create(operationModel);
+                return Ok(createdOperationModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+
         }
 
         [HttpPut]

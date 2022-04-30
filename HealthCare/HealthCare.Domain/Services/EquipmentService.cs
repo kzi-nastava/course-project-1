@@ -91,6 +91,15 @@ public class EquipmentService : IEquipmentService
             Name = item.Name,
             IsDeleted = item.IsDeleted,
         };
+        if (item.EquipmentType != null) 
+        {
+            equipmentModel.EquipmentType = new EquipmentTypeDomainModel 
+            {
+                Id = item.EquipmentType.Id,
+                Name = item.EquipmentType.Name,
+                IsDeleted = item.EquipmentType.IsDeleted,
+            };
+        }
         return equipmentModel;
     }
 
@@ -121,7 +130,7 @@ public class EquipmentService : IEquipmentService
         {
             IEnumerable<Inventory> inventories = await _inventoryRepository.GetAll();
             // group inventories by equipment and sum the amount
-            var summedEquipment = inventories.GroupBy(inventory => inventory.RquipmentId)
+            var summedEquipment = inventories.GroupBy(inventory => inventory.EquipmentId)
                 .Select(group => new
                 {
                     EquipmentId = group.Key,
@@ -155,7 +164,7 @@ public class EquipmentService : IEquipmentService
 
             // find equipment ids in all inventories stored in the rooms
             IEnumerable<Inventory> inventories = await _inventoryRepository.GetAll();
-            IEnumerable<decimal> equipmentIds = inventories.Where(i => roomIds.Contains(i.RoomId)).Select(x => x.RquipmentId); 
+            IEnumerable<decimal> equipmentIds = inventories.Where(i => roomIds.Contains(i.RoomId)).Select(x => x.EquipmentId); 
 
             // return equipment with those ids
             filterResult = filterResult.Where(x => equipmentIds.Contains(x.Id));
