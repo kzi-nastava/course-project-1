@@ -30,6 +30,7 @@ namespace HealthCare.Data.Context
         public DbSet<Room> Rooms { get; set; }
         public DbSet<RoomType> RoomTypes { get; set; }
         public DbSet<Secretary> Secretaries { get; set; }
+        public DbSet<Specialization> Specializations { get; set; }
         public DbSet<Transfer> Transfers { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
 
@@ -69,6 +70,8 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<Room>().HasKey(x => x.Id);
             modelBuilder.Entity<RoomType>().HasKey(x => x.Id);
             modelBuilder.Entity<ReferralLetter>().HasKey(x => x.Id);
+            modelBuilder.Entity<Ingredient>().HasKey(x => x.Id);
+            modelBuilder.Entity<Specialization>().HasKey(x => x.Id);
         }
     }
 }

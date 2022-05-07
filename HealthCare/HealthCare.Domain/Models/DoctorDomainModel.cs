@@ -17,10 +17,15 @@ public class DoctorDomainModel
     public string Phone { get; set; }
 
     public bool isDeleted { get; set; }
+    public decimal SpecializationId { get; set; }
+
 
     public List<OperationDomainModel> Operations { get; set; }
 
     public List<ExaminationDomainModel> Examinations { get; set; }
 
     public CredentialsDomainModel Credentials { get; set; }
+
+    public SpecializationDomainModel? Specialization { get; set; }
+
 }

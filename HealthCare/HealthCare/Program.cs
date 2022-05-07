@@ -39,6 +39,7 @@ builder.Services.AddTransient<IReferralLetterRepository, ReferralLetterRepositor
 builder.Services.AddTransient<IRoomRepository, RoomRepository>();
 builder.Services.AddTransient<IRoomTypeRepository, RoomTypeRepository>();
 builder.Services.AddTransient<ISecretaryRepository, SecretaryRepository>();
+builder.Services.AddTransient<ISpecializationRepository, SpecializationRepository>();
 builder.Services.AddTransient<ITransferRepository, TransferRepository>();
 builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
 
@@ -62,6 +63,7 @@ builder.Services.AddTransient<IReferralLetterService, ReferralLetterService>();
 builder.Services.AddTransient<IRoomService, RoomService>();
 builder.Services.AddTransient<IRoomTypeService, RoomTypeService>();
 builder.Services.AddTransient<ISecretaryService, SecretaryService>();
+builder.Services.AddTransient<ISpecializationService, SpecializationService>();
 builder.Services.AddTransient<ITransferService, TransferService>();
 builder.Services.AddTransient<IUserRoleService, UserRoleService>();
 

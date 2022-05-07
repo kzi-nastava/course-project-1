@@ -35,11 +35,11 @@ public class DoctorService : IDoctorService
                 Id = item.Id,
                 Name = item.Name,
                 Phone = item.Phone,
-                Surname = item.Surname
+                Surname = item.Surname,
             };
-            if (item.Credentials != null) 
+            if (item.Credentials != null)
             {
-                doctorModel.Credentials = new CredentialsDomainModel 
+                doctorModel.Credentials = new CredentialsDomainModel
                 {
                     Id = item.Credentials.Id,
                     Username = item.Credentials.Username,
@@ -51,15 +51,24 @@ public class DoctorService : IDoctorService
                     UserRoleId = item.Credentials.UserRoleId
 
                 };
-                if (item.Credentials.UserRole != null) 
+                if (item.Credentials.UserRole != null)
                 {
-                    doctorModel.Credentials.UserRole = new UserRoleDomainModel 
+                    doctorModel.Credentials.UserRole = new UserRoleDomainModel
                     {
                         Id = item.Credentials.UserRole.Id,
                         RoleName = item.Credentials.UserRole.RoleName,
                         IsDeleted = item.Credentials.UserRole.IsDeleted
                     };
                 }
+            }
+            if(item.Specialization != null)
+            {
+                doctorModel.Specialization = new SpecializationDomainModel
+                {
+                    Id = item.Specialization.Id,
+                    Name = item.Specialization.Name
+                };
+
             }
             doctorModel.Examinations = new List<ExaminationDomainModel>();
             doctorModel.Operations = new List<OperationDomainModel>();
