@@ -16,4 +16,7 @@ public class MedicalRecordDomainModel
 
     public bool IsDeleted { get; set; }
 
+    public List<ReferralLetterDomainModel> ReferralLetters { get; set; }
+
+
 }

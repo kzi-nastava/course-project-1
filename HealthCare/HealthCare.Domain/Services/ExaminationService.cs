@@ -88,7 +88,7 @@ public class ExaminationService : IExaminationService
             RoomId = examinationModel.RoomId,
             IsEmergency = examinationModel.IsEmergency
         };
-        if (examination.Anamnesis != null)
+        if (examinationModel.Anamnesis != null)
         {
             examination.Anamnesis = new Anamnesis
             {

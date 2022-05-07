@@ -34,5 +34,6 @@ namespace HealthCare.Data.Entities
         [Column("emergency")]
         public bool IsEmergency { get; set; }
         public Anamnesis? Anamnesis { get; set; }
+
     }
 }
