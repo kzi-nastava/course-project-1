@@ -25,6 +25,7 @@ namespace HealthCare.Data.Context
         public DbSet<MedicalRecord> MedicalRecords { get; set; }
         public DbSet<Operation> Operations { get; set; }
         public DbSet<Patient> Patients { get; set; }
+        public DbSet<ReferralLetter> ReferralLetters { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<RoomType> RoomTypes { get; set; }
         public DbSet<Secretary> Secretaries { get; set; }
