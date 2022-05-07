@@ -60,7 +60,8 @@ public class ExaminationService : IExaminationService
             DoctorId = examination.DoctorId,
             IsDeleted = examination.IsDeleted,
             PatientId = examination.PatientId,
-            RoomId = examination.RoomId
+            RoomId = examination.RoomId,
+            IsEmergency = examination.IsEmergency
         };
         if (examination.Anamnesis != null)
         {
@@ -84,7 +85,8 @@ public class ExaminationService : IExaminationService
             DoctorId = examinationModel.DoctorId,
             IsDeleted = examinationModel.IsDeleted,
             PatientId = examinationModel.PatientId,
-            RoomId = examinationModel.RoomId
+            RoomId = examinationModel.RoomId,
+            IsEmergency = examinationModel.IsEmergency
         };
         if (examination.Anamnesis != null)
         {
@@ -422,12 +424,14 @@ public class ExaminationService : IExaminationService
                 StartTime = examinationModel.StartTime,
                 IsDeleted = true,
                 Anamnesis = null,
+                IsEmergency = examinationModel.IsEmergency
+
             };
 
             _ = _examinationRepository.Post(newExamination);
             _examinationRepository.Save();
 
-            Examination createdExamination = await _examinationRepository.GetByParams(newExamination.DoctorId, newExamination.RoomId, newExamination.PatientId, newExamination.StartTime);
+            Examination createdExamination = await _examinationRepository.GetByParams(newExamination.DoctorId, newExamination.RoomId, newExamination.PatientId, removeSeconds(newExamination.StartTime));
 
             // Make an approval request
             ExaminationApproval examinationApproval = new ExaminationApproval 

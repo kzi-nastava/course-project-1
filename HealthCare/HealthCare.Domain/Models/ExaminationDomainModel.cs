@@ -18,5 +18,7 @@ public class ExaminationDomainModel
     public DateTime StartTime { get; set; }
 
     public bool IsDeleted { get; set; }
+
+    public bool IsEmergency { get; set; }
     public AnamnesisDomainModel? Anamnesis { get; set; }
 }
