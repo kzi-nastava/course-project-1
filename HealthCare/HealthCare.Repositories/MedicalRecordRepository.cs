@@ -27,7 +27,7 @@ namespace HealthCare.Repositories
         }
         public async Task<IEnumerable<MedicalRecord>> GetAll() 
         {
-            return await _healthCareContext.MedicalRecords.ToListAsync();
+            return await _healthCareContext.MedicalRecords.Include(x => x.ReferralLetters).ToListAsync();
         }
 
         public async Task<MedicalRecord> GetByPatientId(decimal patientId) 

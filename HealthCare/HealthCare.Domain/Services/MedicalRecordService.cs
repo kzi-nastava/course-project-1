@@ -33,16 +33,7 @@ public class MedicalRecordService : IMedicalRecordService
         MedicalRecordDomainModel medicalRecordModel;
         foreach (MedicalRecord item in data)
         {
-            medicalRecordModel = new MedicalRecordDomainModel
-            {
-                IsDeleted = item.IsDeleted,
-                Allergies = item.Allergies,
-                BedriddenDiseases = item.BedriddenDiseases,
-                Height = item.Height,
-                PatientId = item.PatientId,
-                Weight = item.Weight
-            };
-            results.Add(medicalRecordModel);
+            results.Add(parseToModel(item));
         }
 
         return results;
@@ -54,16 +45,8 @@ public class MedicalRecordService : IMedicalRecordService
 
         if (data == null) 
             throw new DataIsNullException();
-        MedicalRecordDomainModel medicalRecordModel = new MedicalRecordDomainModel
-        {
-            IsDeleted = data.IsDeleted,
-            Allergies = data.Allergies,
-            BedriddenDiseases = data.BedriddenDiseases,
-            Height = data.Height,
-            PatientId = data.PatientId,
-            Weight = data.Weight
-        };
-        return medicalRecordModel;
+        
+        return parseToModel(data);
     }
 
     public async Task<MedicalRecordDomainModel> Update(MedicalRecordDomainModel medicalRecordModel)
@@ -84,6 +67,21 @@ public class MedicalRecordService : IMedicalRecordService
             Allergies = medicalRecord.Allergies,
             IsDeleted = medicalRecord.IsDeleted
         };
+        if (medicalRecord.ReferralLetters != null)
+        {
+            foreach (ReferralLetter item in medicalRecord.ReferralLetters)
+            {
+                ReferralLetterDomainModel referralLetterModel = new ReferralLetterDomainModel
+                {
+                    Id = item.Id,
+                    FromDoctorId = item.FromDoctorId,
+                    ToDoctorId = item.ToDoctorId,
+                    PatientId = item.PatientId
+                };
+                medicalRecordModel.ReferralLetters.Add(referralLetterModel);
+            }
+
+        }
         return medicalRecordModel;
     }
 
@@ -98,6 +96,21 @@ public class MedicalRecordService : IMedicalRecordService
             Allergies = medicalRecordModel.Allergies,
             IsDeleted = medicalRecordModel.IsDeleted
         };
+        if (medicalRecordModel.ReferralLetters != null)
+        {
+            foreach(ReferralLetterDomainModel item in medicalRecordModel.ReferralLetters)
+            {
+                ReferralLetter referralLetter = new ReferralLetter
+                {
+                    Id = item.Id,
+                    FromDoctorId = item.FromDoctorId,
+                    ToDoctorId = item.ToDoctorId,
+                    PatientId = item.PatientId
+                };
+                medicalRecord.ReferralLetters.Add(referralLetter);
+            }
+
+        }
         return medicalRecord;
     }
 }

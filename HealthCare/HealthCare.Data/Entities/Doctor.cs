@@ -32,10 +32,15 @@ namespace HealthCare.Data.Entities
         [Column("deleted")]
         public bool IsDeleted { get; set; }
 
+        [Column("specialization_id")]
+        public decimal? SpecializationId { get; set; }
+
         public List<Operation> Operations { get; set; }
 
         public List<Examination> Examinations { get; set; }
 
         public Credentials Credentials { get; set; }
+
+        public Specialization? Specialization { get; set; }
     }
 }

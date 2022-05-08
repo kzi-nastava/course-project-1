@@ -27,5 +27,7 @@ namespace HealthCare.Data.Entities
 
         [Column("deleted")]
         public bool IsDeleted { get; set; }
+
+        public List<ReferralLetter> ReferralLetters { get; set; }
     }
 }

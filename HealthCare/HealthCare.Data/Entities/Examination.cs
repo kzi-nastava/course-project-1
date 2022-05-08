@@ -30,6 +30,10 @@ namespace HealthCare.Data.Entities
 
         [Column("deleted")]
         public bool IsDeleted { get; set; }
+
+        [Column("emergency")]
+        public bool IsEmergency { get; set; }
         public Anamnesis? Anamnesis { get; set; }
+
     }
 }

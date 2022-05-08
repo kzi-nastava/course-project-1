@@ -29,6 +29,7 @@ namespace HealthCare.Repositories
         {
             return await _healthCareContext.Doctors
                 .Include(x => x.Credentials).ThenInclude(x => x.UserRole)
+                .Include(x => x.Specialization)
                 .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
                 .Include(x => x.Operations)
                 .ToListAsync();
