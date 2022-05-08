@@ -141,6 +141,20 @@ public class ExaminationService : IExaminationService
         return results;
     }
 
+    public async Task<IEnumerable<ExaminationDomainModel>> GetAllForPatientSorted(decimal id, string sortParam)
+    {
+        IEnumerable<ExaminationDomainModel> examinations = await GetAllForPatient(id);
+        IEnumerable<ExaminationDomainModel> sortedExaminations = null;
+        if (sortParam.Equals("date"))
+            sortedExaminations = examinations.OrderBy(x => x.StartTime);
+        else if (sortParam.Equals("doctor"))
+            sortedExaminations = examinations.OrderBy(x => x.DoctorId);
+        else
+            sortedExaminations = examinations.OrderBy(x => x.Id);
+
+        return sortedExaminations;
+    }
+
     public async Task<IEnumerable<ExaminationDomainModel>> GetAllForDoctor(decimal id)
     {
         IEnumerable<Examination> data = await _examinationRepository.GetAllByDoctorId(id);
