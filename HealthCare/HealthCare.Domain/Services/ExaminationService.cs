@@ -141,6 +141,20 @@ public class ExaminationService : IExaminationService
         return results;
     }
 
+    public async Task<IEnumerable<ExaminationDomainModel>> GetAllForPatientSorted(decimal id, string sortParam)
+    {
+        IEnumerable<ExaminationDomainModel> examinations = await GetAllForPatient(id);
+        IEnumerable<ExaminationDomainModel> sortedExaminations = null;
+        if (sortParam.Equals("date"))
+            sortedExaminations = examinations.OrderBy(x => x.StartTime);
+        else if (sortParam.Equals("doctor"))
+            sortedExaminations = examinations.OrderBy(x => x.DoctorId);
+        else
+            sortedExaminations = examinations.OrderBy(x => x.Id);
+
+        return sortedExaminations;
+    }
+
     public async Task<IEnumerable<ExaminationDomainModel>> GetAllForDoctor(decimal id)
     {
         IEnumerable<Examination> data = await _examinationRepository.GetAllByDoctorId(id);
@@ -461,5 +475,22 @@ public class ExaminationService : IExaminationService
         }
 
         return parseToModel(examination);
+    }
+
+    public async Task<IEnumerable<ExaminationDomainModel>> SearchByAnamnesis(decimal id, string substring)
+    {
+        substring = substring.ToLower();
+        IEnumerable<Examination> examinations = await _examinationRepository.GetByPatientId(id);
+        if (examinations == null)
+            throw new DataIsNullException();
+
+        List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
+
+        foreach (Examination item in examinations)
+        {
+            if(item.Anamnesis != null && item.Anamnesis.Description.ToLower().Contains(substring))
+                results.Add(parseToModel(item));
+        }
+        return results;
     }
 }
