@@ -1,4 +1,5 @@
 ﻿using HealthCare.Domain.Models;
+using HealthCare.Domain.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,8 @@ namespace HealthCare.Domain.Interfaces
 {
     public interface IReferralLetterService : IService<ReferralLetterDomainModel>
     {
+        public Task<ReferralLetterDomainModel> Create(ReferralLetterDTO referralDTO);
+
         public Task<ReferralLetterDomainModel> CreateAppointment(decimal referralId, DateTime time, IExaminationService examinationService);
     }
 }
