@@ -36,7 +36,7 @@ namespace HealthCareAPI.Controllers
         // https://localhost:7195/api/examination/patientId=___
         [HttpGet]
         [Route("patientId={id}")]
-        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllExaminationsForPatient(decimal id) 
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForPatient(decimal id) 
         {
             IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatient(id);
             if (examinations == null) {
@@ -45,9 +45,22 @@ namespace HealthCareAPI.Controllers
             return Ok(examinations);
         }
 
+        // https://localhost:7195/api/examination/patientId=___
+        [HttpGet]
+        [Route("patientId={id}/sortParam={sortParam}")]
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForPatientSorted(decimal id, string sortParam)
+        {
+            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatientSorted(id, sortParam);
+            if (examinations == null)
+            {
+                examinations = new List<ExaminationDomainModel>();
+            }
+            return Ok(examinations);
+        }
+
         [HttpGet]
         [Route("doctorId={id}")]
-        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllExaminationsForDoctor(decimal id)
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForDoctor(decimal id)
         {
             IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForDoctor(id);
             if (examinations == null)
@@ -120,7 +133,22 @@ namespace HealthCareAPI.Controllers
         }
 
 
+        // https://localhost:7195/api/examination/search
+        [HttpGet]
+        [Route("search/patientId={id}/substring={substring}")]
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetByName(decimal id, string substring)
+        {
+            try
+            {
+                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.SearchByAnamnesis(id, substring);
+                return Ok(examinations);
 
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+        }
 
     }
 }
