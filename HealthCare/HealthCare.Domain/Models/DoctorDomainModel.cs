@@ -19,7 +19,6 @@ public class DoctorDomainModel
     public bool IsDeleted { get; set; }
     public decimal SpecializationId { get; set; }
 
-
     public List<OperationDomainModel> Operations { get; set; }
 
     public List<ExaminationDomainModel> Examinations { get; set; }

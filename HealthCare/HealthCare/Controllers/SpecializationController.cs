@@ -18,11 +18,12 @@ namespace HealthCareAPI.Controllers
 
         // https://localhost:7195/api/ingridient
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<IngredientDomainModel>>> GetAll()
+        public async Task<ActionResult<IEnumerable<SpecializationDomainModel>>> GetAll()
         {
-            IEnumerable<SpecializationDomainModel> ingridients = await _specializationService.GetAll();
-            return Ok(ingridients);
+            IEnumerable<SpecializationDomainModel> specializations = await _specializationService.GetAll();
+            return Ok(specializations);
         }
+            
 
     }
 }
