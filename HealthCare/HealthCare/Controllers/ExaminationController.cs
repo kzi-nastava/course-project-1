@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DataTransferObjects;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -101,6 +102,21 @@ namespace HealthCareAPI.Controllers
                 return NotFound(exception.Message);
             }
 
+        }
+
+        [HttpGet]
+        [Route("recommend")]
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> RecommendExaminations([FromBody] ParamsForRecommendingFreeExaminationsDTO paramsDTO)
+        {
+            try
+            {
+                IEnumerable<ExaminationDomainModel> recommendedExaminations = await _examinationService.GetRecommendedExaminations(paramsDTO);
+                return Ok(recommendedExaminations);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
 

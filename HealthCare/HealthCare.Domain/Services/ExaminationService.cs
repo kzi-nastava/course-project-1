@@ -1,4 +1,5 @@
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DataTransferObjects;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -461,5 +462,10 @@ public class ExaminationService : IExaminationService
         }
 
         return parseToModel(examination);
+    }
+
+    public Task<IEnumerable<ExaminationDomainModel>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO)
+    {
+        throw new NotImplementedException();
     }
 }
