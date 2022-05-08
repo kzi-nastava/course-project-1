@@ -15,6 +15,7 @@ namespace HealthCare.Repositories
     {
         public Examination Post(Examination examination);
         public Task<IEnumerable<Examination>> GetAllByPatientId(decimal id);
+        public Task<IEnumerable<Examination>> GetByPatientId(decimal id);
         public Task<IEnumerable<Examination>> GetAllByDoctorId(decimal id);
         public Task<IEnumerable<Examination>> GetAllByDoctorId(decimal id, DateTime date);
         public Task<IEnumerable<Examination>> GetAllByRoomId(decimal id);
@@ -40,9 +41,16 @@ namespace HealthCare.Repositories
         {
             return await _healthCareContext.Examinations
                 .Where(x => x.PatientId == id)
-                .Include(x => x.Anamnesis!)
+                .Include(x => x.Anamnesis)
                 .Where(x => x.IsDeleted == false)
+                .ToListAsync();
+        }
 
+        public async Task<IEnumerable<Examination>> GetByPatientId(decimal id)
+        {
+            return await _healthCareContext.Examinations
+                .Where(x => x.PatientId == id)
+                .Include(x => x.Anamnesis)
                 .ToListAsync();
         }
 

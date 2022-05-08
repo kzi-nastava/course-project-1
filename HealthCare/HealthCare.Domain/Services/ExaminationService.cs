@@ -462,4 +462,21 @@ public class ExaminationService : IExaminationService
 
         return parseToModel(examination);
     }
+
+    public async Task<IEnumerable<ExaminationDomainModel>> SearchByAnamnesis(decimal id, string substring)
+    {
+        substring = substring.ToLower();
+        IEnumerable<Examination> examinations = await _examinationRepository.GetByPatientId(id);
+        if (examinations == null)
+            throw new DataIsNullException();
+
+        List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
+
+        foreach (Examination item in examinations)
+        {
+            if(item.Anamnesis != null && item.Anamnesis.Description.ToLower().Contains(substring))
+                results.Add(parseToModel(item));
+        }
+        return results;
+    }
 }

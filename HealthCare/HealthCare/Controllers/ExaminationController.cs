@@ -102,7 +102,21 @@ namespace HealthCareAPI.Controllers
             }
 
         }
-
+        // https://localhost:7195/api/examination/search
+        [HttpGet]
+        [Route("search/patientId={id}/substring={substring}")]
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetByName(decimal id, string substring)
+        {
+            try
+            {
+                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.SearchByAnamnesis(id, substring);
+                return Ok(examinations);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+        }
 
 
 
