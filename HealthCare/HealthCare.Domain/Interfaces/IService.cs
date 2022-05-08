@@ -96,5 +96,17 @@ namespace HealthCare.Domain.Interfaces
         {
         }
     }
+    public class ReferralCannotBeUsedException : Exception
+    {
+        public ReferralCannotBeUsedException() : base("This referral letter has already been used")
+        {
+        }
+    }
 
+    public class NoAvailableSpecialistsException : Exception
+    {
+        public NoAvailableSpecialistsException() : base("There are no available specialists for the given date")
+        {
+        }
+    }
 }
