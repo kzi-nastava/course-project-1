@@ -48,7 +48,12 @@ namespace HealthCare.Repositories
 
         public async Task<Doctor> GetDoctortById(decimal id)
         {
-            return await _healthCareContext.Doctors.FirstAsync(x => x.Id == id);
+            return await _healthCareContext.Doctors
+                .Include(x => x.Credentials).ThenInclude(x => x.UserRole)
+                .Include(x => x.Specialization)
+                .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
+                .Include(x => x.Operations)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public Doctor Post(Doctor doctor)

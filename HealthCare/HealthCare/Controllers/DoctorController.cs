@@ -31,5 +31,14 @@ namespace HealthCareAPI.Controllers
             IEnumerable<DoctorDomainModel> doctors = await _doctorService.ReadAll();
             return Ok(doctors);
         }
+        // FOR TESTING
+        // DELETE LATER
+        [HttpGet]
+        [Route("testSchedule/{doctorId}/{duration?}")]
+        public async Task<ActionResult<IEnumerable<KeyValuePair<DateTime, DateTime>>>> GetAvailableSchedule(decimal doctorId, decimal duration=15) 
+        {
+            IEnumerable<KeyValuePair<DateTime, DateTime>> schedule = await _doctorService.GetAvailableSchedule(doctorId, duration);
+            return Ok(schedule);
+        }
     }
 }
