@@ -3,6 +3,7 @@ using HealthCare.Domain.DataTransferObjects;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
+using System.Collections.Generic;
 
 namespace HealthCare.Domain.Services;
 
@@ -478,9 +479,95 @@ public class ExaminationService : IExaminationService
         return parseToModel(examination);
     }
 
-    public Task<IEnumerable<ExaminationDomainModel>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO)
+    public async Task<IEnumerable<ExaminationDomainModel>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService)
     {
-        throw new NotImplementedException();
+        List<ExaminationDomainModel> recommendedExaminaions = new List<ExaminationDomainModel>();
+        IEnumerable<KeyValuePair<DateTime,DateTime>> freeTimes = await doctorService.GetAvailableSchedule(paramsDTO.DoctorId);
+        List<KeyValuePair<DateTime, DateTime>> possibleSlots = new List<KeyValuePair<DateTime, DateTime>>();
+        foreach (KeyValuePair<DateTime, DateTime> time in freeTimes)
+        {
+            if (DateTime.Now < time.Value && time.Key < paramsDTO.LastDate)
+            {
+                possibleSlots.Add(time);
+            }
+        }
+        if (possibleSlots.Count == 0) return null;
+        int numOfExaminations = 0;
+        int possibleSlotIndex = 0;
+        int numOfAddedMinutes = 0;
+        int numOfAddedDays = 0;
+        DateTime startTime = paramsDTO.TimeFrom;
+        bool canFindExaminations = true;
+        if (startTime.TimeOfDay < possibleSlots[possibleSlotIndex].Key.TimeOfDay)
+            startTime = possibleSlots[possibleSlotIndex].Key;
+        else
+        {
+            startTime = DateTime.Now;
+        }
+        paramsDTO.TimeTo.AddMinutes(-15);
+        while (numOfExaminations != 3)
+        {
+
+            if (startTime.TimeOfDay < paramsDTO.TimeTo.TimeOfDay && startTime < possibleSlots[possibleSlotIndex].Value)
+            {
+                bool canReserve = true;
+                ExaminationDomainModel firstExamination = new ExaminationDomainModel
+                {
+                    DoctorId = paramsDTO.DoctorId,
+                    PatientId = paramsDTO.PatientId,
+                    StartTime = startTime
+                };
+                try
+                {
+                    await validateUserInput(firstExamination);
+                }
+                catch (Exception ex)
+                {
+                    canReserve = false;
+                }
+                if (canReserve)
+                {
+                    recommendedExaminaions.Add(firstExamination);
+                    numOfExaminations++;
+                    if (numOfExaminations == 3)
+                    {
+                        break;
+                    }
+                }
+                startTime = startTime.AddMinutes(15);
+                numOfAddedMinutes++;
+            }
+            else
+            {
+                if (startTime < possibleSlots[possibleSlotIndex].Value)
+                {
+                    startTime = startTime.AddDays(1);
+                    startTime = new DateTime(startTime.Year, startTime.Month, startTime.Day, paramsDTO.TimeFrom.Hour, paramsDTO.TimeFrom.Minute, paramsDTO.TimeFrom.Second);
+                    numOfAddedMinutes = 0;
+                }
+                else
+                {
+                    possibleSlotIndex++;
+                    if (possibleSlotIndex == possibleSlots.Count)
+                    {
+                        canFindExaminations = false;
+                        break;
+                    }
+                    if (startTime.TimeOfDay < possibleSlots[possibleSlotIndex].Key.TimeOfDay)
+                        startTime = possibleSlots[possibleSlotIndex].Key;
+                }
+            }
+        }
+        if(!canFindExaminations)
+        {
+            return null;
+        }
+         
+
+        
+      
+
+        return recommendedExaminaions;
     }
     public async Task<IEnumerable<ExaminationDomainModel>> SearchByAnamnesis(decimal id, string substring)
     {
@@ -497,5 +584,6 @@ public class ExaminationService : IExaminationService
                 results.Add(parseToModel(item));
         }
         return results;
+       
     }
 }

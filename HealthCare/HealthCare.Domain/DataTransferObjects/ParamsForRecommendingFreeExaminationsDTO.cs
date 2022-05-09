@@ -10,9 +10,9 @@ namespace HealthCare.Domain.DataTransferObjects
     {
         public decimal PatientId { get; set; }
         public decimal DoctorId { get; set; }
-        public TimeOnly TimeFrom { get; set; }
-        public TimeOnly TimeTo { get; set; }
-        public DateOnly LastDate { get; set; }
+        public DateTime TimeFrom { get; set; }
+        public DateTime TimeTo { get; set; }
+        public DateTime LastDate { get; set; }
         public bool IsDoctorPriority { get; set; }
 
     }

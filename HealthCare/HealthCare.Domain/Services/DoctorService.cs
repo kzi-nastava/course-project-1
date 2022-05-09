@@ -273,6 +273,7 @@ public class DoctorService : IDoctorService
             if (currentFirst <= currentSecond)  result.Add(new KeyValuePair<DateTime, DateTime>(first.Value, currentSecond.AddMinutes((double) -duration)));
             first = schedule[i];
         }
+        result.Add(new KeyValuePair<DateTime, DateTime>(schedule[schedule.Count - 1].Value, new DateTime(9999, 12, 31)));
         return result;
     }
 }

@@ -11,10 +11,12 @@ namespace HealthCareAPI.Controllers
     public class ExaminationController : ControllerBase 
     {
         private IExaminationService _examinationService;
+        private IDoctorService _doctorService;
 
-        public ExaminationController(IExaminationService examinationService) 
+        public ExaminationController(IExaminationService examinationService, IDoctorService doctorService) 
         {
             _examinationService = examinationService;
+            _doctorService = doctorService;
         }
 
         // https://localhost:7195/api/examination
@@ -117,13 +119,13 @@ namespace HealthCareAPI.Controllers
 
         }
 
-        [HttpGet]
+        [HttpPost]
         [Route("recommend")]
         public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> RecommendExaminations([FromBody] ParamsForRecommendingFreeExaminationsDTO paramsDTO)
         {
             try
             {
-                IEnumerable<ExaminationDomainModel> recommendedExaminations = await _examinationService.GetRecommendedExaminations(paramsDTO);
+                IEnumerable<ExaminationDomainModel> recommendedExaminations = await _examinationService.GetRecommendedExaminations(paramsDTO, _doctorService);
                 return Ok(recommendedExaminations);
             }
             catch (Exception exception)

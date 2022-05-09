@@ -13,7 +13,7 @@ public interface IExaminationService : IService<ExaminationDomainModel>
     public Task<ExaminationDomainModel> Create(ExaminationDomainModel examinationModel, bool isPatient);
     public Task<ExaminationDomainModel> Update(ExaminationDomainModel examinationModel, bool isPatient);
 
-    public Task<IEnumerable<ExaminationDomainModel>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO);
+    public Task<IEnumerable<ExaminationDomainModel>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService);
     public Task<IEnumerable<ExaminationDomainModel>> ReadAll();
     public Task<IEnumerable<ExaminationDomainModel>> SearchByAnamnesis(decimal id, string substring);
 }
