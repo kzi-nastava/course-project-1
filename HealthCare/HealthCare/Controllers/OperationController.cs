@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.Eventing.Reader;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
+using HealthCare.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareAPI.Controllers 
@@ -10,10 +11,12 @@ namespace HealthCareAPI.Controllers
     public class OperationController : ControllerBase 
     {
         private IOperationService _operationService;
+        private IDoctorService _doctorService;
 
-        public OperationController(IOperationService operationService) 
+        public OperationController(IOperationService operationService, IDoctorService doctorService) 
         {
             _operationService = operationService;
+            _doctorService = doctorService;
         }
 
         // https://localhost:7195/api/operation
@@ -90,6 +93,16 @@ namespace HealthCareAPI.Controllers
             {
                 return NotFound(exception.Message);
             }
+        }
+        
+        [HttpPut]
+        [Route("urgent/{patientId}/{specializationId}/{duration}")]
+        public async Task<ActionResult<IEnumerable<OperationDomainModel>>> CreateUrgentOperation(decimal patientId, decimal specializationId, decimal duration)
+        {
+            List<OperationDomainModel> operationModels =
+                (List<OperationDomainModel>) await _operationService.CreateUrgent(patientId, specializationId, duration, _doctorService);
+            if (operationModels.Count == 0) return Ok();
+            return operationModels;
         }
     }
 }

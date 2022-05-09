@@ -516,9 +516,8 @@ public class ExaminationService : IExaminationService
         return null;
     }
 
-    public async Task<IEnumerable<ExaminationDomainModel>> CreateUrgentExamination(decimal patientId, decimal specializationId, IDoctorService doctorService)
+    public async Task<IEnumerable<ExaminationDomainModel>> CreateUrgent(decimal patientId, decimal specializationId, IDoctorService doctorService)
     {
-        Patient patient = await _patientRepository.GetPatientById(patientId);
         DateTime now = removeSeconds(DateTime.Now);
         ExaminationDomainModel examinationModel = new ExaminationDomainModel
         {

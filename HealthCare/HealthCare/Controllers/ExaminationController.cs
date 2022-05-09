@@ -10,10 +10,12 @@ namespace HealthCareAPI.Controllers
     public class ExaminationController : ControllerBase 
     {
         private IExaminationService _examinationService;
+        private IDoctorService _doctorService;
 
-        public ExaminationController(IExaminationService examinationService) 
+        public ExaminationController(IExaminationService examinationService, IDoctorService doctorService) 
         {
             _examinationService = examinationService;
+            _doctorService = doctorService;
         }
 
         // https://localhost:7195/api/examination
@@ -131,7 +133,15 @@ namespace HealthCareAPI.Controllers
             }
         }
 
-
+        [HttpPut]
+        [Route("urgent/{patientId}/{specializationId}")]
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> CreateUrgentExamination(decimal patientId, decimal specializationId)
+        {
+            List<ExaminationDomainModel> operationModels =
+                (List<ExaminationDomainModel>) await _examinationService.CreateUrgent(patientId, specializationId, _doctorService);
+            if (operationModels.Count == 0) return Ok();
+            return operationModels;
+        }
 
     }
 }

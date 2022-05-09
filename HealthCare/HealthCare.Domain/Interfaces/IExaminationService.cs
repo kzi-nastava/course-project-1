@@ -13,4 +13,7 @@ public interface IExaminationService : IService<ExaminationDomainModel>
     public Task<ExaminationDomainModel> Update(ExaminationDomainModel examinationModel, bool isPatient);
     public Task<IEnumerable<ExaminationDomainModel>> ReadAll();
     public Task<IEnumerable<ExaminationDomainModel>> SearchByAnamnesis(decimal id, string substring);
+
+    public Task<IEnumerable<ExaminationDomainModel>> CreateUrgent(decimal patientId,
+        decimal specializationId, IDoctorService doctorService);
 }

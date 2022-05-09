@@ -12,16 +12,19 @@ public class OperationService : IOperationService
     private IRoomRepository _roomRepository;
     private IExaminationRepository _examinationRepository;
     private IPatientRepository _patientRepository;
+    private IDoctorRepository _doctorRepository;
 
     public OperationService(IOperationRepository operationRepository, 
                             IRoomRepository roomRepository, 
                             IExaminationRepository examinationRepository,
-                            IPatientRepository patientRepository) 
+                            IPatientRepository patientRepository,
+                            IDoctorRepository doctorRepository) 
     {
         _operationRepository = operationRepository;
         _roomRepository = roomRepository;
         _examinationRepository = examinationRepository;
         _patientRepository = patientRepository;
+        _doctorRepository = doctorRepository;
     }
 
     public async Task<IEnumerable<OperationDomainModel>> ReadAll()
@@ -276,5 +279,83 @@ public class OperationService : IOperationService
 
         return operationModel;
     }
+    
+    private Operation parseFromModel(OperationDomainModel operationModel)
+    {
+        Operation operation = new Operation
+        {
+            Id = operationModel.Id,
+            StartTime = operationModel.StartTime,
+            Duration = operationModel.Duration,
+            RoomId = operationModel.RoomId,
+            DoctorId = operationModel.DoctorId,
+            PatientId = operationModel.PatientId,
+            IsDeleted = operationModel.IsDeleted
+        };
 
+        return operation;
+    }
+    
+    public async Task<DateTime?> FirstStartTime(decimal doctorId, List<KeyValuePair<DateTime, DateTime>> schedule, DateTime now)
+    {
+        DateTime limit = removeSeconds(now.AddHours(2));
+        foreach (KeyValuePair<DateTime, DateTime> pair in schedule)
+        {
+            // Now: 20:00, Limit: 22:00, Schedule: 14:00 - 16:00 -> continue
+            if (now > pair.Value) continue;
+            // Now: 20:00, Limit: 22:00, Schedule: 15:00 - 21:00 -> 20:00
+            if (now >= pair.Key && now <= pair.Value) return now;
+            // Now: 20:00, Limit: 22:00, Schedule: 21:00 - 23:00 -> 21:00
+            if (limit >= pair.Key && pair.Key > now) return pair.Key;
+            // Now: 20:00, Limit: 22:00, Schedule: 23:00 - 23:30 -> break completely (every other
+            // pair will be greater than this one, so return null)
+            return null;
+        }
+        return null;
+    }
+
+    public async Task<IEnumerable<OperationDomainModel>> CreateUrgent(decimal patientId, decimal specializationId, decimal duration, IDoctorService doctorService)
+    {
+        DateTime now = removeSeconds(DateTime.Now);
+        // TODO: add urgent flag
+        OperationDomainModel operationModel = new OperationDomainModel
+        {
+            IsDeleted = false,
+            PatientId = patientId
+        };
+        // Find examination in the first 2 hours for any doctor that matches
+        // the specialization criteria
+        List<Doctor> doctors = (List<Doctor>)await _doctorRepository.GetBySpecializationId(specializationId);
+        if (doctors == null || doctors.Count == 0) throw new NoAvailableSpecialistsException();
+        List<KeyValuePair<DateTime, decimal>> urgentStartTimes = new List<KeyValuePair<DateTime, decimal>>();
+        foreach (Doctor doctor in doctors)
+        {
+            var schedule =
+                (List<KeyValuePair<DateTime, DateTime>>)await doctorService.GetAvailableSchedule(doctor.Id, duration);
+            DateTime? startTime = await FirstStartTime(doctor.Id, schedule, now);
+            if (startTime.HasValue)
+                urgentStartTimes.Add(new KeyValuePair<DateTime, decimal>(startTime.GetValueOrDefault(), doctor.Id));
+        }
+
+        urgentStartTimes.Sort((x, y) => x.Key.CompareTo(y.Key));
+        // Try to create examination
+        foreach (KeyValuePair<DateTime, decimal> pair in urgentStartTimes)
+        {
+            operationModel.StartTime = pair.Key;
+            operationModel.DoctorId = pair.Value;
+            decimal roomId = await GetAvailableRoomId(operationModel);
+            if (roomId == -1) continue;
+            operationModel.RoomId = roomId;
+            Operation operation = parseFromModel(operationModel);
+            _ = _operationRepository.Post(operation);
+            _operationRepository.Save();
+            // Return empty list to signify success
+            return new List<OperationDomainModel>();
+        }
+
+        // Above failed, return examinations that can be postponed
+        // sorted by the date on which they can be postponed 
+        // This list must contain 5 examinations
+        return null;
+    }
 }

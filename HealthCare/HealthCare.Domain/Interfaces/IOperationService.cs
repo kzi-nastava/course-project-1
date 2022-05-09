@@ -8,4 +8,7 @@ public interface IOperationService : IService<OperationDomainModel>
     public Task<OperationDomainModel> Update(OperationDomainModel operationModel);
     public Task<OperationDomainModel> Delete(OperationDomainModel operationModel);
     public Task<IEnumerable<OperationDomainModel>> ReadAll();
+
+    public Task<IEnumerable<OperationDomainModel>> CreateUrgent(decimal patientId, decimal specializationId,
+        decimal duration, IDoctorService doctorService);
 }
