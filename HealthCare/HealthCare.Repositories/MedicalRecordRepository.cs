@@ -33,6 +33,7 @@ namespace HealthCare.Repositories
         public async Task<MedicalRecord> GetByPatientId(decimal patientId) 
         {
             return await _healthCareContext.MedicalRecords
+                .Include(x => x.ReferralLetters).ThenInclude(x => x.Specialization)
                 .Where(x => x.PatientId == patientId)
                 .FirstOrDefaultAsync();
         }

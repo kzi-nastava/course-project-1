@@ -67,6 +67,8 @@ public class MedicalRecordService : IMedicalRecordService
             Allergies = medicalRecord.Allergies,
             IsDeleted = medicalRecord.IsDeleted
         };
+
+        medicalRecordModel.ReferralLetters = new List<ReferralLetterDomainModel>();
         if (medicalRecord.ReferralLetters != null)
         {
             foreach (ReferralLetter item in medicalRecord.ReferralLetters)
