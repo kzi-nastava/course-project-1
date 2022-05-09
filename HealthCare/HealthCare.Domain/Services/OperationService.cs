@@ -274,7 +274,8 @@ public class OperationService : IOperationService
             RoomId = operation.RoomId,
             DoctorId = operation.DoctorId,
             PatientId = operation.PatientId,
-            IsDeleted = operation.IsDeleted
+            IsDeleted = operation.IsDeleted,
+            IsEmergency = operation.IsEmergency
         };
 
         return operationModel;
@@ -290,7 +291,8 @@ public class OperationService : IOperationService
             RoomId = operationModel.RoomId,
             DoctorId = operationModel.DoctorId,
             PatientId = operationModel.PatientId,
-            IsDeleted = operationModel.IsDeleted
+            IsDeleted = operationModel.IsDeleted,
+            IsEmergency = operationModel.IsEmergency
         };
 
         return operation;
@@ -317,11 +319,12 @@ public class OperationService : IOperationService
     public async Task<IEnumerable<OperationDomainModel>> CreateUrgent(decimal patientId, decimal specializationId, decimal duration, IDoctorService doctorService)
     {
         DateTime now = removeSeconds(DateTime.Now);
-        // TODO: add urgent flag
         OperationDomainModel operationModel = new OperationDomainModel
         {
             IsDeleted = false,
-            PatientId = patientId
+            PatientId = patientId,
+            Duration = duration,
+            IsEmergency = true
         };
         // Find examination in the first 2 hours for any doctor that matches
         // the specialization criteria

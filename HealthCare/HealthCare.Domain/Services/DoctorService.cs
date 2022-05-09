@@ -100,7 +100,8 @@ public class DoctorService : IDoctorService
                     RoomId = operationModel.RoomId,
                     PatientId = operationModel.PatientId,
                     Duration = operationModel.Duration,
-                    IsDeleted = operationModel.IsDeleted
+                    IsDeleted = operationModel.IsDeleted,
+                    IsEmergency = operationModel.IsEmergency
                 };
                 doctor.Operations.Add(operation);
             }
@@ -193,7 +194,8 @@ public class DoctorService : IDoctorService
                     RoomId = operation.RoomId,
                     PatientId = operation.PatientId,
                     Duration = operation.Duration,
-                    IsDeleted = operation.IsDeleted
+                    IsDeleted = operation.IsDeleted,
+                    IsEmergency = operation.IsEmergency
                 };
                 doctorModel.Operations.Add(operationModel);
             }
