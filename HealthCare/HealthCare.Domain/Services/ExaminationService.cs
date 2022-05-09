@@ -2,6 +2,7 @@ using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace HealthCare.Domain.Services;
 
@@ -14,6 +15,7 @@ public class ExaminationService : IExaminationService
     private IAntiTrollRepository _antiTrollRepository;
     private IAnamnesisRepository _anamnesisRepository;
     private IPatientRepository _patientRepository;
+    private IDoctorRepository _doctorRepository;
 
     public ExaminationService(IExaminationRepository examinationRepository,
                               IExaminationApprovalRepository examinationApprovalRepository,
@@ -21,7 +23,8 @@ public class ExaminationService : IExaminationService
                               IRoomRepository roomRepository,
                               IAntiTrollRepository antiTrollRepository,
                               IAnamnesisRepository anamnesisRepository,
-                              IPatientRepository patientRepository)
+                              IPatientRepository patientRepository,
+                              IDoctorRepository doctorRepository)
     {
         _examinationRepository = examinationRepository;
         _examinationApprovalRepository = examinationApprovalRepository;
@@ -30,6 +33,7 @@ public class ExaminationService : IExaminationService
         _antiTrollRepository = antiTrollRepository;
         _anamnesisRepository = anamnesisRepository;
         _patientRepository = patientRepository;
+        _doctorRepository = doctorRepository;
     }
 
     private async Task<bool> AntiTrollCheck(decimal patientId, bool isCreate)
@@ -492,5 +496,67 @@ public class ExaminationService : IExaminationService
                 results.Add(parseToModel(item));
         }
         return results;
+    }
+
+    public async Task<DateTime?> FirstStartTime(decimal doctorId, List<KeyValuePair<DateTime, DateTime>> schedule, DateTime now)
+    {
+        DateTime limit = removeSeconds(now.AddHours(2));
+        foreach (KeyValuePair<DateTime, DateTime> pair in schedule)
+        {
+            // Now: 20:00, Limit: 22:00, Schedule: 14:00 - 16:00 -> continue
+            if (now > pair.Value) continue;
+            // Now: 20:00, Limit: 22:00, Schedule: 15:00 - 21:00 -> 20:00
+            if (now >= pair.Key && now <= pair.Value) return now;
+            // Now: 20:00, Limit: 22:00, Schedule: 21:00 - 23:00 -> 21:00
+            if (limit >= pair.Key && pair.Key > now) return pair.Key;
+            // Now: 20:00, Limit: 22:00, Schedule: 23:00 - 23:30 -> break completely (every other
+            // pair will be greater than this one, so return null)
+            return null;
+        }
+        return null;
+    }
+
+    public async Task<IEnumerable<ExaminationDomainModel>> CreateUrgentExamination(decimal patientId, decimal specializationId, IDoctorService doctorService)
+    {
+        Patient patient = await _patientRepository.GetPatientById(patientId);
+        DateTime now = removeSeconds(DateTime.Now);
+        ExaminationDomainModel examinationModel = new ExaminationDomainModel
+        {
+            IsDeleted = false,
+            IsEmergency = true,
+            PatientId = patientId
+        };
+        // Find examination in the first 2 hours for any doctor that matches
+        // the specialization criteria
+        List<Doctor> doctors = (List<Doctor>) await _doctorRepository.GetBySpecializationId(specializationId);
+        if (doctors == null || doctors.Count == 0) throw new NoAvailableSpecialistsException();
+        List<KeyValuePair<DateTime, decimal>> urgentStartTimes = new List<KeyValuePair<DateTime, decimal>>();
+        foreach (Doctor doctor in doctors)
+        {
+            var schedule = (List<KeyValuePair<DateTime, DateTime>>) await doctorService.GetAvailableSchedule(doctor.Id);
+            DateTime? startTime = await FirstStartTime(doctor.Id, schedule, now);
+            if (startTime.HasValue) 
+                urgentStartTimes.Add(new KeyValuePair<DateTime, decimal>(startTime.GetValueOrDefault(), doctor.Id));
+        }
+        urgentStartTimes.Sort((x, y) => x.Key.CompareTo(y.Key));
+        // Try to create examination
+        foreach (KeyValuePair<DateTime, decimal> pair in urgentStartTimes)
+        {
+            examinationModel.StartTime = pair.Key;
+            examinationModel.DoctorId = pair.Value;
+            decimal roomId = await getAvailableRoomId(examinationModel);
+            if (roomId == -1) continue;
+            examinationModel.RoomId = roomId;
+            Examination examination = parseFromModel(examinationModel);
+            _ = _examinationRepository.Post(examination);
+            _examinationRepository.Save();
+            // Return empty list to signify success
+            return new List<ExaminationDomainModel>();
+        }
+
+        // Above failed, return examinations that can be postponed
+        // sorted by the date on which they can be postponed 
+        // This list must contain 5 examinations
+        return null;
     }
 }
