@@ -11,6 +11,7 @@ namespace HealthCare.Repositories
 {
     public interface ISpecializationRepository : IRepository<Specialization>
     {
+        public Task<Specialization> GetById(decimal id);
 
     }
     public class SpecializationRepository : ISpecializationRepository
@@ -30,6 +31,10 @@ namespace HealthCare.Repositories
         public void Save()
         {
             _healthCareContext.SaveChanges();
+        }
+        public async Task<Specialization> GetById(decimal id)
+        {
+            return await _healthCareContext.Specializations.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
     }
 }

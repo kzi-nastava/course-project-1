@@ -1,6 +1,7 @@
 ﻿using HealthCare.Data.Entities;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
+using HealthCare.Domain.DTOs;
 using HealthCare.Repositories;
 using System;
 using System.Collections.Generic;
@@ -15,11 +16,13 @@ namespace HealthCare.Domain.Services
     {
         private IReferralLetterRepository _referralLetterRepository;
         private IDoctorRepository _doctorRepository;
+        private ISpecializationRepository _specializationRepository;
 
-        public ReferralLetterService(IReferralLetterRepository referralLetterRepository, IDoctorRepository doctorRepository)
+        public ReferralLetterService(IReferralLetterRepository referralLetterRepository, IDoctorRepository doctorRepository, ISpecializationRepository specializationRepository)
         {
             _referralLetterRepository = referralLetterRepository;
             _doctorRepository = doctorRepository;
+            _specializationRepository = specializationRepository;
         }
 
         private ReferralLetterDomainModel parseToModel(ReferralLetter referralLetter)
@@ -156,6 +159,30 @@ namespace HealthCare.Domain.Services
             }
 
             return referralLetterModel;
+        }
+
+        public async Task<ReferralLetterDomainModel> Create(ReferralLetterDTO referralDTO)
+        {
+            // check if he chose himself as the doctor? front/back?
+
+            ReferralLetter newReferral = new ReferralLetter 
+            {
+                FromDoctorId = referralDTO.FromDoctorId,
+                PatientId = referralDTO.PatientId,
+                ToDoctorId = referralDTO.ToDoctorId,
+                SpecializationId = referralDTO.SpecializationId,
+                State = "created"
+            };
+
+            if (referralDTO.SpecializationId != null)
+            {
+                newReferral.Specialization = await _specializationRepository.GetById(referralDTO.SpecializationId.Value);
+            }
+
+            _referralLetterRepository.Post(newReferral);
+            _referralLetterRepository.Save();
+
+            return parseToModel(newReferral);
         }
     }
 }

@@ -47,7 +47,7 @@ namespace HealthCare.Repositories
         {
             return await _healthCareContext.Patients
                 .Include(x => x.Credentials)
-                .Include(x => x.MedicalRecord)
+                .Include(x => x.MedicalRecord).ThenInclude(x => x.ReferralLetters)
                 .Include(x => x.Operations)
                 .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
                 .Where(x => x.Id == id).FirstOrDefaultAsync();
