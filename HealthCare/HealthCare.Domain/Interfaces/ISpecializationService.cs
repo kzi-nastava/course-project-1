@@ -9,6 +9,5 @@ namespace HealthCare.Domain.Interfaces
 {
     public interface ISpecializationService : IService<SpecializationDomainModel>
     {
-
     }
 }

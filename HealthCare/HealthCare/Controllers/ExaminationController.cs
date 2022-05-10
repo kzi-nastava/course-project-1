@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DataTransferObjects;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -51,7 +52,7 @@ namespace HealthCareAPI.Controllers
         [Route("patientId={id}/sortParam={sortParam}")]
         public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForPatientSorted(decimal id, string sortParam)
         {
-            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatientSorted(id, sortParam);
+            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatientSorted(id, sortParam, _doctorService);
             if (examinations == null)
             {
                 examinations = new List<ExaminationDomainModel>();
@@ -117,6 +118,23 @@ namespace HealthCareAPI.Controllers
             }
 
         }
+
+        [HttpPost]
+        [Route("recommend")]
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> RecommendExaminations([FromBody] ParamsForRecommendingFreeExaminationsDTO paramsDTO)
+        {
+            try
+            {
+                IEnumerable<ExaminationDomainModel> recommendedExaminations = await _examinationService.GetRecommendedExaminations(paramsDTO, _doctorService);
+                return Ok(recommendedExaminations);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+        }
+
+
         // https://localhost:7195/api/examination/search
         [HttpGet]
         [Route("search/patientId={id}/substring={substring}")]
@@ -126,6 +144,7 @@ namespace HealthCareAPI.Controllers
             {
                 IEnumerable<ExaminationDomainModel> examinations = await _examinationService.SearchByAnamnesis(id, substring);
                 return Ok(examinations);
+
             }
             catch (Exception exception)
             {
