@@ -392,6 +392,11 @@ public class OperationService : IOperationService
         return result;
     }
 
+    public async Task<Boolean> IsUrgent(Operation operation)
+    {
+        return operation.IsEmergency;
+    }
+
     public async Task<KeyValuePair<OperationDomainModel, DateTime>> GetFirstForReschedule(List<KeyValuePair<DateTime, DateTime>> busySchedule, 
         List<KeyValuePair<DateTime, DateTime>> availableSchedule, List<KeyValuePair<DateTime, DateTime>> patientSchedule, decimal doctorId, decimal patientId, decimal duration)
     {
@@ -412,7 +417,10 @@ public class OperationService : IOperationService
             if (mockupModel.StartTime < pair.Key && mockupModel.StartTime.AddMinutes((double)duration) >= pair.Key &&
                 mockupModel.StartTime.AddMinutes((double)duration) <= pair.Value && await isDoctorAvailable(mockupModel))
             {
-                // Find this examination
+                // If it's urgent, then skip it
+                if (await IsUrgent(await _operationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key)))
+                    continue;
+                // Find this operation
                 Operation operation = await _operationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key);
                 operationModel = parseToModel(operation);
             }
@@ -423,7 +431,10 @@ public class OperationService : IOperationService
             if (mockupModel.StartTime > pair.Value && mockupModel.StartTime.AddMinutes((double)-duration) > pair.Key
                && mockupModel.StartTime.AddMinutes((double)-duration) < pair.Value && await isDoctorAvailable(mockupModel))
             {
-               // Find this examination
+                // If it's urgent, then skip it
+                if (await IsUrgent(await _operationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key)))
+                    continue;
+                // Find this operation
                 Operation operation = await _operationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key);
                 operationModel = parseToModel(operation);
             }

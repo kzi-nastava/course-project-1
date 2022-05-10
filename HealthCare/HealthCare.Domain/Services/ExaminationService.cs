@@ -765,6 +765,11 @@ public class ExaminationService : IExaminationService
         return result;
     }
 
+    public async Task<Boolean> IsUrgent(Examination examination)
+    {
+        return examination.IsEmergency;
+    }
+
     public async Task<KeyValuePair<ExaminationDomainModel, DateTime>> GetFirstForReschedule(List<KeyValuePair<DateTime, DateTime>> busySchedule, 
         List<KeyValuePair<DateTime, DateTime>> availableSchedule, List<KeyValuePair<DateTime, DateTime>> patientSchedule, decimal doctorId, decimal patientId)
     {
@@ -785,6 +790,9 @@ public class ExaminationService : IExaminationService
             if (mockupModel.StartTime < pair.Key && mockupModel.StartTime.AddMinutes((double)duration) >= pair.Key &&
                 mockupModel.StartTime.AddMinutes((double)duration) <= pair.Value && await isDoctorAvailable(mockupModel))
             {
+                // If it's urgent, then skip it
+                if (await IsUrgent(await _examinationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key)))
+                    continue;
                 // Find this examination
                 Examination examination = await _examinationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key);
                 examinationModel = parseToModel(examination);
@@ -796,6 +804,9 @@ public class ExaminationService : IExaminationService
             if (mockupModel.StartTime > pair.Value && mockupModel.StartTime.AddMinutes((double)-duration) > pair.Key
                && mockupModel.StartTime.AddMinutes((double)-duration) < pair.Value && await isDoctorAvailable(mockupModel))
             {
+                // If it's urgent, then skip it
+                if (await IsUrgent(await _examinationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key)))
+                    continue;
                // Find this examination
                 Examination examination = await _examinationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key);
                 examinationModel = parseToModel(examination);
