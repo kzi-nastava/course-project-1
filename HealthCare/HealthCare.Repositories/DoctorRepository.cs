@@ -15,7 +15,8 @@ namespace HealthCare.Repositories
         public Doctor Post(Doctor doctor);
         public Doctor Update(Doctor doctor);
         public Doctor Delete(Doctor doctor);
-        public Task<Doctor> GetDoctortById(decimal id);
+        public Task<Doctor> GetDoctorById(decimal id);
+        public Task<IEnumerable<Doctor>> GetBySpecialization(decimal id);
     }
     public class DoctorRepository : IDoctorRepository 
     {
@@ -46,7 +47,7 @@ namespace HealthCare.Repositories
             return deletedDoctor;
         }
 
-        public async Task<Doctor> GetDoctortById(decimal id)
+        public async Task<Doctor> GetDoctorById(decimal id)
         {
             return await _healthCareContext.Doctors
                 .Include(x => x.Credentials).ThenInclude(x => x.UserRole)
@@ -67,6 +68,18 @@ namespace HealthCare.Repositories
             EntityEntry<Doctor> updatedEntry = _healthCareContext.Doctors.Attach(doctor);
             _healthCareContext.Entry(doctor).State = EntityState.Modified;
             return updatedEntry.Entity;
+        }
+
+        public async Task<IEnumerable<Doctor>> GetBySpecialization(decimal id)
+        {
+            return await _healthCareContext.Doctors
+               .Include(x => x.Credentials).ThenInclude(x => x.UserRole)
+               .Include(x => x.Specialization)
+               .Include(x => x.Examinations).ThenInclude(x => x.Anamnesis)
+               .Include(x => x.Operations)
+               .Where(x => x.IsDeleted == false)
+               .Where(x => x.SpecializationId == id)
+               .ToListAsync();
         }
     }
 }

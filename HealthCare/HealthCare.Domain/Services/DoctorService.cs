@@ -26,6 +26,7 @@ public class DoctorService : IDoctorService
             Name = doctorModel.Name,
             Phone = doctorModel.Phone,
             Surname = doctorModel.Surname,
+            SpecializationId = doctorModel.SpecializationId
         };
         if (doctorModel.Credentials != null)
         {
@@ -119,6 +120,7 @@ public class DoctorService : IDoctorService
             Name = doctor.Name,
             Phone = doctor.Phone,
             Surname = doctor.Surname,
+            SpecializationId = doctor.SpecializationId
         };
         if (doctor.Credentials != null)
         {
@@ -215,7 +217,30 @@ public class DoctorService : IDoctorService
         }
         return results;
     }
-    
+
+
+    public async Task<IEnumerable<DoctorDomainModel>> GetAllBySpecialization(decimal id)
+    {
+        IEnumerable<Doctor> data = await _doctorRepository.GetBySpecialization(id);
+        if (data == null)
+            return new List<DoctorDomainModel>();
+
+        List<DoctorDomainModel> results = new List<DoctorDomainModel>();
+        foreach (Doctor item in data)
+        {
+            results.Add(parseToModel(item));
+        }
+        return results;
+    }
+
+    public async Task<DoctorDomainModel> GetById(decimal id)
+    {
+        Doctor data = await _doctorRepository.GetDoctorById(id);
+        if (data == null)
+            return null;
+        return parseToModel(data);
+    }
+
     public async Task<IEnumerable<DoctorDomainModel>> ReadAll()
     {
         IEnumerable<DoctorDomainModel> doctors = await GetAll();
@@ -240,7 +265,7 @@ public class DoctorService : IDoctorService
 
     public async Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetAvailableSchedule(decimal doctorId, decimal duration=15)
     {
-        Doctor doctor = await _doctorRepository.GetDoctortById(doctorId);
+        Doctor doctor = await _doctorRepository.GetDoctorById(doctorId);
         DoctorDomainModel doctorModel = parseToModel(doctor);
         List<KeyValuePair<DateTime, DateTime>> schedule = new List<KeyValuePair<DateTime, DateTime>>();
         DateTime timeStart, timeEnd;

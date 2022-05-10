@@ -5,6 +5,11 @@ namespace HealthCare.Domain.Interfaces;
 public interface IDoctorService : IService<DoctorDomainModel>
 {
     public Task<IEnumerable<DoctorDomainModel>> ReadAll();
+    public Task<DoctorDomainModel> GetById(decimal id);
+
+
+    public Task<IEnumerable<DoctorDomainModel>> GetAllBySpecialization(decimal id);
+
 
     public Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetAvailableSchedule(decimal doctorId, decimal duration = 15);
 }
