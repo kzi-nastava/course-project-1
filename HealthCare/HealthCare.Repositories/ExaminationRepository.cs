@@ -23,6 +23,7 @@ namespace HealthCare.Repositories
         public Examination Update(Examination examination);
         public Task<Examination> GetExamination(decimal id);
         public Task<Examination> GetExaminationWithoutAnamnesis(decimal id);
+        public Task<Examination> GetByDoctorPatientDate(decimal doctorId, decimal patientId, DateTime date);
     }
     public class ExaminationRepository : IExaminationRepository
     {
@@ -119,6 +120,13 @@ namespace HealthCare.Repositories
         public void Save()
         {
             _healthCareContext.SaveChanges();
+        }
+        public async Task<Examination> GetByDoctorPatientDate(decimal doctorId, decimal patientId, DateTime date)
+        {
+            return await _healthCareContext.Examinations
+                .Include(x => x.Anamnesis)
+                .Where(x => x.DoctorId == doctorId && x.PatientId == patientId && x.StartTime == date)
+                .FirstOrDefaultAsync();
         }
     }
 }

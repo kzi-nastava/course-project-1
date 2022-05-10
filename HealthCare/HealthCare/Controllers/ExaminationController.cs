@@ -12,11 +12,13 @@ namespace HealthCareAPI.Controllers
     {
         private IExaminationService _examinationService;
         private IDoctorService _doctorService;
+        private IPatientService _patientService;
 
-        public ExaminationController(IExaminationService examinationService, IDoctorService doctorService) 
+        public ExaminationController(IExaminationService examinationService, IDoctorService doctorService, IPatientService patientService) 
         {
             _examinationService = examinationService;
             _doctorService = doctorService;
+            _patientService = patientService;
         }
 
         // https://localhost:7195/api/examination
@@ -157,7 +159,7 @@ namespace HealthCareAPI.Controllers
         public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> CreateUrgentExamination(decimal patientId, decimal specializationId)
         {
             List<ExaminationDomainModel> operationModels =
-                (List<ExaminationDomainModel>) await _examinationService.CreateUrgent(patientId, specializationId, _doctorService);
+                (List<ExaminationDomainModel>) await _examinationService.CreateUrgent(patientId, specializationId, _doctorService, _patientService);
             if (operationModels.Count == 0) return Ok();
             return operationModels;
         }

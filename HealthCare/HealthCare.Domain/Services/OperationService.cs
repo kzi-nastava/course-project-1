@@ -328,7 +328,7 @@ public class OperationService : IOperationService
         };
         // Find examination in the first 2 hours for any doctor that matches
         // the specialization criteria
-        List<Doctor> doctors = (List<Doctor>)await _doctorRepository.GetBySpecializationId(specializationId);
+        List<Doctor> doctors = (List<Doctor>)await _doctorRepository.GetBySpecialization(specializationId);
         if (doctors == null || doctors.Count == 0) throw new NoAvailableSpecialistsException();
         List<KeyValuePair<DateTime, decimal>> urgentStartTimes = new List<KeyValuePair<DateTime, decimal>>();
         foreach (Doctor doctor in doctors)
@@ -359,6 +359,7 @@ public class OperationService : IOperationService
         // Above failed, return examinations that can be postponed
         // sorted by the date on which they can be postponed 
         // This list must contain 5 examinations
+
         return null;
     }
 }

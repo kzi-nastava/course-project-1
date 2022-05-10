@@ -429,4 +429,9 @@ public class PatientService : IPatientService
 
         return parseToModel(patient);
     }
+
+    public async Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetSchedule(decimal id)
+    {
+        return null;
+    }
 }
