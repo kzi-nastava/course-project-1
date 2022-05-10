@@ -6,7 +6,7 @@ namespace HealthCare.Domain.Interfaces;
 public interface IExaminationService : IService<ExaminationDomainModel> 
 {
     public Task<IEnumerable<ExaminationDomainModel>> GetAllForPatient(decimal id);
-    public Task<IEnumerable<ExaminationDomainModel>> GetAllForPatientSorted(decimal id, string sortParam);
+    public Task<IEnumerable<ExaminationDomainModel>> GetAllForPatientSorted(decimal id, string sortParam, IDoctorService doctorService);
 
     public Task<IEnumerable<ExaminationDomainModel>> GetAllForDoctor(decimal id);
     public Task<ExaminationDomainModel> Delete(ExaminationDomainModel examinationModel, bool isPatient);

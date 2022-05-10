@@ -144,7 +144,7 @@ public class ExaminationService : IExaminationService
         return results;
     }
 
-    public async Task<IEnumerable<ExaminationDomainModel>> GetAllForPatientSorted(decimal id, string sortParam)
+    public async Task<IEnumerable<ExaminationDomainModel>> GetAllForPatientSorted(decimal id, string sortParam, IDoctorService doctorService)
     {
         IEnumerable<ExaminationDomainModel> examinations = await GetAllForPatient(id);
         IEnumerable<ExaminationDomainModel> sortedExaminations = null;
@@ -153,7 +153,22 @@ public class ExaminationService : IExaminationService
         else if (sortParam.Equals("doctor"))
             sortedExaminations = examinations.OrderBy(x => x.DoctorId);
         else
-            sortedExaminations = examinations.OrderBy(x => x.Id);
+        {
+            Dictionary<decimal, decimal> doctorsSpecialisations = new Dictionary<decimal, decimal>();
+            foreach (var examination in examinations)
+            {
+                DoctorDomainModel doctor = await doctorService.GetById(examination.DoctorId);
+                try
+                { 
+                   doctorsSpecialisations.Add(examination.DoctorId, doctor.SpecializationId);
+                }
+                catch (Exception ex)
+                {
+                    continue;
+                }
+            }
+            sortedExaminations = examinations.OrderBy(x => doctorsSpecialisations[x.DoctorId]);
+        }
 
         return sortedExaminations;
     }
