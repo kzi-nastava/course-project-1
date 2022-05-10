@@ -316,7 +316,7 @@ public class OperationService : IOperationService
         return null;
     }
 
-    public async Task<IEnumerable<OperationDomainModel>> CreateUrgent(decimal patientId, decimal specializationId, decimal duration, IDoctorService doctorService)
+    public async Task<IEnumerable<OperationDomainModel>> CreateUrgent(decimal patientId, decimal specializationId, decimal duration, IDoctorService doctorService, IPatientService patientService)
     {
         DateTime now = removeSeconds(DateTime.Now);
         OperationDomainModel operationModel = new OperationDomainModel
@@ -359,7 +359,88 @@ public class OperationService : IOperationService
         // Above failed, return examinations that can be postponed
         // sorted by the date on which they can be postponed 
         // This list must contain 5 examinations
+        // TODO: Dto candidate
+        Dictionary<decimal, KeyValuePair<OperationDomainModel, DateTime>> canBeRescheduled =
+            new Dictionary<decimal, KeyValuePair<OperationDomainModel, DateTime>>();
+        foreach (Doctor doctor in doctors)
+        {
+            // Available doctor schedule
+            var availableSchedule =
+                (List<KeyValuePair<DateTime, DateTime>>)await doctorService.GetAvailableSchedule(doctor.Id);
+            // Busy doctor schedule
+            var busySchedule =
+                (List<KeyValuePair<DateTime, DateTime>>)await doctorService.GetBusySchedule(doctor.Id);
+            // Patient schedule
+            var patientSchedule = 
+                (List<KeyValuePair<DateTime, DateTime>>)await patientService.GetSchedule(patientId);
+            var first = await GetFirstForReschedule(busySchedule, availableSchedule, patientSchedule, doctor.Id,
+                patientId, duration);
+            if (first.Key == null) continue;
+            canBeRescheduled.Add(doctor.Id, first); 
+        }
+        var sortedDict = 
+            from entry in canBeRescheduled orderby entry.Value.Value select entry;
+        List<OperationDomainModel> result = new List<OperationDomainModel>();
+        int counter = 0;
+        foreach (var entry in sortedDict)
+        {
+            result.Add(entry.Value.Key);
+            counter++;
+            if (counter == 5) break;
+        }
 
-        return null;
+        return result;
+    }
+
+    public async Task<KeyValuePair<OperationDomainModel, DateTime>> GetFirstForReschedule(List<KeyValuePair<DateTime, DateTime>> busySchedule, 
+        List<KeyValuePair<DateTime, DateTime>> availableSchedule, List<KeyValuePair<DateTime, DateTime>> patientSchedule, decimal doctorId, decimal patientId, decimal duration)
+    {
+        DateTime now = removeSeconds(DateTime.Now);
+        DateTime limit = removeSeconds(now.AddHours(2));
+        OperationDomainModel mockupModel = new OperationDomainModel
+        {
+            StartTime = now,
+            Duration = duration
+        };
+        OperationDomainModel? operationModel = null;
+        foreach (KeyValuePair<DateTime, DateTime> pair in busySchedule)
+        {
+            // If limit is larger than pair key then we cannot reschedule
+            if (now > pair.Value) continue;
+            if (limit > pair.Key) break;
+            // Rescheduling ahead
+            if (mockupModel.StartTime < pair.Key && mockupModel.StartTime.AddMinutes((double)duration) >= pair.Key &&
+                mockupModel.StartTime.AddMinutes((double)duration) <= pair.Value && await isDoctorAvailable(mockupModel))
+            {
+                // Find this examination
+                Operation operation = await _operationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key);
+                operationModel = parseToModel(operation);
+            }
+
+            mockupModel.StartTime.AddMinutes((double)duration);
+            if (mockupModel.StartTime > limit) break;
+            // Rescheduling behind
+            if (mockupModel.StartTime > pair.Value && mockupModel.StartTime.AddMinutes((double)-duration) > pair.Key
+               && mockupModel.StartTime.AddMinutes((double)-duration) < pair.Value && await isDoctorAvailable(mockupModel))
+            {
+               // Find this examination
+                Operation operation = await _operationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key);
+                operationModel = parseToModel(operation);
+            }
+        }
+        if (operationModel == null) return new KeyValuePair<OperationDomainModel, DateTime>(null, now);
+        // Else check when to reschedule
+        DateTime rescheduleTime = FindRescheduleTime(busySchedule, patientSchedule, duration);
+        return new KeyValuePair<OperationDomainModel, DateTime>(operationModel, rescheduleTime);
+    }
+
+    public DateTime FindRescheduleTime(List<KeyValuePair<DateTime, DateTime>> busySchedule,
+        List<KeyValuePair<DateTime, DateTime>> patientSchedule, decimal duration)
+    {
+        // Can't do logic, will reschedule after larger schedule[-1]
+        var doctor = busySchedule.Last();
+        var patient = patientSchedule.Last();
+        if (doctor.Value > patient.Value) return doctor.Value;
+        return patient.Value;
     }
 }

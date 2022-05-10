@@ -10,5 +10,5 @@ public interface IOperationService : IService<OperationDomainModel>
     public Task<IEnumerable<OperationDomainModel>> ReadAll();
 
     public Task<IEnumerable<OperationDomainModel>> CreateUrgent(decimal patientId, decimal specializationId,
-        decimal duration, IDoctorService doctorService);
+        decimal duration, IDoctorService doctorService, IPatientService patientService);
 }

@@ -12,11 +12,13 @@ namespace HealthCareAPI.Controllers
     {
         private IOperationService _operationService;
         private IDoctorService _doctorService;
+        private IPatientService _patientService;
 
-        public OperationController(IOperationService operationService, IDoctorService doctorService) 
+        public OperationController(IOperationService operationService, IDoctorService doctorService, IPatientService patientService) 
         {
             _operationService = operationService;
             _doctorService = doctorService;
+            _patientService = patientService;
         }
 
         // https://localhost:7195/api/operation
@@ -100,7 +102,7 @@ namespace HealthCareAPI.Controllers
         public async Task<ActionResult<IEnumerable<OperationDomainModel>>> CreateUrgentOperation(decimal patientId, decimal specializationId, decimal duration)
         {
             List<OperationDomainModel> operationModels =
-                (List<OperationDomainModel>) await _operationService.CreateUrgent(patientId, specializationId, duration, _doctorService);
+                (List<OperationDomainModel>) await _operationService.CreateUrgent(patientId, specializationId, duration, _doctorService, _patientService);
             if (operationModels.Count == 0) return Ok();
             return operationModels;
         }
