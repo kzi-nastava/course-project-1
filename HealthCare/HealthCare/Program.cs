@@ -66,6 +66,7 @@ builder.Services.AddTransient<ISecretaryService, SecretaryService>();
 builder.Services.AddTransient<ISpecializationService, SpecializationService>();
 builder.Services.AddTransient<ITransferService, TransferService>();
 builder.Services.AddTransient<IUserRoleService, UserRoleService>();
+builder.Services.AddTransient<IRenovationService, RenovationService>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");
