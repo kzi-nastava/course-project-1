@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DataTransferObjects;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,12 @@ namespace HealthCareAPI.Controllers
     public class ExaminationController : ControllerBase 
     {
         private IExaminationService _examinationService;
+        private IDoctorService _doctorService;
 
-        public ExaminationController(IExaminationService examinationService) 
+        public ExaminationController(IExaminationService examinationService, IDoctorService doctorService) 
         {
             _examinationService = examinationService;
+            _doctorService = doctorService;
         }
 
         // https://localhost:7195/api/examination
@@ -115,6 +118,23 @@ namespace HealthCareAPI.Controllers
             }
 
         }
+
+        [HttpPost]
+        [Route("recommend")]
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> RecommendExaminations([FromBody] ParamsForRecommendingFreeExaminationsDTO paramsDTO)
+        {
+            try
+            {
+                IEnumerable<ExaminationDomainModel> recommendedExaminations = await _examinationService.GetRecommendedExaminations(paramsDTO, _doctorService);
+                return Ok(recommendedExaminations);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+        }
+
+
         // https://localhost:7195/api/examination/search
         [HttpGet]
         [Route("search/patientId={id}/substring={substring}")]
@@ -124,14 +144,13 @@ namespace HealthCareAPI.Controllers
             {
                 IEnumerable<ExaminationDomainModel> examinations = await _examinationService.SearchByAnamnesis(id, substring);
                 return Ok(examinations);
+
             }
             catch (Exception exception)
             {
                 return NotFound(exception.Message);
             }
         }
-
-
 
     }
 }

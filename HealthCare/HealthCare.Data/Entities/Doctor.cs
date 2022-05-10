@@ -33,7 +33,7 @@ namespace HealthCare.Data.Entities
         public bool IsDeleted { get; set; }
 
         [Column("specialization_id")]
-        public decimal? SpecializationId { get; set; }
+        public decimal SpecializationId { get; set; }
 
         public List<Operation> Operations { get; set; }
 

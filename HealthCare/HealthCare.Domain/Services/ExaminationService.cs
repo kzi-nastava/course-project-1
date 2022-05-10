@@ -1,7 +1,10 @@
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DataTransferObjects;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace HealthCare.Domain.Services;
 
@@ -388,7 +391,7 @@ public class ExaminationService : IExaminationService
 
     private async Task validateUserInput(ExaminationDomainModel examinationModel)
     {
-        if (examinationModel.StartTime <= DateTime.UtcNow)
+        if (examinationModel.StartTime <= DateTime.Now)
             throw new DateInPastExeption();
         if (await isPatientBlocked(examinationModel.PatientId))
             throw new PatientIsBlockedException();
@@ -477,6 +480,162 @@ public class ExaminationService : IExaminationService
         return parseToModel(examination);
     }
 
+    private async Task<List<KeyValuePair<DateTime, DateTime>>> getScehdule(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService)
+    {
+        IEnumerable<KeyValuePair<DateTime, DateTime>> freeTimes = await doctorService.GetAvailableSchedule(paramsDTO.DoctorId);
+        List<KeyValuePair<DateTime, DateTime>> possibleSlots = new List<KeyValuePair<DateTime, DateTime>>();
+        foreach (KeyValuePair<DateTime, DateTime> time in freeTimes)
+        {
+            if (DateTime.Now < time.Value && time.Key < paramsDTO.LastDate)
+            {
+                possibleSlots.Add(time);
+            }
+        }
+        return possibleSlots;
+    }
+
+
+    private async Task<ExaminationDomainModel> checkAviabilityForExamination(ParamsForRecommendingFreeExaminationsDTO paramsDTO, DateTime startTime)
+    {
+        ExaminationDomainModel recommendedExamination = new ExaminationDomainModel
+        {
+            DoctorId = paramsDTO.DoctorId,
+            PatientId = paramsDTO.PatientId,
+            StartTime = startTime
+        };
+        try
+        {
+            await validateUserInput(recommendedExamination);
+        }
+        catch (Exception ex)
+        {
+            return null;
+        }
+        return recommendedExamination;
+    }
+
+    private async Task<List<ExaminationDomainModel>> getRecommendedExaminationsForOneDoctor(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService)
+    {
+        List<ExaminationDomainModel> recommendedExaminaions = new List<ExaminationDomainModel>();
+        List<KeyValuePair<DateTime, DateTime>> possibleSlots = await getScehdule(paramsDTO, doctorService);
+        if (possibleSlots.Count == 0) return null;
+
+        int numOfExaminations = 0;
+        int possibleSlotIndex = 0;
+
+        DateTime startTime = paramsDTO.TimeFrom;
+        if (startTime.TimeOfDay < possibleSlots[possibleSlotIndex].Key.TimeOfDay)
+            startTime = possibleSlots[possibleSlotIndex].Key;
+        else
+            startTime = DateTime.Now;
+        paramsDTO.TimeTo.AddMinutes(-15);
+
+        while (numOfExaminations != 3)
+        {
+            //start time is in available range for doctor and patient
+            if (startTime.TimeOfDay < paramsDTO.TimeTo.TimeOfDay && startTime < possibleSlots[possibleSlotIndex].Value)
+            {
+                ExaminationDomainModel recommendedExamination = await checkAviabilityForExamination(paramsDTO, startTime);
+                if (recommendedExamination != null)
+                {
+                    recommendedExaminaions.Add(recommendedExamination);
+                    numOfExaminations++;
+                    if (numOfExaminations == 3)
+                    {
+                        break;
+                    }
+                }
+                startTime = startTime.AddMinutes(15);
+            }
+            else
+            {
+                //there is another day in doctor free range 
+                if (startTime < possibleSlots[possibleSlotIndex].Value)
+                {
+                    startTime = startTime.AddDays(1);
+                    startTime = new DateTime(startTime.Year, startTime.Month, startTime.Day, paramsDTO.TimeFrom.Hour, paramsDTO.TimeFrom.Minute, paramsDTO.TimeFrom.Second);
+                    if (startTime > paramsDTO.LastDate)
+                    {
+                        break;
+                    }
+                }
+                //there is no times in this slot
+                else
+                {
+                    possibleSlotIndex++;
+                    if (possibleSlotIndex == possibleSlots.Count)
+                    {
+                        break;
+                    }
+                    if (startTime.TimeOfDay < possibleSlots[possibleSlotIndex].Key.TimeOfDay)
+                        startTime = possibleSlots[possibleSlotIndex].Key;
+                }
+            }
+        }
+        return recommendedExaminaions;
+    }
+    
+
+    public async Task<IEnumerable<ExaminationDomainModel>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService)
+    {
+        List<ExaminationDomainModel> recommendedExaminaions = await getRecommendedExaminationsForOneDoctor(paramsDTO, doctorService);
+        int numOfExaminations = recommendedExaminaions.Count;
+        if (numOfExaminations != 3)
+        {
+            if (paramsDTO.IsDoctorPriority)
+            {
+                DoctorDomainModel doctorModel = await doctorService.GetById(paramsDTO.DoctorId);
+                List<DoctorDomainModel> otherDoctors = (List<DoctorDomainModel>)await doctorService.GetAllBySpecialization(doctorModel.SpecializationId);
+                int numOfDoctor = 0;
+                while (numOfExaminations < 3)
+                {
+                    if (paramsDTO.DoctorId == otherDoctors.ElementAt(numOfDoctor).Id)
+                    {
+                        numOfDoctor++;
+                        continue;
+                    }
+                    else
+                        paramsDTO.DoctorId = otherDoctors.ElementAt(numOfDoctor++).Id;
+                    List <ExaminationDomainModel> newDoctorExaminations = await getRecommendedExaminationsForOneDoctor(paramsDTO, doctorService);
+                    if (newDoctorExaminations == null)
+                        continue;
+                    foreach (var examination in newDoctorExaminations)
+                    { 
+                        recommendedExaminaions.Add(examination);
+                        numOfExaminations++;
+                    }
+                    if(numOfDoctor > otherDoctors.Count - 1)
+                    {
+                        return recommendedExaminaions;
+                    }
+                }
+
+            }
+            else
+            {
+                DateTime startTime = recommendedExaminaions[numOfExaminations - 1].StartTime.AddMinutes(15);
+
+                while (numOfExaminations != 3)
+                {
+                    ExaminationDomainModel recommendedExamination = await checkAviabilityForExamination(paramsDTO, startTime);
+                    if (recommendedExamination != null)
+                    {
+                        recommendedExaminaions.Add(recommendedExamination);
+                        numOfExaminations++;
+                        if (numOfExaminations == 3)
+                        {
+                            break;
+                        }
+                    }
+                    startTime = startTime.AddMinutes(15);
+
+                }
+            }
+
+        }
+
+        return recommendedExaminaions;
+    }
     public async Task<IEnumerable<ExaminationDomainModel>> SearchByAnamnesis(decimal id, string substring)
     {
         substring = substring.ToLower();
@@ -492,5 +651,6 @@ public class ExaminationService : IExaminationService
                 results.Add(parseToModel(item));
         }
         return results;
+       
     }
 }
