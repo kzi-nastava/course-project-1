@@ -20,6 +20,7 @@ namespace HealthCare.Repositories
         public Task<IEnumerable<Operation>> GetAllByRoomId(decimal id);
         public Operation Post(Operation operation);
         public Operation Update(Operation operation);
+        public Task<Operation> GetByDoctorPatientDate(decimal doctorId, decimal patientId, DateTime date);
     }
     public class OperationRepository : IOperationRepository 
     {
@@ -102,6 +103,13 @@ namespace HealthCare.Repositories
         public void Save()
         {
             _healthCareContext.SaveChanges();
+        }
+        
+        public async Task<Operation> GetByDoctorPatientDate(decimal doctorId, decimal patientId, DateTime date)
+        {
+            return await _healthCareContext.Operations
+                .Where(x => x.DoctorId == doctorId && x.PatientId == patientId && x.StartTime == date)
+                .FirstOrDefaultAsync();
         }
     }
 }

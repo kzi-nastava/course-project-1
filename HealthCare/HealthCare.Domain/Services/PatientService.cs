@@ -129,7 +129,8 @@ public class PatientService : IPatientService
                     RoomId = operation.RoomId,
                     PatientId = operation.PatientId,
                     Duration = operation.Duration,
-                    IsDeleted = operation.IsDeleted
+                    IsDeleted = operation.IsDeleted,
+                    IsEmergency = operation.IsEmergency
                 };
                 patientModel.Operations.Add(operationModel);
             }
@@ -225,7 +226,8 @@ public class PatientService : IPatientService
                     RoomId = operationModel.RoomId,
                     PatientId = operationModel.PatientId,
                     Duration = operationModel.Duration,
-                    IsDeleted = operationModel.IsDeleted
+                    IsDeleted = operationModel.IsDeleted,
+                    IsEmergency = operationModel.IsEmergency
                 };
                 patient.Operations.Add(operation);
             }
@@ -287,16 +289,7 @@ public class PatientService : IPatientService
 
     public async Task<PatientDomainModel> Create(PatientDomainModel patientModel)
     {
-        Patient newPatient = new Patient();
-        newPatient.BlockedBy = null;
-        newPatient.IsDeleted = false;
-        newPatient.Name = patientModel.Name;
-        newPatient.Surname = patientModel.Surname;
-        newPatient.BlockingCounter = 0;
-        newPatient.Email = patientModel.Email;
-        newPatient.BirthDate = patientModel.BirthDate;
-        newPatient.Phone = patientModel.Phone;
-        newPatient.Id = 0;
+        Patient newPatient = parseFromModel(patientModel);
 
         Patient insertedPatient = _patientRepository.Post(newPatient);
         _patientRepository.Save();
@@ -435,5 +428,10 @@ public class PatientService : IPatientService
         //return patientModel;
 
         return parseToModel(patient);
+    }
+
+    public async Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetSchedule(decimal id)
+    {
+        return null;
     }
 }

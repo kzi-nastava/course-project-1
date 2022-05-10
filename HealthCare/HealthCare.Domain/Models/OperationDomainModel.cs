@@ -17,5 +17,6 @@ public class OperationDomainModel
     public decimal PatientId { get; set; }
 
     public bool IsDeleted { get; set; }
+    public bool IsEmergency { get; set; }
 
 }

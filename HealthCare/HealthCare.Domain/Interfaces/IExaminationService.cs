@@ -16,4 +16,7 @@ public interface IExaminationService : IService<ExaminationDomainModel>
     public Task<IEnumerable<ExaminationDomainModel>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService);
     public Task<IEnumerable<ExaminationDomainModel>> ReadAll();
     public Task<IEnumerable<ExaminationDomainModel>> SearchByAnamnesis(decimal id, string substring);
+
+    public Task<IEnumerable<ExaminationDomainModel>> CreateUrgent(decimal patientId,
+        decimal specializationId, IDoctorService doctorService, IPatientService patientService);
 }

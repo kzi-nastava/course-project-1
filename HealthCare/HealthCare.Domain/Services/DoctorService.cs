@@ -101,7 +101,8 @@ public class DoctorService : IDoctorService
                     RoomId = operationModel.RoomId,
                     PatientId = operationModel.PatientId,
                     Duration = operationModel.Duration,
-                    IsDeleted = operationModel.IsDeleted
+                    IsDeleted = operationModel.IsDeleted,
+                    IsEmergency = operationModel.IsEmergency
                 };
                 doctor.Operations.Add(operation);
             }
@@ -195,7 +196,8 @@ public class DoctorService : IDoctorService
                     RoomId = operation.RoomId,
                     PatientId = operation.PatientId,
                     Duration = operation.Duration,
-                    IsDeleted = operation.IsDeleted
+                    IsDeleted = operation.IsDeleted,
+                    IsEmergency = operation.IsEmergency
                 };
                 doctorModel.Operations.Add(operationModel);
             }
@@ -300,5 +302,34 @@ public class DoctorService : IDoctorService
         }
         result.Add(new KeyValuePair<DateTime, DateTime>(schedule[schedule.Count - 1].Value, new DateTime(9999, 12, 31)));
         return result;
+    }
+
+    public async Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetBusySchedule(decimal doctorId)
+    {
+        // TODO: This and the above function can work together
+        Doctor doctor = await _doctorRepository.GetDoctorById(doctorId);
+        DoctorDomainModel doctorModel = parseToModel(doctor);
+        List<KeyValuePair<DateTime, DateTime>> schedule = new List<KeyValuePair<DateTime, DateTime>>();
+        DateTime timeStart, timeEnd;
+        // Go through examinations
+        foreach (ExaminationDomainModel item in  doctorModel.Examinations)
+        {
+            if (item.IsDeleted) continue;
+            timeStart = removeSeconds(item.StartTime);
+            timeEnd = removeSeconds(item.StartTime).AddMinutes(15);
+            schedule.Add(new KeyValuePair<DateTime, DateTime>(timeStart, timeEnd));
+        }
+        // Go through operations
+        foreach (OperationDomainModel item in  doctorModel.Operations)
+        {
+            if (item.IsDeleted) continue;
+            timeStart = removeSeconds(item.StartTime);
+            timeEnd = removeSeconds(item.StartTime).AddMinutes((double) item.Duration);
+            schedule.Add(new KeyValuePair<DateTime, DateTime>(timeStart, timeEnd));
+        }
+        // Sort the list
+        schedule.Sort((x, y) => x.Key.CompareTo(y.Key));
+        // Generate busy time
+        return schedule;
     }
 }
