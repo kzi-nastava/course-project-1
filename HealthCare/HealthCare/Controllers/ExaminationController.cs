@@ -52,7 +52,7 @@ namespace HealthCareAPI.Controllers
         [Route("patientId={id}/sortParam={sortParam}")]
         public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForPatientSorted(decimal id, string sortParam)
         {
-            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatientSorted(id, sortParam);
+            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatientSorted(id, sortParam, _doctorService);
             if (examinations == null)
             {
                 examinations = new List<ExaminationDomainModel>();
