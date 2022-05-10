@@ -42,6 +42,7 @@ builder.Services.AddTransient<ISecretaryRepository, SecretaryRepository>();
 builder.Services.AddTransient<ISpecializationRepository, SpecializationRepository>();
 builder.Services.AddTransient<ITransferRepository, TransferRepository>();
 builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
+builder.Services.AddTransient<IRenovationRepository, RenovationRepository>();
 
 //Domain
 builder.Services.AddTransient<IAntiTrollService, AntiTrollService>();

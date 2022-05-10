@@ -19,10 +19,10 @@ namespace HealthCareAPI.Controllers
 
         // https://localhost:7195/api/anamnsesis
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AnamnesisDomainModel>>> GetAll()
+        public async Task<ActionResult<IEnumerable<RenovationDomainModel>>> GetAll()
         {
-            IEnumerable<RenovationDomainModel> anamnesis = await _renovationService.GetAll();
-            return Ok(anamnesis);
+            IEnumerable<RenovationDomainModel> renovations = await _renovationService.GetAll();
+            return Ok(renovations);
         }
 
         [HttpPost]

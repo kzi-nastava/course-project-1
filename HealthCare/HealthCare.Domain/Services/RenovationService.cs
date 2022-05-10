@@ -14,6 +14,11 @@ namespace HealthCare.Domain.Services
     {
         private readonly IRenovationRepository _renovationRepository;
 
+        public RenovationService(IRenovationRepository renovationRepository)
+        {
+            _renovationRepository = renovationRepository;
+        }
+
         public async Task<RenovationDomainModel> Create(RenovationDomainModel newRenovationModel)
         {
             //add validation

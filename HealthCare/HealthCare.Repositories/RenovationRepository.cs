@@ -14,7 +14,7 @@ namespace HealthCare.Repositories
     {
         public Renovation Post(Renovation r);
     }
-    internal class RenovationRepository : IRenovationRepository
+    public class RenovationRepository : IRenovationRepository
     {
         private readonly HealthCareContext _healthCareContext;
 

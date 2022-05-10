@@ -14,12 +14,12 @@ namespace HealthCare.Domain.Models
 
         public DateTime EndDate { get; set; }
 
-        public bool Split { get; set; }
+        public bool? Split { get; set; }
 
         public decimal Participant { get; set; }
 
-        public decimal Participant1 { get; set; }
+        public decimal? Participant1 { get; set; }
 
-        public decimal Participant2 { get; set; }
+        public decimal? Participant2 { get; set; }
     }
 }

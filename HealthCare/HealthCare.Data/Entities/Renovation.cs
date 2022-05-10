@@ -22,16 +22,16 @@ namespace HealthCare.Data.Entities
         public DateTime EndDate { get; set; }
 
         [Column("split")]
-        public bool Split { get; set; }
+        public bool? Split { get; set; }
 
         [Column("room_id")]
         public decimal Participant { get; set; }
 
         [Column("room_id1")]
-        public decimal Participant1 { get; set; }
+        public decimal? Participant1 { get; set; }
 
         [Column("room_id2")]
-        public decimal Participant2 { get; set; }
+        public decimal? Participant2 { get; set; }
 
         public bool IsSimple()
         {
@@ -43,7 +43,7 @@ namespace HealthCare.Data.Entities
             if (Split == null)
                 return false;
 
-            return Split;
+            return (bool)Split;
         }
     }
 }
