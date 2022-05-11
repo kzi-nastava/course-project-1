@@ -1,4 +1,5 @@
-﻿using HealthCare.Domain.Interfaces;
+﻿using HealthCare.Domain.DTOs;
+using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,11 +26,11 @@ namespace HealthCareAPI.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<PrescriptionDomainModel>> Create([FromBody] PrescriptionDomainModel newPrescriptionModel)
+        public async Task<ActionResult<PrescriptionDomainModel>> Create([FromBody] PrescriptionDTO newPrescriptionDTO)
         {
             try
             {
-                PrescriptionDomainModel prescriptionModel = await _prescriptionService.Create(newPrescriptionModel);
+                PrescriptionDomainModel prescriptionModel = await _prescriptionService.Create(newPrescriptionDTO);
                 return Ok(prescriptionModel);
             }
             catch (Exception exception)

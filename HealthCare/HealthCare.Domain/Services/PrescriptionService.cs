@@ -1,4 +1,5 @@
 ﻿using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -13,15 +14,49 @@ namespace HealthCare.Domain.Services
     public class PrescriptionService : IPrescriptionService
     {
         IPrescriptionRepository _prescriptionRepository;
+        IExaminationRepository _examinationRepository;
+        IMedicalRecordRepository _medicalRecordRepository;
+        IDrugRepository _drugRepository;
+        IIngredientRepository _ingredientRepository;
 
-        public PrescriptionService(IPrescriptionRepository prescriptionRepository)
+        public PrescriptionService(IPrescriptionRepository prescriptionRepository, IExaminationRepository examinationRepository, 
+                                   IMedicalRecordRepository medicalRecordRepository, IDrugRepository drugRepository, IIngredientRepository ingredientRepository)
         {
             _prescriptionRepository = prescriptionRepository;
+            _examinationRepository = examinationRepository;
+            _medicalRecordRepository = medicalRecordRepository;
+            _drugRepository = drugRepository;
+            _ingredientRepository = ingredientRepository;
         }    
 
-        public async Task<PrescriptionDomainModel> Create(PrescriptionDomainModel model)
+        public async Task<PrescriptionDomainModel> Create(PrescriptionDTO prescriptionDTO)
         {
-            return model;
+            await checkPatientsAllergies(prescriptionDTO.DrugId, prescriptionDTO.PatientId);
+
+            Prescription newPrescription = _prescriptionRepository.Post(parseFromDTO(prescriptionDTO));
+            _prescriptionRepository.Save();
+
+            return parseToModel(newPrescription);
+        }
+
+        private async Task checkPatientsAllergies(decimal drugId, decimal patientId)
+        {
+            Drug drug = await _drugRepository.GetById(drugId);
+            MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(patientId);
+
+            foreach (Allergy allergy in medicalRecord.AllergiesList)
+            {
+                foreach (DrugIngredient drugIngredient in drug.DrugIngredients)
+                {
+                    if (allergy.IngredientId == drugIngredient.IngredientId)
+                    {
+                        Ingredient allergen = await _ingredientRepository.GetById(allergy.IngredientId);
+                        throw new PatientIsAllergicException(allergen.Name);
+                    }
+                        
+                }
+            }
+
         }
 
         public async Task<IEnumerable<PrescriptionDomainModel>> GetAll()
@@ -37,6 +72,21 @@ namespace HealthCare.Domain.Services
             }
 
             return results;
+        }
+
+        private Prescription parseFromDTO(PrescriptionDTO prescriptionDTO)
+        {
+            Prescription prescription = new Prescription
+            {
+                DoctorId = prescriptionDTO.DoctorId,
+                PatientId = prescriptionDTO.PatientId,
+                DrugId = prescriptionDTO.DrugId,
+                TakeAt = prescriptionDTO.TakeAt,
+                PerDay = prescriptionDTO.PerDay,    
+                MealCombination = prescriptionDTO.MealCombination
+            };
+
+            return prescription;
         }
 
         private PrescriptionDomainModel parseToModel(Prescription prescription)

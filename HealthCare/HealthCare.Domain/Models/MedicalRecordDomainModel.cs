@@ -10,8 +10,6 @@ public class MedicalRecordDomainModel
 
     public string BedriddenDiseases { get; set; }
 
-    public string Allergies { get; set; }
-
     public decimal PatientId { get; set; }
 
     public bool IsDeleted { get; set; }

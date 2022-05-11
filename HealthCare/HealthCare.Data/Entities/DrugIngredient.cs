@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Data.Entities
 {
-    [Table("drug-ingredient")]
+    [Table("drug_ingredient")]
     public class DrugIngredient
     {
         [Column("ingredient_id")]
@@ -17,7 +17,7 @@ namespace HealthCare.Data.Entities
         [Column("drug_id")]
         public decimal DrugId { get; set; }
 
-        [Column("amount")]
+        [Column("ammount")]
         public decimal Amount { get; set; }
 
         public Ingredient Ingredient { get; set; }

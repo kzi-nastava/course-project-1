@@ -19,8 +19,6 @@ namespace HealthCare.Data.Entities
         [Column("bedridden_diseases")]
         public string BedriddenDiseases { get; set; }
 
-        public string Allergies { get; set; }
-
         [Column("Patient_id")]
         public decimal PatientId { get; set; }
 

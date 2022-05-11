@@ -1,4 +1,5 @@
 ﻿using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -10,7 +11,7 @@ namespace HealthCare.Domain.Interfaces
 {
     public interface IPrescriptionService : IService<PrescriptionDomainModel>
     {
-        public Task<PrescriptionDomainModel> Create(PrescriptionDomainModel model);
+        public Task<PrescriptionDomainModel> Create(PrescriptionDTO prescriptionDTO);
 
     }
 }

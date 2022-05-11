@@ -34,6 +34,7 @@ namespace HealthCare.Repositories
         {
             return await _healthCareContext.MedicalRecords
                 .Include(x => x.ReferralLetters).ThenInclude(x => x.Specialization)
+                .Include(x => x.AllergiesList)
                 .Where(x => x.PatientId == patientId)
                 .FirstOrDefaultAsync();
         }
