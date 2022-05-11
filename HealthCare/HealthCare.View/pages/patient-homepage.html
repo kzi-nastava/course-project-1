@@ -1,21 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="../styles/patientStyle.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;500;700&family=Sen:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.0/css/all.min.css"
+    />
 
-<head>
-    <!-- <link rel="icon" href="../icon.png"> -->
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles/styles.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Mulish:wght@200;300&family=Open+Sans:wght@300&family=Sriracha&display=swap" rel="stylesheet">
-    <title>Homepage</title>
-</head>
+    <title>Health Care &mdash; Care you deserve</title>
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <div class="header__date">
+          <p class="header__date--day">Friday,13th March</p>
+          <p class="header__date--time">22:30 PM</p>
+          <p class="header__date--year">2022.</p>
+        </div>
+        <nav class="user-nav">
+          <div class="user-nav__box">
+            <img
+              src="../img/profile_pic.png"
+              alt="profile picture"
+              class="user-nav__box--img"
+            />
+            <div class="user-nav__box--text">
+              <span class="user-nav__box--text-name">John Doe</span>
+              <span class="user-nav__box--text-status">patient</span>
+            </div>
+          </div>
+        </nav>
+      </header>
+      <aside class="sidebar">
+        <a href="patient-homepage.html" class="sidebar__brand--link">
+          <img src="../img/logo_white.svg" alt="brand logo" class="brand-logo" />
+          <h1 class="sidebar__brand--name">Health Care</h1>
+        </a>
 
-<body>
-    <p>Patient</p>
-    
-</body>
-
+        <nav class="sidebar__nav">
+          <ul class="sidebar__nav--list">
+            <li class="sidebar__nav--item">
+              <a href="#" class="sidebar__nav--item-link">
+                <i class="fa-solid fa-border-all"></i>
+                <span>Dashboard</span>
+              </a>
+            </li>
+            <li class="sidebar__nav--item">
+              <a href="#" class="sidebar__nav--item-link">
+                <i class="fa-solid fa-calendar-plus"></i>
+                <span>Appoitments</span>
+              </a>
+            </li>
+            <li class="sidebar__nav--item">
+              <a href="#" class="sidebar__nav--item-link">
+                <i class="fa-solid fa-clock"></i>
+                <span>Recommended</span>
+              </a>
+            </li>
+            <li class="sidebar__nav--item">
+              <a href="#" class="sidebar__nav--item-link">
+                <i class="fa-solid fa-clipboard-user"></i>
+                <span>Medical record</span>
+              </a>
+            </li>
+            <li class="sidebar__nav--item">
+              <a href="#" class="sidebar__nav--item-link">
+                <i class="fa-solid fa-user-doctor"></i>
+                <span>Doctors</span>
+              </a>
+            </li>
+            <li class="sidebar__nav--item">
+              <a href="#" class="sidebar__nav--item-link">
+                <i class="fa-solid fa-capsules"></i>
+                <span>My therapy</span>
+              </a>
+            </li>
+            <li class="sidebar__nav--item sidebar-icon-down">
+              <a href="#" class="sidebar__nav--item-link">
+                <i class="fa-solid fa-gear"></i>
+                <span>Settings</span>
+              </a>
+            </li>
+            <li class="sidebar__nav--item">
+              <a href="#" class="sidebar__nav--item-link">
+                <i class="fa-solid fa-circle-question"></i>
+                <span>Help</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </aside>
+    </div>
+  </body>
 </html>

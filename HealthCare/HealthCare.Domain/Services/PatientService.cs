@@ -65,7 +65,7 @@ public class PatientService : IPatientService
             MedicalRecordDomainModel medicalRecordModel = new MedicalRecordDomainModel 
             {
                 IsDeleted = item.MedicalRecord.IsDeleted,
-                Allergies = item.MedicalRecord.Allergies,
+                //Allergies = item.MedicalRecord.Allergies,
                 BedriddenDiseases = item.MedicalRecord.BedriddenDiseases,
                 Height = item.MedicalRecord.Height,
                 PatientId = item.MedicalRecord.PatientId,
@@ -181,7 +181,7 @@ public class PatientService : IPatientService
             patient.MedicalRecord = new MedicalRecord 
             {
                 IsDeleted = patientModel.MedicalRecord.IsDeleted,
-                Allergies = patientModel.MedicalRecord.Allergies,
+                //Allergies = patientModel.MedicalRecord.Allergies,
                 BedriddenDiseases = patientModel.MedicalRecord.BedriddenDiseases,
                 Height = patientModel.MedicalRecord.Height,
                 PatientId = patientModel.MedicalRecord.PatientId,
@@ -298,7 +298,7 @@ public class PatientService : IPatientService
         medicalRecord.Height = patientModel.MedicalRecord.Height;
         medicalRecord.Weight = patientModel.MedicalRecord.Weight;
         medicalRecord.BedriddenDiseases = patientModel.MedicalRecord.BedriddenDiseases;
-        medicalRecord.Allergies = patientModel.MedicalRecord.Allergies;
+        //medicalRecord.Allergies = patientModel.MedicalRecord.Allergies;
         medicalRecord.IsDeleted = false;
         medicalRecord.PatientId = insertedPatient.Id;
 
@@ -341,7 +341,7 @@ public class PatientService : IPatientService
         medicalRecord.Height = patientModel.MedicalRecord.Height;
         medicalRecord.Weight = patientModel.MedicalRecord.Weight;
         medicalRecord.BedriddenDiseases = patientModel.MedicalRecord.BedriddenDiseases;
-        medicalRecord.Allergies = patientModel.MedicalRecord.Allergies;
+        //medicalRecord.Allergies = patientModel.MedicalRecord.Allergies;
         medicalRecord.IsDeleted = patientModel.MedicalRecord.IsDeleted;
         _ = _medicalRecordRepository.Update(medicalRecord);
         _medicalRecordRepository.Save();

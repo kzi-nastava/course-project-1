@@ -64,7 +64,7 @@ public class MedicalRecordService : IMedicalRecordService
             Weight = medicalRecord.Weight,
             BedriddenDiseases = medicalRecord.BedriddenDiseases,
             PatientId = medicalRecord.PatientId,
-            Allergies = medicalRecord.Allergies,
+            //Allergies = medicalRecord.Allergies,
             IsDeleted = medicalRecord.IsDeleted
         };
 
@@ -95,7 +95,7 @@ public class MedicalRecordService : IMedicalRecordService
             Weight = medicalRecordModel.Weight,
             BedriddenDiseases = medicalRecordModel.BedriddenDiseases,
             PatientId = medicalRecordModel.PatientId,
-            Allergies = medicalRecordModel.Allergies,
+            //Allergies = medicalRecordModel.Allergies,
             IsDeleted = medicalRecordModel.IsDeleted
         };
         if (medicalRecordModel.ReferralLetters != null)
