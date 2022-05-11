@@ -42,7 +42,9 @@ builder.Services.AddTransient<ISecretaryRepository, SecretaryRepository>();
 builder.Services.AddTransient<ISpecializationRepository, SpecializationRepository>();
 builder.Services.AddTransient<ITransferRepository, TransferRepository>();
 builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
-builder.Services.AddTransient<IRenovationRepository, RenovationRepository>();
+builder.Services.AddTransient<IJoinRenovationRepository, JoinRenovationRepository>();
+builder.Services.AddTransient<ISimpleRenovationRepository, SimpleRenovationRepository>();
+builder.Services.AddTransient<ISplitRenovationRepository, SplitRenovationRepository>();
 
 //Domain
 builder.Services.AddTransient<IAntiTrollService, AntiTrollService>();

@@ -10,6 +10,11 @@ namespace HealthCare.Domain.Interfaces
     public interface IRenovationService : IService<RenovationDomainModel>
     {
         public Task<IEnumerable<RenovationDomainModel>> GetAll();
-        public Task<RenovationDomainModel> Create(RenovationDomainModel newRenovation);
+        public Task<SimpleRenovationDomainModel> Create(SimpleRenovationDomainModel newRenovation);
+        public Task<JoinRenovationDomainModel> Create(JoinRenovationDomainModel newRenovation);
+        public Task<SplitRenovationDomainModel> Create(SplitRenovationDomainModel newRenovation);
+        Task<IEnumerable<JoinRenovationDomainModel>> GetJoin();
+        Task<IEnumerable<SplitRenovationDomainModel>> GetSplit();
+        Task<IEnumerable<SimpleRenovationDomainModel>> GetSimple();
     }
 }
