@@ -19,5 +19,6 @@ namespace HealthCare.Data.Entities
         [Column("end_date")]
         public DateTime EndDate { get; set; }
 
+
     }
 }
