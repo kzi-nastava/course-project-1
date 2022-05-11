@@ -69,6 +69,21 @@ namespace HealthCare.Domain.Services
             return renovations.Where(r => r.Id == r.Id);
         }
 
+        private async Task<IEnumerable<Examination>> GetExaminations(Room room)
+        {
+            IEnumerable<Examination> examinations = await _examinationRepository.GetAll();
+            return examinations.Where(e => e.RoomId == room.Id);
+        }
+
+        private async Task<IEnumerable<Operation>> GetOperations(Room room)
+        {
+            IEnumerable<Operation> operations = await _operationRepository.GetAll();
+            return operations.Where(o => o.RoomId == room.Id);
+        }
+
+
+
+
         private async Task<bool> validateSimpleRenovation(SimpleRenovationDomainModel renovation)
         {
             if (renovation.StartDate >= renovation.EndDate)
@@ -77,7 +92,7 @@ namespace HealthCare.Domain.Services
             if (room == null)
                 throw new Exception("Non existant room");
 
-            if (!isAvaliable(room, renovation).Result)
+            if (!IsAvaliable(room, renovation).Result)
                 throw new Exception("Room is already renovating in that period");
             return true;
         }
@@ -99,7 +114,7 @@ namespace HealthCare.Domain.Services
             if (roomType == null)
                 throw new Exception("Non existant room type");
 
-            if (!isAvaliable(join1, renovation).Result || !isAvaliable(join2, renovation).Result)
+            if (!IsAvaliable(join1, renovation).Result || !IsAvaliable(join2, renovation).Result)
                 throw new Exception("Room is already renovating in that period");
 
             return true;
@@ -123,13 +138,13 @@ namespace HealthCare.Domain.Services
             if (split == null)
                 throw new Exception("Non existant room");
 
-            if (!isAvaliable(split, renovation).Result)
+            if (!IsAvaliable(split, renovation).Result)
                 throw new Exception("Room is already renovating in that period");
             return true;
         }
 
 
-        private async Task<bool> isAvaliable(Room room, RenovationDomainModel renovationToCheck)
+        private async Task<bool> IsAvaliable(Room room, RenovationDomainModel renovationToCheck)
         {
             IEnumerable<Renovation> roomRenovations = await GetRenovation(room);
             foreach(Renovation renovation in roomRenovations)
@@ -303,17 +318,7 @@ namespace HealthCare.Domain.Services
             return result;
         }
 
-        private async Task<IEnumerable<Examination>> GetExaminations(Room room)
-        {
-            IEnumerable<Examination> examinations = await _examinationRepository.GetAll();
-            return examinations.Where(e => e.RoomId == room.Id);
-        }
-
-        private async Task<IEnumerable<Operation>> GetOperations(Room room)
-        {
-            IEnumerable<Operation> operations = await _operationRepository.GetAll();
-            return operations.Where(o => o.RoomId == room.Id);
-        }
+        
 
 
 
