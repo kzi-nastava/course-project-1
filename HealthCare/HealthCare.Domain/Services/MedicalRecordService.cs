@@ -84,6 +84,22 @@ public class MedicalRecordService : IMedicalRecordService
             }
 
         }
+        if (medicalRecord.Prescriptions != null)
+        {
+            foreach (Prescription item in medicalRecord.Prescriptions)
+            {
+                PrescriptionDomainModel prescription = new PrescriptionDomainModel
+                {
+                    Id = item.Id,
+                    PatientId = item.PatientId,
+                    DoctorId = item.DoctorId,
+                    TakeAt = item.TakeAt,
+                    PerDay = item.PerDay,
+                    IsDeleted = item.IsDeleted,
+                    MealCombination = (MealCombination)Enum.Parse(typeof(MealCombination), item.MealCombination)
+                };
+            }
+        }
         return medicalRecordModel;
     }
 
@@ -112,6 +128,22 @@ public class MedicalRecordService : IMedicalRecordService
                 medicalRecord.ReferralLetters.Add(referralLetter);
             }
 
+        }
+        if (medicalRecordModel.Prescriptions != null)
+        {
+            foreach(PrescriptionDomainModel item in medicalRecordModel.Prescriptions)
+            {
+                Prescription prescription = new Prescription
+                {
+                    Id = item.Id,
+                    PatientId = item.PatientId,
+                    DoctorId = item.DoctorId,
+                    TakeAt = item.TakeAt,
+                    PerDay = item.PerDay,
+                    IsDeleted = item.IsDeleted,
+                    MealCombination = item.MealCombination.ToString()
+                };
+            }
         }
         return medicalRecord;
     }

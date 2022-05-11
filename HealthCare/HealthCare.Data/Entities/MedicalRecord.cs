@@ -29,5 +29,9 @@ namespace HealthCare.Data.Entities
         public bool IsDeleted { get; set; }
 
         public List<ReferralLetter> ReferralLetters { get; set; }
+
+        public List<Prescription> Prescriptions { get; set; }
+
+        public List<Allergy> AllergiesList { get; set; }
     }
 }

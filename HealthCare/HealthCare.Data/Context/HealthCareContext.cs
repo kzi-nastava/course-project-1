@@ -57,8 +57,23 @@ namespace HealthCare.Data.Context
                 .WithOne(x => x.MedicalRecord)
                 .HasForeignKey(x => x.PatientId);
 
-            
+            modelBuilder.Entity<MedicalRecord>()
+                .HasMany(x => x.Prescriptions)
+                .WithOne(x => x.MedicalRecord)
+                .HasForeignKey(x => x.PatientId);
+
+            modelBuilder.Entity<MedicalRecord>()
+                .HasMany(x => x.AllergiesList)
+                .WithOne(x => x.MedicalRecord)
+                .HasForeignKey(x => x.PatientId);
+
+            modelBuilder.Entity<Drug>()
+                .HasMany(x => x.Ingredients);
+
             modelBuilder.Entity<Anamnesis>().HasKey(x => x.Id);
+            modelBuilder.Entity<Drug>().HasKey(x => x.Id);
+            modelBuilder.Entity<DrugIngredient>().HasKey(x => x.Id);
+            modelBuilder.Entity<Allergy>().HasKey(x => new { x.PatientId, x.IngredientId });
             modelBuilder.Entity<Examination>().HasKey(x => x.Id);
             modelBuilder.Entity<ExaminationApproval>().HasKey(x => x.Id);
             modelBuilder.Entity<Inventory>().HasKey(x => new {x.RoomId, x.EquipmentId });

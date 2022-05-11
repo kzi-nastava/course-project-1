@@ -18,5 +18,6 @@ public class MedicalRecordDomainModel
 
     public List<ReferralLetterDomainModel> ReferralLetters { get; set; }
 
+    public List<PrescriptionDomainModel> Prescriptions {get; set; }
 
 }
