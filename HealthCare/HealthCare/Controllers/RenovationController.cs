@@ -65,12 +65,13 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpPost]
-        [Route("create/join")]
-        public async Task<ActionResult<JoinRenovationDomainModel>> CreateJoin([FromBody] JoinRenovationDomainModel newRenovationModel)
+        [Route("create/join/{resultRoomName}&{roomTypeId}")]
+        public async Task<ActionResult<JoinRenovationDomainModel>> CreateJoin([FromBody] JoinRenovationDomainModel newRenovationModel,
+            string resultRoomName, decimal roomTypeId)
         {
             try
             {
-                JoinRenovationDomainModel renovationModel = await _renovationService.Create(newRenovationModel);
+                JoinRenovationDomainModel renovationModel = await _renovationService.Create(newRenovationModel, resultRoomName, roomTypeId);
                 return Ok(renovationModel);
             }
             catch (Exception exception)
@@ -81,12 +82,13 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpPost]
-        [Route("create/split")]
-        public async Task<ActionResult<SplitRenovationDomainModel>> CreateSplit([FromBody] SplitRenovationDomainModel newRenovationModel)
+        [Route("create/split/{resultRoomName1}&{resultRoomName2}&{roomTypeId1}&{roomTypeId2}")]
+        public async Task<ActionResult<SplitRenovationDomainModel>> CreateSplit([FromBody] SplitRenovationDomainModel newRenovationModel,
+            string resultRoomName1, string resultRoomName2, decimal roomTypeId1, decimal roomTypeId2)
         {
             try
             {
-                SplitRenovationDomainModel renovationModel = await _renovationService.Create(newRenovationModel);
+                SplitRenovationDomainModel renovationModel = await _renovationService.Create(newRenovationModel, resultRoomName1, resultRoomName2, roomTypeId1, roomTypeId2);
                 return Ok(renovationModel);
             }
             catch (Exception exception)

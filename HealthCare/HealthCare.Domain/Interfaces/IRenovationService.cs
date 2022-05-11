@@ -11,8 +11,9 @@ namespace HealthCare.Domain.Interfaces
     {
         public Task<IEnumerable<RenovationDomainModel>> GetAll();
         public Task<SimpleRenovationDomainModel> Create(SimpleRenovationDomainModel newRenovation);
-        public Task<JoinRenovationDomainModel> Create(JoinRenovationDomainModel newRenovation);
-        public Task<SplitRenovationDomainModel> Create(SplitRenovationDomainModel newRenovation);
+        public Task<JoinRenovationDomainModel> Create(JoinRenovationDomainModel newRenovation, string resultRoomName, decimal roomTypeId);
+        public Task<SplitRenovationDomainModel> Create(SplitRenovationDomainModel newRenovationModel,
+            string resultRoomName1, string resultRoomName2, decimal roomTypeId1, decimal roomTypeId2);
         Task<IEnumerable<JoinRenovationDomainModel>> GetJoin();
         Task<IEnumerable<SplitRenovationDomainModel>> GetSplit();
         Task<IEnumerable<SimpleRenovationDomainModel>> GetSimple();
