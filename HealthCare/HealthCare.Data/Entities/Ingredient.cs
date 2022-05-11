@@ -19,5 +19,7 @@ namespace HealthCare.Data.Entities
 
         [Column("allergen")]
         public bool IsAllergen { get; set; }
+
+        public List<DrugIngredient> DrugIngredients { get; set; }
     }
 }

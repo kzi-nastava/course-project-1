@@ -19,7 +19,6 @@ namespace HealthCare.Data.Entities
         [Column("bedridden_diseases")]
         public string BedriddenDiseases { get; set; }
 
-        [Column("alergies")]
         public string Allergies { get; set; }
 
         [Column("Patient_id")]

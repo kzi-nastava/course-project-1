@@ -68,6 +68,21 @@ public class MedicalRecordService : IMedicalRecordService
             IsDeleted = medicalRecord.IsDeleted
         };
 
+        medicalRecordModel.AllergiesList = new List<AllergyDomainModel>();
+        if (medicalRecord.AllergiesList != null)
+        {
+            foreach (Allergy item in medicalRecord.AllergiesList)
+            {
+                AllergyDomainModel allergy = new AllergyDomainModel
+                {
+                    IngredientId = item.IngredientId,
+                    PatientId = item.PatientId
+                };
+                medicalRecordModel.AllergiesList.Add(allergy);
+            }
+        }
+
+
         medicalRecordModel.ReferralLetters = new List<ReferralLetterDomainModel>();
         if (medicalRecord.ReferralLetters != null)
         {
@@ -84,6 +99,8 @@ public class MedicalRecordService : IMedicalRecordService
             }
 
         }
+
+        medicalRecordModel.Prescriptions = new List<PrescriptionDomainModel>();
         if (medicalRecord.Prescriptions != null)
         {
             foreach (Prescription item in medicalRecord.Prescriptions)
@@ -91,6 +108,7 @@ public class MedicalRecordService : IMedicalRecordService
                 PrescriptionDomainModel prescription = new PrescriptionDomainModel
                 {
                     Id = item.Id,
+                    DrugId = item.DrugId,
                     PatientId = item.PatientId,
                     DoctorId = item.DoctorId,
                     TakeAt = item.TakeAt,
@@ -98,6 +116,7 @@ public class MedicalRecordService : IMedicalRecordService
                     IsDeleted = item.IsDeleted,
                     MealCombination = (MealCombination)Enum.Parse(typeof(MealCombination), item.MealCombination)
                 };
+                medicalRecordModel.Prescriptions.Add(prescription);
             }
         }
         return medicalRecordModel;
@@ -114,6 +133,22 @@ public class MedicalRecordService : IMedicalRecordService
             Allergies = medicalRecordModel.Allergies,
             IsDeleted = medicalRecordModel.IsDeleted
         };
+
+        medicalRecord.AllergiesList = new List<Allergy>();
+        if (medicalRecordModel.AllergiesList != null)
+        {
+            foreach (AllergyDomainModel item in medicalRecordModel.AllergiesList)
+            {
+                Allergy allergy = new Allergy
+                {
+                    IngredientId = item.IngredientId,
+                    PatientId = item.PatientId
+                };
+                medicalRecord.AllergiesList.Add(allergy);
+            }
+        }
+
+        medicalRecord.ReferralLetters = new List<ReferralLetter>();
         if (medicalRecordModel.ReferralLetters != null)
         {
             foreach(ReferralLetterDomainModel item in medicalRecordModel.ReferralLetters)
@@ -129,6 +164,8 @@ public class MedicalRecordService : IMedicalRecordService
             }
 
         }
+
+        medicalRecord.Prescriptions = new List<Prescription>();
         if (medicalRecordModel.Prescriptions != null)
         {
             foreach(PrescriptionDomainModel item in medicalRecordModel.Prescriptions)
@@ -143,6 +180,7 @@ public class MedicalRecordService : IMedicalRecordService
                     IsDeleted = item.IsDeleted,
                     MealCombination = item.MealCombination.ToString()
                 };
+                medicalRecord.Prescriptions.Add(prescription);
             }
         }
         return medicalRecord;

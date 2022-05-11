@@ -20,6 +20,6 @@ namespace HealthCare.Data.Entities
         [Column("deleted")]
         public bool IsDeleted { get; set; }
 
-        public List<DrugIngredient> Ingredients { get; set; }
+        public List<DrugIngredient> DrugIngredients { get; set; }
     }
 }

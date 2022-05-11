@@ -8,7 +8,7 @@ namespace HealthCare.Domain.Models
 {
     public class DrugIngredientDomainModel
     {
-        public decimal Id { get; set; }
+        public decimal IngredientId { get; set; }
 
         public decimal DrugId { get; set; }
 

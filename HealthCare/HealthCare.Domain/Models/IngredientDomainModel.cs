@@ -13,5 +13,7 @@ namespace HealthCare.Domain.Models
         public string Name { get; set; }
 
         public bool IsAllergen { get; set; }
+        public List<DrugIngredientDomainModel> DrugIngredients { get; set; }
+
     }
 }

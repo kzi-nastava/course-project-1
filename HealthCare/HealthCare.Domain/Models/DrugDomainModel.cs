@@ -13,5 +13,8 @@ namespace HealthCare.Domain.Models
         public string Name { get; set; }
 
         public bool IsDeleted { get; set; }
+
+        public List<DrugIngredientDomainModel> DrugIngredients { get; set; }
+
     }
 }

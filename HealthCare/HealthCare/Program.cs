@@ -35,6 +35,7 @@ builder.Services.AddTransient<IManagerRepository, ManagerRepository>();
 builder.Services.AddTransient<IMedicalRecordRepository, MedicalRecordRepository>();
 builder.Services.AddTransient<IOperationRepository, OperationRepository>();
 builder.Services.AddTransient<IPatientRepository, PatientRepository>();
+builder.Services.AddTransient<IPrescriptionRepository, PrescriptionRepository>();
 builder.Services.AddTransient<IReferralLetterRepository, ReferralLetterRepository>();
 builder.Services.AddTransient<IRoomRepository, RoomRepository>();
 builder.Services.AddTransient<IRoomTypeRepository, RoomTypeRepository>();
@@ -59,6 +60,7 @@ builder.Services.AddTransient<IManagerService, ManagerService>();
 builder.Services.AddTransient<IMedicalRecordService, MedicalRecordService>();
 builder.Services.AddTransient<IOperationService, OperationService>();
 builder.Services.AddTransient<IPatientService, PatientService>();
+builder.Services.AddTransient<IPrescriptionService, PrescriptionService>();
 builder.Services.AddTransient<IReferralLetterService, ReferralLetterService>();
 builder.Services.AddTransient<IRoomService, RoomService>();
 builder.Services.AddTransient<IRoomTypeService, RoomTypeService>();
@@ -66,6 +68,7 @@ builder.Services.AddTransient<ISecretaryService, SecretaryService>();
 builder.Services.AddTransient<ISpecializationService, SpecializationService>();
 builder.Services.AddTransient<ITransferService, TransferService>();
 builder.Services.AddTransient<IUserRoleService, UserRoleService>();
+
 
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");

@@ -20,4 +20,7 @@ public class MedicalRecordDomainModel
 
     public List<PrescriptionDomainModel> Prescriptions {get; set; }
 
+    public List<AllergyDomainModel> AllergiesList { get; set; }
+
+
 }

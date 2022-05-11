@@ -30,5 +30,11 @@ namespace HealthCare.Domain.Models
         public bool IsDeleted { get; set; }
 
         public MealCombination MealCombination { get; set; }
+
+        public DrugDomainModel Drug { get; set; }
+
+        public MedicalRecordDomainModel MedicalRecord { get; set; }
+
+
     }
 }
