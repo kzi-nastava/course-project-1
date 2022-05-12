@@ -11,7 +11,7 @@ namespace HealthCare.Repositories
 {
     public interface IIngredientRepository : IRepository<Ingredient>
     {
-
+        public Task<Ingredient> GetById(decimal id);
     }
     public class IngredientRepository : IIngredientRepository
     {
@@ -24,7 +24,12 @@ namespace HealthCare.Repositories
 
         public async Task<IEnumerable<Ingredient>> GetAll()
         {
-            return await _healthCareContext.Ingridients.ToListAsync();
+            return await _healthCareContext.Ingridients.Include(x => x.DrugIngredients).ToListAsync();
+        }
+
+        public async Task<Ingredient> GetById(decimal id)
+        {
+            return await _healthCareContext.Ingridients.Where(x => x.Id == id).FirstOrDefaultAsync();
         }
 
         public void Save()

@@ -109,4 +109,11 @@ namespace HealthCare.Domain.Interfaces
         {
         }
     }
+
+    public class PatientIsAllergicException : Exception
+    {
+        public PatientIsAllergicException(string allergen) : base("You can't prescribe the chosen drug to the patient. Allergic to " + allergen + ".")
+        {
+        }
+    }
 }

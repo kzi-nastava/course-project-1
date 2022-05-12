@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Data.Entities
 {
-    [Table("ingredient")]
-    public class Ingredient
+    [Table("drug")]
+    public class Drug
     {
         [Column("id")]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -17,8 +17,8 @@ namespace HealthCare.Data.Entities
         [Column("name")]
         public string Name { get; set; }
 
-        [Column("allergen")]
-        public bool IsAllergen { get; set; }
+        [Column("deleted")]
+        public bool IsDeleted { get; set; }
 
         public List<DrugIngredient> DrugIngredients { get; set; }
     }

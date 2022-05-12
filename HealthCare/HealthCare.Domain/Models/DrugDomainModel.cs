@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Domain.Models
 {
-    public class IngredientDomainModel
+    public class DrugDomainModel
     {
         public decimal Id { get; set; }
 
         public string Name { get; set; }
 
-        public bool IsAllergen { get; set; }
+        public bool IsDeleted { get; set; }
+
         public List<DrugIngredientDomainModel> DrugIngredients { get; set; }
 
     }
