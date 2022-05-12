@@ -95,8 +95,15 @@ namespace HealthCareAPI.Controllers
         [Route("block/{id}")]
         public async Task<ActionResult<PatientDomainModel>> BlockPatient(decimal id)
         {
-            PatientDomainModel blockedPatient = await _patientService.Block(id);
-            return Ok(blockedPatient);
+            try
+            {
+                PatientDomainModel blockedPatient = await _patientService.Block(id);
+                return Ok(blockedPatient);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
         
         [HttpGet]
@@ -112,8 +119,15 @@ namespace HealthCareAPI.Controllers
         [Route("unblock/{id}")]
         public async Task<ActionResult<PatientDomainModel>> UnblockPatient(decimal id)
         {
-            PatientDomainModel blockedPatient = await _patientService.Unblock(id);
-            return Ok(blockedPatient);
+            try
+            {
+                PatientDomainModel blockedPatient = await _patientService.Unblock(id);
+                return Ok(blockedPatient);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
     }
 }
