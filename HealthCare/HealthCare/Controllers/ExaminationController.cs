@@ -42,11 +42,16 @@ namespace HealthCareAPI.Controllers
         [Route("patientId={id}")]
         public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForPatient(decimal id) 
         {
-            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatient(id);
-            if (examinations == null) {
-                examinations = new List<ExaminationDomainModel>();
+            try
+            {
+                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatient(id);
+                return Ok(examinations);
             }
-            return Ok(examinations);
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+
         }
 
         // https://localhost:7195/api/examination/sort/
@@ -54,24 +59,30 @@ namespace HealthCareAPI.Controllers
         [Route("sort")]
         public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForPatientSorted([FromBody] SortExaminationDTO dto)
         {
-            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatientSorted(dto, _doctorService);
-            if (examinations == null)
+            try
             {
-                examinations = new List<ExaminationDomainModel>();
+                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatientSorted(dto, _doctorService);
+                return Ok(examinations);
             }
-            return Ok(examinations);
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
         [HttpGet]
         [Route("doctorId={id}")]
         public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForDoctor(decimal id)
         {
-            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForDoctor(id);
-            if (examinations == null)
+            try
             {
-                examinations = new List<ExaminationDomainModel>();
+                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForDoctor(id);
+                return Ok(examinations);
             }
-            return Ok(examinations);
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
         // https://localhost:7195/api/examination/delete
