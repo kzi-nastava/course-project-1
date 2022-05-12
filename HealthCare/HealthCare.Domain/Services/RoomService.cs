@@ -1,4 +1,5 @@
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -107,12 +108,12 @@ public class RoomService : IRoomService
         return results;
     }
 
-    public async Task<RoomDomainModel> Create(RoomDomainModel roomModel)
+    public async Task<RoomDomainModel> Create(CURoomDTO dto)
     {
         Room newRoom = new Room();
-        newRoom.IsDeleted = roomModel.IsDeleted;
-        newRoom.RoomName = roomModel.RoomName;
-        RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);
+        newRoom.IsDeleted = false;
+        newRoom.RoomName = dto.RoomName;
+        RoomType roomType = await _roomTypeRepository.GetById(dto.RoomTypeId);
         if (roomType == null)
             throw new RoomTypeNotFoundException();
         newRoom.RoomType = roomType;
@@ -120,15 +121,14 @@ public class RoomService : IRoomService
         _ = _roomRepository.Post(newRoom);
         _roomRepository.Save();
 
-        return roomModel;
+        return parseToModel(newRoom);
     }
 
-    public async Task<RoomDomainModel> Update(RoomDomainModel roomModel)
+    public async Task<RoomDomainModel> Update(CURoomDTO dto)
     {
-        Room room = await _roomRepository.GetRoomById(roomModel.Id);
-        room.IsDeleted = roomModel.IsDeleted;
-        room.RoomName = roomModel.RoomName;
-        RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);
+        Room room = await _roomRepository.GetRoomById(dto.RoomId);
+        room.RoomName = dto.RoomName;
+        RoomType roomType = await _roomTypeRepository.GetById(dto.RoomTypeId);
         if (roomType == null)
             throw new RoomTypeNotFoundException();
         room.RoomType = roomType;
@@ -136,7 +136,7 @@ public class RoomService : IRoomService
         _ = _roomRepository.Update(room);
         _roomRepository.Save();
 
-        return roomModel;
+        return parseToModel(room);
     }
 
     public async Task<RoomDomainModel> Delete(decimal id)

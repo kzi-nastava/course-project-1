@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -48,11 +49,11 @@ namespace HealthCareAPI.Controllers
 
         [HttpPut]
         [Route("update")]
-        public async Task<ActionResult<MedicalRecordDomainModel>> Update([FromBody] MedicalRecordDomainModel medicalRecordModel)
+        public async Task<ActionResult<MedicalRecordDomainModel>> Update([FromBody] CUMedicalRecordDTO dto)
         {
             try
             {
-                MedicalRecordDomainModel updatedRecord = await _medicalRecordService.Update(medicalRecordModel);
+                MedicalRecordDomainModel updatedRecord = await _medicalRecordService.Update(dto);
                 return Ok(updatedRecord);
             }
             catch (Exception exception)

@@ -1,4 +1,5 @@
 ﻿using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -27,16 +28,16 @@ namespace HealthCare.Domain.Services
             return new List<AppointmentDomainModel>();
         }
 
-        public async Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(decimal id, DateTime date)
+        public async Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(DoctorsScheduleDTO dto)
         {
-            IEnumerable<Examination> examinationData = await _examinationRepository.GetAllByDoctorId(id, date);
+            IEnumerable<Examination> examinationData = await _examinationRepository.GetAllByDoctorId(dto.DoctorId, dto.Date);
             List<AppointmentDomainModel> results = new List<AppointmentDomainModel>();
             foreach (Examination item in examinationData)
             {
                 results.Add(parseToModel(item));
             }
 
-            IEnumerable<Operation> operationData = await _operationRepository.GetAllByDoctorId(id, date);
+            IEnumerable<Operation> operationData = await _operationRepository.GetAllByDoctorId(dto.DoctorId, dto.Date);
             foreach (Operation item in operationData)
             {
                 results.Add(parseToModel(item));

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -56,11 +57,11 @@ namespace HealthCare.Domain.Services
             return true;
         }
 
-        public async Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(string username, string password)
+        public async Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(LoginDTO dto)
         {
             IEnumerable<CredentialsDomainModel> data = await ReadAll();
             foreach (CredentialsDomainModel item in data) {
-                if (item.Username.Equals(username) && item.Password.Equals(password))
+                if (item.Username.Equals(dto.Username) && item.Password.Equals(dto.Password))
                 {
                     if (item.PatientId != null)
                     {

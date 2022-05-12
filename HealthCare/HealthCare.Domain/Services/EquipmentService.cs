@@ -1,4 +1,5 @@
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -106,20 +107,20 @@ public class EquipmentService : IEquipmentService
         return results;
     }
 
-    public async Task<IEnumerable<EquipmentDomainModel>> Filter(decimal equipmentTypeId, int minAmount, int maxAmount, decimal roomTypeId)
+    public async Task<IEnumerable<EquipmentDomainModel>> Filter(FilterEquipmentDTO dto)
     {
         IEnumerable<Equipment> filterResult = await _equipmentRepository.GetAll();
         if (filterResult == null || filterResult.Count() < 1)
             throw new DataIsNullException();
 
         // filter #1
-        if (equipmentTypeId != -1)
+        if (dto.EquipmentTypeId != null)
         {
-            filterResult = filterResult.Where(e => e.equipmentTypeId == equipmentTypeId);
+            filterResult = filterResult.Where(e => e.equipmentTypeId == dto.EquipmentTypeId);
         }
 
 
-        if (minAmount != -1 || maxAmount != -1)
+        if (dto.MinAmount != null || dto.MaxAmount != null)
         {
             IEnumerable<Inventory> inventories = await _inventoryRepository.GetAll();
             // group inventories by equipment and sum the amount
@@ -130,18 +131,18 @@ public class EquipmentService : IEquipmentService
                     TotalAmount = group.Sum(i => i.Amount),
                 });
             //filter #2
-            if (minAmount != -1)
+            if (dto.MinAmount != null)
             {
-                IEnumerable<decimal> minFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount > minAmount)
+                IEnumerable<decimal> minFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount > dto.MinAmount)
                     .Select(group => group.EquipmentId);
 
                 filterResult = filterResult.Where(x => minFilteredEquipmentIds.Contains(x.Id));
             }
 
             // filter #3
-            if (maxAmount != -1)
+            if (dto.MaxAmount != null)
             {
-                IEnumerable<decimal> maxFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount < maxAmount)
+                IEnumerable<decimal> maxFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount < dto.MaxAmount)
                     .Select(group => group.EquipmentId);
 
                 filterResult = filterResult.Where(x => maxFilteredEquipmentIds.Contains(x.Id));
@@ -149,11 +150,11 @@ public class EquipmentService : IEquipmentService
         }
 
         // filter #4
-        if(roomTypeId != -1)
+        if(dto.RoomTypeId != null)
         {
             // get rooms ids of that room type
             IEnumerable<Room> rooms = await _roomRepository.GetAll();
-            IEnumerable<decimal> roomIds = rooms.Where(x => x.RoomTypeId == roomTypeId).Select(r => r.Id);
+            IEnumerable<decimal> roomIds = rooms.Where(x => x.RoomTypeId == dto.RoomTypeId).Select(r => r.Id);
 
             // find equipment ids in all inventories stored in the rooms
             IEnumerable<Inventory> inventories = await _inventoryRepository.GetAll();

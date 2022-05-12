@@ -74,11 +74,11 @@ namespace HealthCare.Domain.Services
             return results;
         }
 
-        public async Task<Boolean> TryCreateExamination(ExaminationDomainModel examinationModel, IExaminationService examinationService)
+        public async Task<Boolean> TryCreateExamination(CUExaminationDTO dto, IExaminationService examinationService)
         {
             try
             {
-                ExaminationDomainModel createdExamination = await examinationService.Create(examinationModel, false);
+                ExaminationDomainModel createdExamination = await examinationService.Create(dto);
             }
             catch (Exception exception)
             {
@@ -88,19 +88,18 @@ namespace HealthCare.Domain.Services
             return true;
         }
 
-        public async Task<ReferralLetterDomainModel> CreateAppointment(decimal referralId, DateTime time, IExaminationService examinationService)
+        public async Task<ReferralLetterDomainModel> CreateAppointment(CreateAppointmentDTO dto, IExaminationService examinationService)
         {
-            ReferralLetter referralLetter = await _referralLetterRepository.GetById(referralId);
+            ReferralLetter referralLetter = await _referralLetterRepository.GetById(dto.ReferralId);
             ReferralLetterDomainModel referralLetterModel = parseToModel(referralLetter);
             
             if (!referralLetterModel.State.Equals("created")) throw new ReferralCannotBeUsedException();
-            
-            ExaminationDomainModel examinationModel = new ExaminationDomainModel
+
+            CUExaminationDTO examinationModel = new CUExaminationDTO
             {
-                IsDeleted = false,
-                IsEmergency = false,
                 PatientId = referralLetterModel.PatientId,
-                StartTime = time
+                StartTime = dto.StartTime,
+                IsPatient = false
             };
             
             if (referralLetterModel.ToDoctorId != null)
@@ -108,7 +107,7 @@ namespace HealthCare.Domain.Services
                 examinationModel.DoctorId = referralLetterModel.ToDoctorId.GetValueOrDefault();
                 try
                 {
-                    ExaminationDomainModel createdExamination = await examinationService.Create(examinationModel, false);
+                    ExaminationDomainModel createdExamination = await examinationService.Create(examinationModel);
                 }
                 catch (Exception exception)
                 {
