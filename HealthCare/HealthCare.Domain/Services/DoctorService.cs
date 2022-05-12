@@ -14,7 +14,7 @@ public class DoctorService : IDoctorService
         _doctorRepository = doctorRepository;
     }
 
-    private Doctor parseFromModel(DoctorDomainModel doctorModel)
+    public static Doctor ParseFromModel(DoctorDomainModel doctorModel)
     {
         Doctor doctor = new Doctor 
         {
@@ -29,25 +29,25 @@ public class DoctorService : IDoctorService
         };
         
         if (doctorModel.Credentials != null)
-            doctor.Credentials = CredentialsService.parseFromModel(doctorModel.Credentials);
+            doctor.Credentials = CredentialsService.ParseFromModel(doctorModel.Credentials);
         
         if(doctorModel.Specialization != null)
-            doctor.Specialization = SpecializationService.parseFromModel(doctorModel.Specialization);
+            doctor.Specialization = SpecializationService.ParseFromModel(doctorModel.Specialization);
         
         doctor.Examinations = new List<Examination>();
         doctor.Operations = new List<Operation>();
         
         if (doctorModel.Examinations != null) 
             foreach (ExaminationDomainModel examinationModel in doctorModel.Examinations)
-                doctor.Examinations.Add(ExaminationService.parseFromModel(examinationModel));
+                doctor.Examinations.Add(ExaminationService.ParseFromModel(examinationModel));
         
         if(doctorModel.Operations != null) 
             foreach (OperationDomainModel operationModel in doctorModel.Operations) 
-                doctor.Operations.Add(OperationService.parseFromModel(operationModel));
+                doctor.Operations.Add(OperationService.ParseFromModel(operationModel));
         
         return doctor;
     }
-    private DoctorDomainModel parseToModel(Doctor doctor)
+    public static DoctorDomainModel ParseToModel(Doctor doctor)
     {
         DoctorDomainModel doctorModel = new DoctorDomainModel 
         {
@@ -62,20 +62,20 @@ public class DoctorService : IDoctorService
             SpecializationId = doctor.SpecializationId
         };
         if (doctor.Credentials != null)
-            doctorModel.Credentials = CredentialsService.parseToModel(doctor.Credentials);
+            doctorModel.Credentials = CredentialsService.ParseToModel(doctor.Credentials);
 
         if (doctor.Specialization != null)
-            doctorModel.Specialization = SpecializationService.parseToModel(doctor.Specialization); 
+            doctorModel.Specialization = SpecializationService.ParseToModel(doctor.Specialization); 
             
         doctorModel.Examinations = new List<ExaminationDomainModel>();
         doctorModel.Operations = new List<OperationDomainModel>();
         if (doctor.Examinations != null) 
             foreach (Examination examination in doctor.Examinations) 
-                doctorModel.Examinations.Add(ExaminationService.parseToModel(examination));
+                doctorModel.Examinations.Add(ExaminationService.ParseToModel(examination));
                 
         if(doctor.Operations != null) 
             foreach (Operation operation in doctor.Operations) 
-                doctorModel.Operations.Add(OperationService.parseToModel(operation));
+                doctorModel.Operations.Add(OperationService.ParseToModel(operation));
         return doctorModel;
     }
     
@@ -88,7 +88,7 @@ public class DoctorService : IDoctorService
         List<DoctorDomainModel> results = new List<DoctorDomainModel>();
         foreach (Doctor item in data) 
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
         return results;
     }
@@ -103,7 +103,7 @@ public class DoctorService : IDoctorService
         List<DoctorDomainModel> results = new List<DoctorDomainModel>();
         foreach (Doctor item in data)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
         return results;
     }
@@ -113,7 +113,7 @@ public class DoctorService : IDoctorService
         Doctor data = await _doctorRepository.GetDoctorById(id);
         if (data == null)
             return null;
-        return parseToModel(data);
+        return ParseToModel(data);
     }
 
     public async Task<IEnumerable<DoctorDomainModel>> ReadAll()
@@ -141,7 +141,7 @@ public class DoctorService : IDoctorService
     public async Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetAvailableSchedule(decimal doctorId, decimal duration=15)
     {
         Doctor doctor = await _doctorRepository.GetDoctorById(doctorId);
-        DoctorDomainModel doctorModel = parseToModel(doctor);
+        DoctorDomainModel doctorModel = ParseToModel(doctor);
         List<KeyValuePair<DateTime, DateTime>> schedule = new List<KeyValuePair<DateTime, DateTime>>();
         DateTime timeStart, timeEnd;
         // Go through examinations
@@ -181,7 +181,7 @@ public class DoctorService : IDoctorService
     {
         // TODO: This and the above function can work together
         Doctor doctor = await _doctorRepository.GetDoctorById(doctorId);
-        DoctorDomainModel doctorModel = parseToModel(doctor);
+        DoctorDomainModel doctorModel = ParseToModel(doctor);
         List<KeyValuePair<DateTime, DateTime>> schedule = new List<KeyValuePair<DateTime, DateTime>>();
         DateTime timeStart, timeEnd;
         // Go through examinations

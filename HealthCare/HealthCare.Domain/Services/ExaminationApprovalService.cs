@@ -34,7 +34,7 @@ public class ExaminationApprovalService : IExaminationApprovalService
         return results;
     }
     
-    public static ExaminationApproval parseFromModel(ExaminationApprovalDomainModel examinationApprovalModel)
+    public static ExaminationApproval ParseFromModel(ExaminationApprovalDomainModel examinationApprovalModel)
     {
         ExaminationApproval examinationApproval = new ExaminationApproval
         {
@@ -47,7 +47,7 @@ public class ExaminationApprovalService : IExaminationApprovalService
         
         return examinationApproval;
     }
-    public static ExaminationApprovalDomainModel parseToModel(ExaminationApproval examinationApproval)
+    public static ExaminationApprovalDomainModel ParseToModel(ExaminationApproval examinationApproval)
     {
         ExaminationApprovalDomainModel examinationApprovalModel = new ExaminationApprovalDomainModel
         {

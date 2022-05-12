@@ -25,7 +25,7 @@ namespace HealthCare.Domain.Services
             _specializationRepository = specializationRepository;
         }
 
-        public static ReferralLetterDomainModel parseToModel(ReferralLetter referralLetter)
+        public static ReferralLetterDomainModel ParseToModel(ReferralLetter referralLetter)
         {
             ReferralLetterDomainModel referralLetterModel = new ReferralLetterDomainModel
             {
@@ -37,12 +37,12 @@ namespace HealthCare.Domain.Services
                 State = referralLetter.State
             };
             if (referralLetter.Specialization != null)
-                referralLetterModel.Specialization = SpecializationService.parseToModel(referralLetter.Specialization); 
+                referralLetterModel.Specialization = SpecializationService.ParseToModel(referralLetter.Specialization); 
                     
             return referralLetterModel;
         }
 
-        public static ReferralLetter parseFromModel(ReferralLetterDomainModel referralLetterModel)
+        public static ReferralLetter ParseFromModel(ReferralLetterDomainModel referralLetterModel)
         {
             ReferralLetter referralLetter = new ReferralLetter
             {
@@ -54,7 +54,7 @@ namespace HealthCare.Domain.Services
                 State = referralLetterModel.State
             };
             if (referralLetterModel.Specialization != null)
-                referralLetter.Specialization = SpecializationService.parseFromModel(referralLetterModel.Specialization); 
+                referralLetter.Specialization = SpecializationService.ParseFromModel(referralLetterModel.Specialization); 
                     
             return referralLetter;
         }
@@ -68,7 +68,7 @@ namespace HealthCare.Domain.Services
             List<ReferralLetterDomainModel> results = new List<ReferralLetterDomainModel>();
             foreach (ReferralLetter item in data)
             {
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
             }
 
             return results;
@@ -91,7 +91,7 @@ namespace HealthCare.Domain.Services
         public async Task<ReferralLetterDomainModel> CreateAppointment(CreateAppointmentDTO dto, IExaminationService examinationService)
         {
             ReferralLetter referralLetter = await _referralLetterRepository.GetById(dto.ReferralId);
-            ReferralLetterDomainModel referralLetterModel = parseToModel(referralLetter);
+            ReferralLetterDomainModel referralLetterModel = ParseToModel(referralLetter);
             
             if (!referralLetterModel.State.Equals("created")) throw new ReferralCannotBeUsedException();
 
@@ -171,7 +171,7 @@ namespace HealthCare.Domain.Services
             _referralLetterRepository.Post(newReferral);
             _referralLetterRepository.Save();
 
-            return parseToModel(newReferral);
+            return ParseToModel(newReferral);
         }
     }
 }

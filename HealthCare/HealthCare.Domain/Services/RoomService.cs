@@ -71,7 +71,7 @@ public class RoomService : IRoomService
                     inventoryModel.Equipment = new EquipmentDomainModel 
                     {
                         Id = inventory.Equipment.Id,
-                        EquipmentTypeId = inventory.Equipment.equipmentTypeId,
+                        EquipmentTypeId = inventory.Equipment.EquipmentTypeId,
                         IsDeleted = inventory.Equipment.IsDeleted,
                         Name = inventory.Equipment.Name,
                     };
@@ -121,7 +121,7 @@ public class RoomService : IRoomService
         _ = _roomRepository.Post(newRoom);
         _roomRepository.Save();
 
-        return parseToModel(newRoom);
+        return ParseToModel(newRoom);
     }
 
     public async Task<RoomDomainModel> Update(CURoomDTO dto)
@@ -136,7 +136,7 @@ public class RoomService : IRoomService
         _ = _roomRepository.Update(room);
         _roomRepository.Save();
 
-        return parseToModel(room);
+        return ParseToModel(room);
     }
 
     public async Task<RoomDomainModel> Delete(decimal id)
@@ -145,10 +145,10 @@ public class RoomService : IRoomService
         deletedRoom.IsDeleted = true;
         _ = _roomRepository.Update(deletedRoom);
         _roomRepository.Save();
-        return parseToModel(deletedRoom);
+        return ParseToModel(deletedRoom);
     }
 
-    public static RoomDomainModel parseToModel(Room room)
+    public static RoomDomainModel ParseToModel(Room room)
     {
         RoomDomainModel roomModel = new RoomDomainModel 
         {
@@ -161,7 +161,7 @@ public class RoomService : IRoomService
         return roomModel;
     }
     
-    public static Room parseFromModel(RoomDomainModel roomModel)
+    public static Room ParseFromModel(RoomDomainModel roomModel)
     {
         Room room = new Room 
         {

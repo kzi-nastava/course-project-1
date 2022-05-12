@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using HealthCare.Data.Entities;
-using HealthCare.Domain.DataTransferObjects;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -60,7 +59,7 @@ public class ExaminationService : IExaminationService
         return isCreate ? createCounter > 8 : updateCounter > 5;
     }
 
-    public static ExaminationDomainModel parseToModel(Examination examination)
+    public static ExaminationDomainModel ParseToModel(Examination examination)
     {
         ExaminationDomainModel examinationModel = new ExaminationDomainModel
         {
@@ -74,12 +73,12 @@ public class ExaminationService : IExaminationService
         };
         
         if (examination.Anamnesis != null)
-            examinationModel.Anamnesis = AnamnesisService.parseToModel(examination.Anamnesis);
+            examinationModel.Anamnesis = AnamnesisService.ParseToModel(examination.Anamnesis);
         
         return examinationModel;
     }
 
-    public static Examination parseFromModel(ExaminationDomainModel examinationModel)
+    public static Examination ParseFromModel(ExaminationDomainModel examinationModel)
     {
         Examination examination = new Examination
         {
@@ -93,7 +92,7 @@ public class ExaminationService : IExaminationService
         };
         
         if (examinationModel.Anamnesis != null)
-            examination.Anamnesis = AnamnesisService.parseFromModel(examinationModel.Anamnesis);
+            examination.Anamnesis = AnamnesisService.ParseFromModel(examinationModel.Anamnesis);
         
         return examination;
     }
@@ -106,7 +105,7 @@ public class ExaminationService : IExaminationService
         List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
         foreach (Examination item in data)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -132,7 +131,7 @@ public class ExaminationService : IExaminationService
         List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
         foreach (Examination item in data)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -176,7 +175,7 @@ public class ExaminationService : IExaminationService
         List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
         foreach (Examination item in data)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -231,7 +230,7 @@ public class ExaminationService : IExaminationService
             _ = _antiTrollRepository.Post(antiTrollItem);
             _antiTrollRepository.Save();
         }
-        return parseToModel(examination);
+        return ParseToModel(examination);
     }
 
     private async Task<bool> isPatientOnExamination(CUExaminationDTO dto)
@@ -375,7 +374,7 @@ public class ExaminationService : IExaminationService
         _ = _examinationRepository.Post(newExamination);
         _examinationRepository.Save();
 
-        return parseToModel(newExamination);
+        return ParseToModel(newExamination);
     }
 
     private DateTime removeSeconds(DateTime dateTime)
@@ -484,7 +483,7 @@ public class ExaminationService : IExaminationService
             _antiTrollRepository.Save();
         }
 
-        return parseToModel(examination);
+        return ParseToModel(examination);
     }
 
     private async Task<List<KeyValuePair<DateTime, DateTime>>> getScehdule(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService)
@@ -657,7 +656,7 @@ public class ExaminationService : IExaminationService
         foreach (Examination item in examinations)
         {
             if(item.Anamnesis != null && item.Anamnesis.Description.ToLower().Contains(dto.Substring))
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
         }
         return results;
        
@@ -711,7 +710,7 @@ public class ExaminationService : IExaminationService
             decimal roomId = await getAvailableRoomId(examinationModel.StartTime);
             if (roomId == -1) continue;
             examinationModel.RoomId = roomId;
-            Examination examination = parseFromModel(examinationModel);
+            Examination examination = ParseFromModel(examinationModel);
             _ = _examinationRepository.Post(examination);
             _examinationRepository.Save();
             // Return empty list to signify success
@@ -784,7 +783,7 @@ public class ExaminationService : IExaminationService
                     continue;
                 // Find this examination
                 Examination examination = await _examinationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key);
-                examinationModel = parseToModel(examination);
+                examinationModel = ParseToModel(examination);
             }
 
             mockupModel.StartTime.AddMinutes((double)duration);
@@ -798,7 +797,7 @@ public class ExaminationService : IExaminationService
                     continue;
                // Find this examination
                 Examination examination = await _examinationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key);
-                examinationModel = parseToModel(examination);
+                examinationModel = ParseToModel(examination);
             }
         }
         if (examinationModel == null) return new KeyValuePair<ExaminationDomainModel, DateTime>(null, now);

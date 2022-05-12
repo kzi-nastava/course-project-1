@@ -36,7 +36,7 @@ namespace HealthCare.Domain.Services
             Prescription newPrescription = _prescriptionRepository.Post(parseFromDTO(prescriptionDTO));
             _prescriptionRepository.Save();
 
-            return parseToModel(newPrescription);
+            return ParseToModel(newPrescription);
         }
 
         private async Task checkPatientsAllergies(decimal drugId, decimal patientId)
@@ -68,7 +68,7 @@ namespace HealthCare.Domain.Services
             List<PrescriptionDomainModel> results = new List<PrescriptionDomainModel>();
             foreach (Prescription item in data)
             {
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
             }
 
             return results;
@@ -100,7 +100,7 @@ namespace HealthCare.Domain.Services
             return new DateTime(year, month, day, hour, minute, second);
         }
 
-        public static PrescriptionDomainModel parseToModel(Prescription prescription)
+        public static PrescriptionDomainModel ParseToModel(Prescription prescription)
         {
             PrescriptionDomainModel prescriptionModel = new PrescriptionDomainModel
             {
@@ -115,11 +115,11 @@ namespace HealthCare.Domain.Services
             };
 
             if (prescription.Drug != null)
-                prescriptionModel.Drug = DrugService.parseToModel(prescription.Drug);
+                prescriptionModel.Drug = DrugService.ParseToModel(prescription.Drug);
 
             return prescriptionModel;
         }
-        public static Prescription parseFromModel(PrescriptionDomainModel prescriptionModel)
+        public static Prescription ParseFromModel(PrescriptionDomainModel prescriptionModel)
         {
             Prescription prescription = new Prescription
             {
@@ -135,7 +135,7 @@ namespace HealthCare.Domain.Services
             };
 
             if (prescriptionModel.Drug != null)
-                prescription.Drug = DrugService.parseFromModel(prescriptionModel.Drug);
+                prescription.Drug = DrugService.ParseFromModel(prescriptionModel.Drug);
 
             return prescription;
         }

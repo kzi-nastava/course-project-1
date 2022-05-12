@@ -11,7 +11,7 @@ public class DrugIngredientService : IDrugIngredientService
     {
     }
 
-    public static DrugIngredientDomainModel parseToModel(DrugIngredient drugIngredient)
+    public static DrugIngredientDomainModel ParseToModel(DrugIngredient drugIngredient)
     {
         DrugIngredientDomainModel drugIngredientModel = new DrugIngredientDomainModel
         {
@@ -23,7 +23,7 @@ public class DrugIngredientService : IDrugIngredientService
         return drugIngredientModel;
     }
 
-    public static DrugIngredient parseFromModel(DrugIngredientDomainModel drugIngredientModel)
+    public static DrugIngredient ParseFromModel(DrugIngredientDomainModel drugIngredientModel)
     {
         DrugIngredient drugIngredient = new DrugIngredient
         {

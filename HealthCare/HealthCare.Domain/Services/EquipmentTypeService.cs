@@ -23,12 +23,12 @@ public class EquipmentTypeService : IEquipmentTypeService
         List<EquipmentTypeDomainModel> results = new List<EquipmentTypeDomainModel>();
         EquipmentTypeDomainModel equipmentTypeModel;
         foreach (EquipmentType item in equipmentTypes)
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
 
         return results;
     }
 
-    public static EquipmentTypeDomainModel parseToModel(EquipmentType equipmentType)
+    public static EquipmentTypeDomainModel ParseToModel(EquipmentType equipmentType)
     {
         EquipmentTypeDomainModel equipmentTypeModel = new EquipmentTypeDomainModel
         {
@@ -40,7 +40,7 @@ public class EquipmentTypeService : IEquipmentTypeService
         return equipmentTypeModel;
     }
     
-    public static EquipmentType parseFromModel(EquipmentTypeDomainModel equipmentTypeModel)
+    public static EquipmentType ParseFromModel(EquipmentTypeDomainModel equipmentTypeModel)
     {
         EquipmentType equipmentType = new EquipmentType
         {

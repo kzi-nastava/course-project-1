@@ -48,7 +48,7 @@ public class UserRoleService : IUserRoleService
         return result;
     }
 
-    public static UserRoleDomainModel parseToModel(UserRole userRole)
+    public static UserRoleDomainModel ParseToModel(UserRole userRole)
     {
         UserRoleDomainModel userRoleModel = new UserRoleDomainModel
         {
@@ -60,7 +60,7 @@ public class UserRoleService : IUserRoleService
         return userRoleModel;
     }
     
-    public static UserRole parseFromModel(UserRoleDomainModel userRoleModel)
+    public static UserRole ParseFromModel(UserRoleDomainModel userRoleModel)
     {
         UserRole userRole = new UserRole
         {

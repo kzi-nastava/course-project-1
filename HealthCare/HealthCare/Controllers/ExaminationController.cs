@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.Eventing.Reader;
-using HealthCare.Domain.DataTransferObjects;
 using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;

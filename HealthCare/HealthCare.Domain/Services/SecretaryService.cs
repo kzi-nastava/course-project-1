@@ -36,13 +36,13 @@ public class SecretaryService : ISecretaryService
         List<SecretaryDomainModel> results = new List<SecretaryDomainModel>();
         foreach (Secretary secretary in data)
         {
-            results.Add(parseToModel(secretary));
+            results.Add(ParseToModel(secretary));
         }
 
         return results;
     }
 
-    public static SecretaryDomainModel parseToModel(Secretary secretary)
+    public static SecretaryDomainModel ParseToModel(Secretary secretary)
     {
         SecretaryDomainModel secretaryModel = new SecretaryDomainModel
         {
@@ -55,12 +55,12 @@ public class SecretaryService : ISecretaryService
             Surname = secretary.Surname
         };
         if (secretary.Credentials != null)
-            secretaryModel.Credentials = CredentialsService.parseToModel(secretary.Credentials);
+            secretaryModel.Credentials = CredentialsService.ParseToModel(secretary.Credentials);
 
         return secretaryModel;
     }
     
-    public static Secretary parseFromModel(SecretaryDomainModel secretaryModel)
+    public static Secretary ParseFromModel(SecretaryDomainModel secretaryModel)
     {
         Secretary secretary = new Secretary
         {
@@ -74,7 +74,7 @@ public class SecretaryService : ISecretaryService
         };
         
         if (secretaryModel.Credentials != null)
-            secretary.Credentials = CredentialsService.parseFromModel(secretaryModel.Credentials);
+            secretary.Credentials = CredentialsService.ParseFromModel(secretaryModel.Credentials);
 
         return secretary;
     }

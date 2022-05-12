@@ -23,7 +23,7 @@ public class PatientService : IPatientService
         _medicalRecordRepository = medicalRecordRepository;
     }
 
-    private PatientDomainModel parseToModel(Patient patient) 
+    public static PatientDomainModel ParseToModel(Patient patient) 
     {
         PatientDomainModel patientModel = new PatientDomainModel 
         {
@@ -39,25 +39,25 @@ public class PatientService : IPatientService
         };
         
         if (patient.Credentials != null)
-            patientModel.Credentials = CredentialsService.parseToModel(patient.Credentials);
+            patientModel.Credentials = CredentialsService.ParseToModel(patient.Credentials);
             
         if (patient.MedicalRecord != null) 
-            patientModel.MedicalRecord = MedicalRecordService.parseToModel(patient.MedicalRecord);
+            patientModel.MedicalRecord = MedicalRecordService.ParseToModel(patient.MedicalRecord);
         
         patientModel.Examinations = new List<ExaminationDomainModel>();
         patientModel.Operations = new List<OperationDomainModel>();
         if (patient.Examinations != null) 
             foreach (Examination examination in patient.Examinations) 
-                patientModel.Examinations.Add(ExaminationService.parseToModel(examination));
+                patientModel.Examinations.Add(ExaminationService.ParseToModel(examination));
         
         if (patient.Operations != null) 
             foreach (Operation operation in patient.Operations) 
-                patientModel.Operations.Add(OperationService.parseToModel(operation));
+                patientModel.Operations.Add(OperationService.ParseToModel(operation));
         
         return patientModel;
     }
 
-    private Patient parseFromModel(PatientDomainModel patientModel) 
+    public static Patient ParseFromModel(PatientDomainModel patientModel) 
     {
         Patient patient = new Patient 
         {
@@ -72,20 +72,20 @@ public class PatientService : IPatientService
             Phone = patientModel.Phone
         };
         if (patientModel.Credentials != null)
-            patient.Credentials = CredentialsService.parseFromModel(patientModel.Credentials);
+            patient.Credentials = CredentialsService.ParseFromModel(patientModel.Credentials);
 
         if (patientModel.MedicalRecord != null)
-            patient.MedicalRecord = MedicalRecordService.parseFromModel(patientModel.MedicalRecord);
+            patient.MedicalRecord = MedicalRecordService.ParseFromModel(patientModel.MedicalRecord);
 
         patient.Examinations = new List<Examination>();
         patient.Operations = new List<Operation>();
         if (patientModel.Examinations != null) 
             foreach (ExaminationDomainModel examinationModel in patientModel.Examinations) 
-                patient.Examinations.Add(ExaminationService.parseFromModel(examinationModel));
+                patient.Examinations.Add(ExaminationService.ParseFromModel(examinationModel));
             
         if (patientModel.Operations != null) 
             foreach (OperationDomainModel operationModel in patientModel.Operations) 
-                patient.Operations.Add(OperationService.parseFromModel(operationModel));
+                patient.Operations.Add(OperationService.ParseFromModel(operationModel));
         
         return patient;
     }
@@ -102,7 +102,7 @@ public class PatientService : IPatientService
         List<PatientDomainModel> results = new List<PatientDomainModel>();
         foreach (Patient item in data)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -127,7 +127,7 @@ public class PatientService : IPatientService
         patient.BlockingCounter++;
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
-        return parseToModel(patient);
+        return ParseToModel(patient);
     }
 
     public async Task<PatientDomainModel> Unblock(decimal patientId)
@@ -138,7 +138,7 @@ public class PatientService : IPatientService
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
 
-        return parseToModel(patient);
+        return ParseToModel(patient);
     }
 
     public async Task<PatientDomainModel> Create(CUPatientDTO dto)
@@ -175,13 +175,13 @@ public class PatientService : IPatientService
         newCredentials.ManagerId = null;
         newCredentials.PatientId = insertedPatient.Id;
         newCredentials.UserRoleId = 726243269;
-        newCredentials.isDeleted = false;
+        newCredentials.IsDeleted = false;
         newCredentials.Id = 0;
 
         _ = _credentialsRepository.Post(newCredentials);
         _credentialsRepository.Save();
 
-        return parseToModel(insertedPatient);
+        return ParseToModel(insertedPatient);
     }
 
     public async Task<PatientDomainModel> Update(CUPatientDTO dto)
@@ -209,7 +209,7 @@ public class PatientService : IPatientService
         credentials.Password = dto.LoginDTO.Password;
         _ = _credentialsRepository.Update(credentials);
         _credentialsRepository.Save();
-        return parseToModel(patient);
+        return ParseToModel(patient);
     }
 
 
@@ -225,11 +225,11 @@ public class PatientService : IPatientService
         _ = _medicalRecordRepository.Update(medicalRecord);
         _medicalRecordRepository.Save();
         Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(id);
-        credentials.isDeleted = true;
+        credentials.IsDeleted = true;
         _ = _credentialsRepository.Update(credentials);
         _credentialsRepository.Save();
         
-        return parseToModel(patient);
+        return ParseToModel(patient);
     }
 
     public async Task<IEnumerable<PatientDomainModel>> GetBlockedPatients()
@@ -254,7 +254,7 @@ public class PatientService : IPatientService
         if (patient == null)
             throw new DataIsNullException();
 
-        return parseToModel(patient);
+        return ParseToModel(patient);
     }
 
     public async Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetSchedule(decimal id)

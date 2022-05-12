@@ -19,7 +19,7 @@ namespace HealthCare.Domain.Services
             _ingredientRepository = ingredientRepository;
         }
 
-        public static IngredientDomainModel parseToModel(Ingredient ingredient)
+        public static IngredientDomainModel ParseToModel(Ingredient ingredient)
         {
             IngredientDomainModel ingredientModel = new IngredientDomainModel
             {
@@ -31,12 +31,12 @@ namespace HealthCare.Domain.Services
             ingredientModel.DrugIngredients = new List<DrugIngredientDomainModel>();
             if (ingredient.DrugIngredients != null)
                 foreach (DrugIngredient drugIngredient in ingredient.DrugIngredients)
-                    ingredientModel.DrugIngredients.Add(DrugIngredientService.parseToModel(drugIngredient));
+                    ingredientModel.DrugIngredients.Add(DrugIngredientService.ParseToModel(drugIngredient));
 
             return ingredientModel;
         }
 
-        public static Ingredient parseFromModel(IngredientDomainModel ingredientModel)
+        public static Ingredient ParseFromModel(IngredientDomainModel ingredientModel)
         {
             Ingredient ingredient = new Ingredient
             {
@@ -49,7 +49,7 @@ namespace HealthCare.Domain.Services
             
             if (ingredientModel.DrugIngredients != null)
                 foreach (DrugIngredientDomainModel drugIngredientModel in ingredientModel.DrugIngredients)
-                    ingredient.DrugIngredients.Add(DrugIngredientService.parseFromModel(drugIngredientModel));
+                    ingredient.DrugIngredients.Add(DrugIngredientService.ParseFromModel(drugIngredientModel));
             
             return ingredient;
         }
@@ -63,7 +63,7 @@ namespace HealthCare.Domain.Services
             List<IngredientDomainModel> results = new List<IngredientDomainModel>();
             foreach (Ingredient item in data)
             {
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
             }
 
             return results;

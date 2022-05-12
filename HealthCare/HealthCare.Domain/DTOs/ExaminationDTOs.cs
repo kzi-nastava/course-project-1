@@ -40,4 +40,18 @@ namespace HealthCare.Domain.DTOs
         public string Substring { get; set; }
     }
 
+    public class ParamsForRecommendingFreeExaminationsDTO
+    {
+        public decimal PatientId { get; set; }
+        
+        public decimal DoctorId { get; set; }
+        
+        public DateTime TimeFrom { get; set; }
+        
+        public DateTime TimeTo { get; set; }
+        
+        public DateTime LastDate { get; set; }
+        
+        public bool IsDoctorPriority { get; set; }
+    }
 }

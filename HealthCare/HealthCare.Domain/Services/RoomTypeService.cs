@@ -24,7 +24,7 @@ public class RoomTypeService : IRoomTypeService
         RoomTypeDomainModel roomTypeModel;
         foreach (RoomType item in roomTypes)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -40,7 +40,7 @@ public class RoomTypeService : IRoomTypeService
         return result;
     }
 
-    public static RoomTypeDomainModel parseToModel(RoomType roomType)
+    public static RoomTypeDomainModel ParseToModel(RoomType roomType)
     {
         RoomTypeDomainModel roomTypeModel = new RoomTypeDomainModel
         {
@@ -52,7 +52,7 @@ public class RoomTypeService : IRoomTypeService
         return roomTypeModel;
     }
     
-    public static RoomType parseFromModel(RoomTypeDomainModel roomTypeModel)
+    public static RoomType ParseFromModel(RoomTypeDomainModel roomTypeModel)
     {
         RoomType roomType = new RoomType
         {
