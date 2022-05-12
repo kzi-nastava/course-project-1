@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -18,10 +19,10 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpGet]
-        [Route("schedule/doctorId={id}/{date}")]
-        public async Task<ActionResult<IEnumerable<AppointmentDomainModel>>> GetDoctorsSchedule(decimal id, DateTime date)
+        [Route("schedule")]
+        public async Task<ActionResult<IEnumerable<AppointmentDomainModel>>> GetDoctorsSchedule([FromBody] DoctorsScheduleDTO dto)
         {
-            IEnumerable<AppointmentDomainModel> appointments = await _appointmentService.GetAllForDoctor(id, date);
+            IEnumerable<AppointmentDomainModel> appointments = await _appointmentService.GetAllForDoctor(dto);
             if (appointments == null)
             {
                 appointments = new List<AppointmentDomainModel>();

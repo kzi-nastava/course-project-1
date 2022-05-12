@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -34,13 +35,13 @@ namespace HealthCareAPI.Controllers
 
         // https://localhost:7195/api/credentials/login/someuser/somepass
         [HttpGet]
-        [Route("login/{username}/{password}")]
-        public async Task<ActionResult<CredentialsDomainModel>> GetLoggedUser(string username, string password)
+        [Route("login/")]
+        public async Task<ActionResult<CredentialsDomainModel>> GetLoggedUser([FromBody] LoginDTO dto)
         {
             try
             {
                 CredentialsDomainModel credentials =
-                    await _credentialsService.GetCredentialsByUsernameAndPassword(username, password);
+                    await _credentialsService.GetCredentialsByUsernameAndPassword(dto);
                 return Ok(credentials);
             }
             catch (Exception exception)

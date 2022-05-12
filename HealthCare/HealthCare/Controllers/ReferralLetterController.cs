@@ -30,9 +30,9 @@ namespace HealthCareAPI.Controllers
 
         [HttpGet]
         [Route("createAppointment/{referralId}/{time}")]
-        public async Task<ActionResult<IEnumerable<ReferralLetterDomainModel>>> CreateAppointment(decimal referralId, DateTime time)
+        public async Task<ActionResult<IEnumerable<ReferralLetterDomainModel>>> CreateAppointment(CreateAppointmentDTO dto)
         {
-            ReferralLetterDomainModel referralLetter = await _referralLetterService.CreateAppointment(referralId, time, _examinationService);
+            ReferralLetterDomainModel referralLetter = await _referralLetterService.CreateAppointment(dto, _examinationService);
             return Ok(referralLetter);
         }
 

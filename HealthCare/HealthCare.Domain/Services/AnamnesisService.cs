@@ -1,5 +1,6 @@
 using System.Data;
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -54,9 +55,9 @@ public class AnamnesisService : IAnamnesisService
         return result;
     }
 
-    public async Task<AnamnesisDomainModel> Create(AnamnesisDomainModel anamnesisModel)
+    public async Task<AnamnesisDomainModel> Create(CreateAnamnesisDTO dto)
     {
-        Examination examination = await _examinationRepository.GetExamination(anamnesisModel.ExaminationId);
+        Examination examination = await _examinationRepository.GetExamination(dto.ExaminationId);
         // can't create another anamnesis for examination that already has one
         if (examination.Anamnesis != null)
             throw new AnamnesisAlreadyExistsException();
@@ -66,9 +67,9 @@ public class AnamnesisService : IAnamnesisService
   
         Anamnesis anamesis = new Anamnesis
         {
-            ExaminationId = anamnesisModel.ExaminationId,
+            ExaminationId = dto.ExaminationId,
             IsDeleted = false,
-            Description = anamnesisModel.Description
+            Description = dto.Description
         };
         _ = _anamnesisRepository.Post(anamesis);
         _anamnesisRepository.Save();

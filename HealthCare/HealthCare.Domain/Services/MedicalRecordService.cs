@@ -1,6 +1,7 @@
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 
 namespace HealthCare.Domain.Interfaces;
 
@@ -49,11 +50,16 @@ public class MedicalRecordService : IMedicalRecordService
         return parseToModel(data);
     }
 
-    public async Task<MedicalRecordDomainModel> Update(MedicalRecordDomainModel medicalRecordModel)
+    public async Task<MedicalRecordDomainModel> Update(CUMedicalRecordDTO dto)
     {
-        MedicalRecord medicalRecord = _medicalRecordRepository.Update(parseFromModel(medicalRecordModel));
+        MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(dto.PatientId);
+        medicalRecord.Weight = dto.Weight;
+        medicalRecord.Height = dto.Height;
+        medicalRecord.BedriddenDiseases = dto.BedriddenDiseases;
+        medicalRecord.IsDeleted = dto.IsDeleted;
+        MedicalRecord updatedMedicalRecord = _medicalRecordRepository.Update(medicalRecord);
         _medicalRecordRepository.Save();
-        return parseToModel(medicalRecord);
+        return parseToModel(updatedMedicalRecord);
     }
 
     private MedicalRecordDomainModel parseToModel(MedicalRecord medicalRecord)

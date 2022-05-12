@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -26,7 +27,7 @@ namespace HealthCareAPI.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<AnamnesisDomainModel>> Create([FromBody] AnamnesisDomainModel newAnamnesisModel)
+        public async Task<ActionResult<AnamnesisDomainModel>> Create([FromBody] CreateAnamnesisDTO newAnamnesisModel)
         {
             try
             {

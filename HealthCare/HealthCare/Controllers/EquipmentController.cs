@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -48,12 +49,12 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpGet]
-        [Route("filter/{equipmentTypeId:decimal?}/{minAmount:int?}/{maxAmount:int?}/{roomTypeId:decimal?}")]
-        public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> GetFilteredEquipment(decimal equipmentTypeId=-1, int minAmount=-1, int maxAmount=-1, decimal roomTypeId = -1)
+        [Route("filter")]
+        public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> GetFilteredEquipment(FilterEquipmentDTO dto)
         {
             try
             {
-                IEnumerable<EquipmentDomainModel> equipment = await _equipmentService.Filter(equipmentTypeId, minAmount, maxAmount, roomTypeId);
+                IEnumerable<EquipmentDomainModel> equipment = await _equipmentService.Filter(dto);
                 return Ok(equipment);
             }
             catch (Exception exception)

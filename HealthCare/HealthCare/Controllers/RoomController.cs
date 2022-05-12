@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -34,11 +35,11 @@ namespace HealthCareAPI.Controllers
         // https://localhost:7195/api/room/create
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<RoomDomainModel>> CreateRoom([FromBody] RoomDomainModel roomModel)
+        public async Task<ActionResult<RoomDomainModel>> CreateRoom([FromBody] CURoomDTO dto)
         {
             try
             {
-                RoomDomainModel insertedRoomModel = await _roomService.Create(roomModel);
+                RoomDomainModel insertedRoomModel = await _roomService.Create(dto);
                 return Ok(insertedRoomModel);
             }
             catch (Exception ex)
@@ -50,11 +51,11 @@ namespace HealthCareAPI.Controllers
         // https://localhost:7195/api/room/update
         [HttpPut]
         [Route("update")]
-        public async Task<ActionResult<RoomDomainModel>> UpdateRoom([FromBody] RoomDomainModel roomModel)
+        public async Task<ActionResult<RoomDomainModel>> UpdateRoom([FromBody] CURoomDTO dto)
         {
             try
             {
-                RoomDomainModel updatedRoomModel = await _roomService.Update(roomModel);
+                RoomDomainModel updatedRoomModel = await _roomService.Update(dto);
                 return Ok(updatedRoomModel);
             }
             catch (Exception exception)
