@@ -19,9 +19,6 @@ namespace HealthCare.Data.Entities
         [Column("bedridden_diseases")]
         public string BedriddenDiseases { get; set; }
 
-        //[Column("allergies")]
-        //public string Allergies { get; set; }
-
         [Column("Patient_id")]
         public decimal PatientId { get; set; }
 
@@ -29,5 +26,9 @@ namespace HealthCare.Data.Entities
         public bool IsDeleted { get; set; }
 
         public List<ReferralLetter> ReferralLetters { get; set; }
+
+        public List<Prescription> Prescriptions { get; set; }
+
+        public List<Allergy> AllergiesList { get; set; }
     }
 }

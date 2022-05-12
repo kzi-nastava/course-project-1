@@ -19,15 +19,31 @@ namespace HealthCare.Domain.Services
             _ingridientRepository = ingridientRepository;
         }
 
-        private IngredientDomainModel parseToModel(Ingredient ingridient)
+        private IngredientDomainModel parseToModel(Ingredient ingredient)
         {
-            IngredientDomainModel ingridientModel = new IngredientDomainModel
+            IngredientDomainModel ingredientModel = new IngredientDomainModel
             {
-                Id = ingridient.Id,
-                IsAllergen = ingridient.IsAllergen,
-                Name = ingridient.Name
+                Id = ingredient.Id,
+                IsAllergen = ingredient.IsAllergen,
+                Name = ingredient.Name
             };
-            return ingridientModel;
+
+            ingredientModel.DrugIngredients = new List<DrugIngredientDomainModel>();
+            if (ingredient.DrugIngredients != null)
+            {
+                foreach (DrugIngredient drugIngredient in ingredient.DrugIngredients)
+                {
+                    DrugIngredientDomainModel drugIngredientModel = new DrugIngredientDomainModel
+                    {
+                        DrugId = drugIngredient.DrugId,
+                        IngredientId = drugIngredient.IngredientId,
+                        Amount = drugIngredient.Amount
+                    };
+                    ingredientModel.DrugIngredients.Add(drugIngredientModel);
+                }
+            }
+
+            return ingredientModel;
         }
 
         private Ingredient parseFromModel(IngredientDomainModel ingridientModel)
