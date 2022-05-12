@@ -522,7 +522,7 @@ public class ExaminationService : IExaminationService
             startTime = possibleSlots[possibleSlotIndex].Key;
         else
             startTime = DateTime.Now;
-        paramsDTO.TimeTo.AddMinutes(-15);
+        paramsDTO.TimeTo = paramsDTO.TimeTo.AddMinutes(-15);
 
         while (numOfExaminations != 3)
         {
@@ -568,67 +568,77 @@ public class ExaminationService : IExaminationService
         }
         return recommendedExaminaions;
     }
-    
 
+    public async Task<IEnumerable<CUExaminationDTO>> RecommendedByDoctorPriority(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService, decimal numOfExaminations)
+    {
+        List<CUExaminationDTO> recommendedExaminations = await getRecommendedExaminationsForOneDoctor(paramsDTO, doctorService);
+        DoctorDomainModel doctorModel = await doctorService.GetById(paramsDTO.DoctorId);
+        List<DoctorDomainModel> otherDoctors = (List<DoctorDomainModel>)await doctorService.GetAllBySpecialization(doctorModel.SpecializationId);
+        int numOfDoctor = 0;
+        while (numOfExaminations < 3)
+        {
+            if (paramsDTO.DoctorId == otherDoctors.ElementAt(numOfDoctor).Id)
+            {
+                numOfDoctor++;
+                continue;
+            }
+            paramsDTO.DoctorId = otherDoctors.ElementAt(numOfDoctor++).Id;
+            List <CUExaminationDTO> newDoctorExaminations = await getRecommendedExaminationsForOneDoctor(paramsDTO, doctorService);
+            if (newDoctorExaminations == null)
+                continue;
+            foreach (var examination in newDoctorExaminations)
+            { 
+                recommendedExaminations.Add(examination);
+                numOfExaminations++;
+            }
+
+            if (numOfDoctor > otherDoctors.Count - 1)
+                break;
+        }
+        return recommendedExaminations;
+    }
+
+    public async Task<IEnumerable<CUExaminationDTO>> RecommendedByDatePriority(ParamsForRecommendingFreeExaminationsDTO paramsDTO, decimal numOfExaminations, DateTime startTime)
+    {
+        List<CUExaminationDTO> recommendedExaminations = new List<CUExaminationDTO>();
+        while (numOfExaminations != 3)
+        {
+            CUExaminationDTO recommendedExamination = await checkAviabilityForExamination(paramsDTO, startTime);
+            if (recommendedExamination != null)
+            {
+                recommendedExaminations.Add(recommendedExamination);
+                numOfExaminations++;
+                if (numOfExaminations == 3)
+                    break;
+            }
+
+            startTime = startTime.AddMinutes(15);
+        }
+
+        return recommendedExaminations;
+    }
     public async Task<IEnumerable<CUExaminationDTO>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService)
     {
-        List<CUExaminationDTO> recommendedExaminaions = await getRecommendedExaminationsForOneDoctor(paramsDTO, doctorService);
-        int numOfExaminations = recommendedExaminaions.Count;
+        List<CUExaminationDTO> recommendedExaminations = await getRecommendedExaminationsForOneDoctor(paramsDTO, doctorService);
+        int numOfExaminations = recommendedExaminations.Count;
         if (numOfExaminations != 3)
         {
+            // Doctor priority
             if (paramsDTO.IsDoctorPriority)
-            {
-                DoctorDomainModel doctorModel = await doctorService.GetById(paramsDTO.DoctorId);
-                List<DoctorDomainModel> otherDoctors = (List<DoctorDomainModel>)await doctorService.GetAllBySpecialization(doctorModel.SpecializationId);
-                int numOfDoctor = 0;
-                while (numOfExaminations < 3)
-                {
-                    if (paramsDTO.DoctorId == otherDoctors.ElementAt(numOfDoctor).Id)
-                    {
-                        numOfDoctor++;
-                        continue;
-                    }
-                    else
-                        paramsDTO.DoctorId = otherDoctors.ElementAt(numOfDoctor++).Id;
-                    List <CUExaminationDTO> newDoctorExaminations = await getRecommendedExaminationsForOneDoctor(paramsDTO, doctorService);
-                    if (newDoctorExaminations == null)
-                        continue;
-                    foreach (var examination in newDoctorExaminations)
-                    { 
-                        recommendedExaminaions.Add(examination);
-                        numOfExaminations++;
-                    }
-                    if(numOfDoctor > otherDoctors.Count - 1)
-                    {
-                        return recommendedExaminaions;
-                    }
-                }
-
-            }
-            else
-            {
-                DateTime startTime = recommendedExaminaions[numOfExaminations - 1].StartTime.AddMinutes(15);
-
-                while (numOfExaminations != 3)
-                {
-                    CUExaminationDTO recommendedExamination = await checkAviabilityForExamination(paramsDTO, startTime);
-                    if (recommendedExamination != null)
-                    {
-                        recommendedExaminaions.Add(recommendedExamination);
-                        numOfExaminations++;
-                        if (numOfExaminations == 3)
-                        {
-                            break;
-                        }
-                    }
-                    startTime = startTime.AddMinutes(15);
-
-                }
-            }
+                return await RecommendedByDoctorPriority(paramsDTO, doctorService, numOfExaminations);
+            
+            // Date priority
+            DateTime startTime = recommendedExaminations[numOfExaminations - 1].StartTime.AddMinutes(15);
+            return await RecommendedByDatePriority(paramsDTO, numOfExaminations, startTime);
 
         }
 
-        return recommendedExaminaions;
+        return recommendedExaminations;
+    }
+
+    public bool IsInAnamnesis(Anamnesis anamnesis, string subString)
+    {
+        return anamnesis != null && anamnesis.Description.ToLower().Contains(subString);
     }
     public async Task<IEnumerable<ExaminationDomainModel>> SearchByAnamnesis(SearchByNameDTO dto)
     {
@@ -640,10 +650,9 @@ public class ExaminationService : IExaminationService
         List<ExaminationDomainModel> results = new List<ExaminationDomainModel>();
 
         foreach (Examination item in examinations)
-        {
-            if(item.Anamnesis != null && item.Anamnesis.Description.ToLower().Contains(dto.Substring))
+            if(IsInAnamnesis(item.Anamnesis, dto.Substring))
                 results.Add(ParseToModel(item));
-        }
+        
         return results;
        
     }
