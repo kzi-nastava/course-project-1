@@ -42,7 +42,7 @@ public class EquipmentService : IEquipmentService
         List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
         foreach (Equipment item in equipment)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -60,39 +60,39 @@ public class EquipmentService : IEquipmentService
         {
             // added equipment type to search review
             if(item.Name.ToLower().Contains(substring) || item.EquipmentType.Name.ToLower().Contains(substring))
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
         }
         return results;
     }
 
-    public static EquipmentDomainModel parseToModel(Equipment equipment)
+    public static EquipmentDomainModel ParseToModel(Equipment equipment)
     {
         EquipmentDomainModel equipmentModel = new EquipmentDomainModel 
         {
             Id = equipment.Id,
-            EquipmentTypeId = equipment.equipmentTypeId,
+            EquipmentTypeId = equipment.EquipmentTypeId,
             Name = equipment.Name,
             IsDeleted = equipment.IsDeleted
         };
         
         if (equipment.EquipmentType != null)
-            equipmentModel.EquipmentType = EquipmentTypeService.parseToModel(equipment.EquipmentType);
+            equipmentModel.EquipmentType = EquipmentTypeService.ParseToModel(equipment.EquipmentType);
         
         return equipmentModel;
     }
     
-    public static Equipment parseFromModel(EquipmentDomainModel equipmentModel)
+    public static Equipment ParseFromModel(EquipmentDomainModel equipmentModel)
     {
         Equipment equipment = new Equipment 
         {
             Id = equipmentModel.Id,
-            equipmentTypeId = equipmentModel.EquipmentTypeId,
+            EquipmentTypeId = equipmentModel.EquipmentTypeId,
             Name = equipmentModel.Name,
             IsDeleted = equipmentModel.IsDeleted
         };
         
         if (equipmentModel.EquipmentType != null)
-            equipment.EquipmentType = EquipmentTypeService.parseFromModel(equipmentModel.EquipmentType);
+            equipment.EquipmentType = EquipmentTypeService.ParseFromModel(equipmentModel.EquipmentType);
         
         return equipment;
     }
@@ -102,7 +102,7 @@ public class EquipmentService : IEquipmentService
         List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
         foreach (Equipment equipment in equipments)
         {
-            results.Add(parseToModel(equipment));
+            results.Add(ParseToModel(equipment));
         }
         return results;
     }
@@ -116,7 +116,7 @@ public class EquipmentService : IEquipmentService
         // filter #1
         if (dto.EquipmentTypeId != null)
         {
-            filterResult = filterResult.Where(e => e.equipmentTypeId == dto.EquipmentTypeId);
+            filterResult = filterResult.Where(e => e.EquipmentTypeId == dto.EquipmentTypeId);
         }
 
 

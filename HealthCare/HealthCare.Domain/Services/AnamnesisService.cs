@@ -72,10 +72,10 @@ public class AnamnesisService : IAnamnesisService
         _ = _anamnesisRepository.Post(anamesis);
         _anamnesisRepository.Save();
 
-        return parseToModel(anamesis);
+        return ParseToModel(anamesis);
     }
 
-    public static AnamnesisDomainModel parseToModel(Anamnesis anamnesis)
+    public static AnamnesisDomainModel ParseToModel(Anamnesis anamnesis)
     {
         AnamnesisDomainModel anamnesisModel = new AnamnesisDomainModel
         {
@@ -88,7 +88,7 @@ public class AnamnesisService : IAnamnesisService
         return anamnesisModel;
     }
     
-    public static Anamnesis parseFromModel(AnamnesisDomainModel anamnesisModel)
+    public static Anamnesis ParseFromModel(AnamnesisDomainModel anamnesisModel)
     {
         Anamnesis anamnesis = new Anamnesis
         {

@@ -11,7 +11,7 @@ public class AllergyService : IAllergyService
     {
     }
 
-    public static AllergyDomainModel parseToModel(Allergy allergy)
+    public static AllergyDomainModel ParseToModel(Allergy allergy)
     {
         AllergyDomainModel allergyModel = new AllergyDomainModel
         {
@@ -22,7 +22,7 @@ public class AllergyService : IAllergyService
         return allergyModel;
     }
     
-    public static Allergy parseFromModel(AllergyDomainModel allergyModel)
+    public static Allergy ParseFromModel(AllergyDomainModel allergyModel)
     {
         Allergy allergy = new Allergy
         {

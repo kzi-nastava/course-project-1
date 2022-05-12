@@ -35,7 +35,7 @@ public class MedicalRecordService : IMedicalRecordService
         MedicalRecordDomainModel medicalRecordModel;
         foreach (MedicalRecord item in data)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -48,7 +48,7 @@ public class MedicalRecordService : IMedicalRecordService
         if (data == null) 
             throw new DataIsNullException();
         
-        return parseToModel(data);
+        return ParseToModel(data);
     }
 
     public async Task<MedicalRecordDomainModel> Update(CUMedicalRecordDTO dto)
@@ -60,10 +60,10 @@ public class MedicalRecordService : IMedicalRecordService
         medicalRecord.IsDeleted = dto.IsDeleted;
         MedicalRecord updatedMedicalRecord = _medicalRecordRepository.Update(medicalRecord);
         _medicalRecordRepository.Save();
-        return parseToModel(updatedMedicalRecord);
+        return ParseToModel(updatedMedicalRecord);
     }
 
-    public static MedicalRecordDomainModel parseToModel(MedicalRecord medicalRecord)
+    public static MedicalRecordDomainModel ParseToModel(MedicalRecord medicalRecord)
     {
         MedicalRecordDomainModel medicalRecordModel = new MedicalRecordDomainModel 
         {
@@ -77,22 +77,22 @@ public class MedicalRecordService : IMedicalRecordService
         medicalRecordModel.AllergiesList = new List<AllergyDomainModel>();
         if (medicalRecord.AllergiesList != null)
             foreach (Allergy item in medicalRecord.AllergiesList)
-                medicalRecordModel.AllergiesList.Add(AllergyService.parseToModel(item));
+                medicalRecordModel.AllergiesList.Add(AllergyService.ParseToModel(item));
 
         medicalRecordModel.ReferralLetters = new List<ReferralLetterDomainModel>();
         if (medicalRecord.ReferralLetters != null)
             foreach (ReferralLetter item in medicalRecord.ReferralLetters)
-                medicalRecordModel.ReferralLetters.Add(ReferralLetterService.parseToModel(item));
+                medicalRecordModel.ReferralLetters.Add(ReferralLetterService.ParseToModel(item));
 
         medicalRecordModel.Prescriptions = new List<PrescriptionDomainModel>();
         if (medicalRecord.Prescriptions != null)
             foreach (Prescription item in medicalRecord.Prescriptions)
-                medicalRecordModel.Prescriptions.Add(PrescriptionService.parseToModel(item));
+                medicalRecordModel.Prescriptions.Add(PrescriptionService.ParseToModel(item));
                 
         return medicalRecordModel;
     }
 
-    public static MedicalRecord parseFromModel(MedicalRecordDomainModel medicalRecordModel)
+    public static MedicalRecord ParseFromModel(MedicalRecordDomainModel medicalRecordModel)
     {
         MedicalRecord medicalRecord = new MedicalRecord 
         {
@@ -106,17 +106,17 @@ public class MedicalRecordService : IMedicalRecordService
         medicalRecord.AllergiesList = new List<Allergy>();
         if (medicalRecordModel.AllergiesList != null)
             foreach (AllergyDomainModel item in medicalRecordModel.AllergiesList)
-                medicalRecord.AllergiesList.Add(AllergyService.parseFromModel(item));
+                medicalRecord.AllergiesList.Add(AllergyService.ParseFromModel(item));
 
         medicalRecord.ReferralLetters = new List<ReferralLetter>();
         if (medicalRecordModel.ReferralLetters != null)
             foreach(ReferralLetterDomainModel item in medicalRecordModel.ReferralLetters)
-                medicalRecord.ReferralLetters.Add(ReferralLetterService.parseFromModel(item));
+                medicalRecord.ReferralLetters.Add(ReferralLetterService.ParseFromModel(item));
 
         medicalRecord.Prescriptions = new List<Prescription>();
         if (medicalRecordModel.Prescriptions != null)
             foreach(PrescriptionDomainModel item in medicalRecordModel.Prescriptions)
-                medicalRecord.Prescriptions.Add(PrescriptionService.parseFromModel(item));
+                medicalRecord.Prescriptions.Add(PrescriptionService.ParseFromModel(item));
         
         return medicalRecord;
     }

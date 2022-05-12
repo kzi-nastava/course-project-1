@@ -1,4 +1,3 @@
-using HealthCare.Domain.DataTransferObjects;
 using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Models;
 

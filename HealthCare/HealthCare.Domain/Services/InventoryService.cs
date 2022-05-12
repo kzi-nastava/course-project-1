@@ -23,14 +23,14 @@ public class InventoryService : IInventoryService
         List<InventoryDomainModel> results = new List<InventoryDomainModel>();
         foreach (Inventory item in inventories)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
 
         return results;
 
     }
 
-    public static Inventory parseFromModel(InventoryDomainModel inventoryModel)
+    public static Inventory ParseFromModel(InventoryDomainModel inventoryModel)
     {
         Inventory inventory = new Inventory
         {
@@ -41,11 +41,11 @@ public class InventoryService : IInventoryService
         };
 
         if (inventoryModel.Equipment != null)
-            inventory.Equipment = EquipmentService.parseFromModel(inventoryModel.Equipment);
+            inventory.Equipment = EquipmentService.ParseFromModel(inventoryModel.Equipment);
 
         return inventory;
     } 
-    public static InventoryDomainModel parseToModel(Inventory inventory)
+    public static InventoryDomainModel ParseToModel(Inventory inventory)
     {
         InventoryDomainModel inventoryModel = new InventoryDomainModel
         {
@@ -56,7 +56,7 @@ public class InventoryService : IInventoryService
         };
 
         if (inventory.Equipment != null)
-            inventoryModel.Equipment = EquipmentService.parseToModel(inventory.Equipment);
+            inventoryModel.Equipment = EquipmentService.ParseToModel(inventory.Equipment);
 
         return inventoryModel;
     } 

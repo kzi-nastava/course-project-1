@@ -76,7 +76,7 @@ public class ManagerService : IManagerService
         return results;
     }
 
-    public static ManagerDomainModel parseToModel(Manager manager)
+    public static ManagerDomainModel ParseToModel(Manager manager)
     {
         ManagerDomainModel managerModel = new ManagerDomainModel
         {
@@ -90,12 +90,12 @@ public class ManagerService : IManagerService
         };
         
         if (manager.Credentials != null)
-            managerModel.Credentials = CredentialsService.parseToModel(manager.Credentials);
+            managerModel.Credentials = CredentialsService.ParseToModel(manager.Credentials);
         
         return managerModel;
     }
     
-    public static Manager parseFromModel (ManagerDomainModel managerModel)
+    public static Manager ParseFromModel (ManagerDomainModel managerModel)
     {
         Manager manager = new Manager
         {
@@ -109,7 +109,7 @@ public class ManagerService : IManagerService
         };
         
         if (managerModel.Credentials != null)
-            manager.Credentials = CredentialsService.parseFromModel(managerModel.Credentials);
+            manager.Credentials = CredentialsService.ParseFromModel(managerModel.Credentials);
         
         return manager;
     }

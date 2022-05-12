@@ -74,7 +74,7 @@ namespace HealthCare.Domain.Services
             throw new UserNotFoundException();
         }
         
-        public static CredentialsDomainModel parseToModel(Credentials credentials)
+        public static CredentialsDomainModel ParseToModel(Credentials credentials)
         {
             CredentialsDomainModel credentialsModel = new CredentialsDomainModel
             {
@@ -86,16 +86,16 @@ namespace HealthCare.Domain.Services
                 ManagerId = credentials.ManagerId,
                 PatientId = credentials.PatientId,
                 UserRoleId = credentials.UserRoleId,
-                IsDeleted = credentials.isDeleted
+                IsDeleted = credentials.IsDeleted
             };
             if (credentials.UserRole != null)
             {
-                credentialsModel.UserRole = UserRoleService.parseToModel(credentials.UserRole);
+                credentialsModel.UserRole = UserRoleService.ParseToModel(credentials.UserRole);
             }
             return credentialsModel;
         }
         
-        public static Credentials parseFromModel(CredentialsDomainModel credentialsModel)
+        public static Credentials ParseFromModel(CredentialsDomainModel credentialsModel)
         {
             Credentials credentials = new Credentials 
             {
@@ -107,11 +107,11 @@ namespace HealthCare.Domain.Services
                 ManagerId = credentialsModel.ManagerId,
                 PatientId = credentialsModel.PatientId,
                 UserRoleId = credentialsModel.UserRoleId,
-                isDeleted = credentialsModel.IsDeleted
+                IsDeleted = credentialsModel.IsDeleted
             };
             if (credentialsModel.UserRole != null)
             {
-                credentials.UserRole = UserRoleService.parseFromModel(credentialsModel.UserRole);
+                credentials.UserRole = UserRoleService.ParseFromModel(credentialsModel.UserRole);
             }
             return credentials;
         }

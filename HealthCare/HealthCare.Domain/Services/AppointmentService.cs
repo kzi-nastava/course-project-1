@@ -34,19 +34,19 @@ namespace HealthCare.Domain.Services
             List<AppointmentDomainModel> results = new List<AppointmentDomainModel>();
             foreach (Examination item in examinationData)
             {
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
             }
 
             IEnumerable<Operation> operationData = await _operationRepository.GetAllByDoctorId(dto.DoctorId, dto.Date);
             foreach (Operation item in operationData)
             {
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
             }
 
             return results;
         }
 
-        public static AppointmentDomainModel parseToModel(Examination examination)
+        public static AppointmentDomainModel ParseToModel(Examination examination)
         {
             AppointmentDomainModel appointmentModel = new AppointmentDomainModel
             {
@@ -61,12 +61,12 @@ namespace HealthCare.Domain.Services
             };
             if (examination.Anamnesis != null)
             {
-                appointmentModel.Anamnesis = AnamnesisService.parseToModel(examination.Anamnesis);
+                appointmentModel.Anamnesis = AnamnesisService.ParseToModel(examination.Anamnesis);
             }
             return appointmentModel;
         }
 
-        public static AppointmentDomainModel parseToModel(Operation operation)
+        public static AppointmentDomainModel ParseToModel(Operation operation)
         {
             AppointmentDomainModel appointmentModel = new AppointmentDomainModel
             {

@@ -47,7 +47,7 @@ public class OperationService : IOperationService
         OperationDomainModel operationModel;
         foreach (Operation item in data)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -62,7 +62,7 @@ public class OperationService : IOperationService
         List<OperationDomainModel> results = new List<OperationDomainModel>();
         foreach (Operation item in data)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -226,7 +226,7 @@ public class OperationService : IOperationService
         _ = _operationRepository.Post(newOperation);
         _operationRepository.Save();
 
-        return parseToModel(newOperation);
+        return ParseToModel(newOperation);
     }
 
     public async Task<OperationDomainModel> Update(CUOperationDTO dto)
@@ -250,7 +250,7 @@ public class OperationService : IOperationService
         _ = _operationRepository.Update(operation);
         _operationRepository.Save();
 
-        return parseToModel(operation);
+        return ParseToModel(operation);
     }
 
     public async Task<OperationDomainModel> Delete(decimal id)
@@ -262,10 +262,10 @@ public class OperationService : IOperationService
         _ = _operationRepository.Update(operation);
         _operationRepository.Save();
 
-        return parseToModel(operation);
+        return ParseToModel(operation);
     }
 
-    public static OperationDomainModel parseToModel(Operation operation)
+    public static OperationDomainModel ParseToModel(Operation operation)
     {
         OperationDomainModel operationModel = new OperationDomainModel
         {
@@ -282,7 +282,7 @@ public class OperationService : IOperationService
         return operationModel;
     }
     
-    public static Operation parseFromModel(OperationDomainModel operationModel)
+    public static Operation ParseFromModel(OperationDomainModel operationModel)
     {
         Operation operation = new Operation
         {
@@ -350,7 +350,7 @@ public class OperationService : IOperationService
             decimal roomId = await GetAvailableRoomId(operationModel.StartTime, operationModel.Duration);
             if (roomId == -1) continue;
             operationModel.RoomId = roomId;
-            Operation operation = parseFromModel(operationModel);
+            Operation operation = ParseFromModel(operationModel);
             _ = _operationRepository.Post(operation);
             _operationRepository.Save();
             // Return empty list to signify success
@@ -423,7 +423,7 @@ public class OperationService : IOperationService
                     continue;
                 // Find this operation
                 Operation operation = await _operationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key);
-                operationModel = parseToModel(operation);
+                operationModel = ParseToModel(operation);
             }
 
             mockupModel.StartTime.AddMinutes((double)duration);
@@ -437,7 +437,7 @@ public class OperationService : IOperationService
                     continue;
                 // Find this operation
                 Operation operation = await _operationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key);
-                operationModel = parseToModel(operation);
+                operationModel = ParseToModel(operation);
             }
         }
         if (operationModel == null) return new KeyValuePair<OperationDomainModel, DateTime>(null, now);

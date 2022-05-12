@@ -58,7 +58,8 @@ namespace HealthCare.Data.Context
                 .HasOne(x => x.Anamnesis)
                 .WithOne(x => x.Examination)
                 .IsRequired(false);
-
+        
+            //TODO: Sort this?
             modelBuilder.Entity<MedicalRecord>()
                 .HasMany(x => x.ReferralLetters)
                 .WithOne(x => x.MedicalRecord)
@@ -93,6 +94,7 @@ namespace HealthCare.Data.Context
 
             modelBuilder.Entity<Anamnesis>().HasKey(x => x.Id);
             modelBuilder.Entity<Drug>().HasKey(x => x.Id);
+            modelBuilder.Entity<DrugIngredient>().HasKey(x => new {x.DrugId, x.IngredientId});
             modelBuilder.Entity<Allergy>().HasKey(x => new { x.PatientId, x.IngredientId });
             modelBuilder.Entity<Examination>().HasKey(x => x.Id);
             modelBuilder.Entity<ExaminationApproval>().HasKey(x => x.Id);
