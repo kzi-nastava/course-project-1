@@ -34,12 +34,12 @@ namespace HealthCareAPI.Controllers
         
         // https://localhost:7195/api/examinationApproval/reject
         [HttpPut]
-        [Route("reject")]
-        public async Task<ActionResult<IEnumerable<ExaminationApprovalDomainModel>>> Reject([FromBody] ExaminationApprovalDomainModel examinationModel) 
+        [Route("reject/{id}")]
+        public async Task<ActionResult<IEnumerable<ExaminationApprovalDomainModel>>> Reject(decimal id) 
         {
             try
             {
-                ExaminationApprovalDomainModel examinationApproval = await _examinationApprovalService.Reject(examinationModel);
+                ExaminationApprovalDomainModel examinationApproval = await _examinationApprovalService.Reject(id);
                 return Ok(examinationApproval);
             }
             catch (Exception exception)
@@ -50,12 +50,12 @@ namespace HealthCareAPI.Controllers
         
         // https://localhost:7195/api/examinationApproval/approve
         [HttpPut]
-        [Route("approve")]
-        public async Task<ActionResult<IEnumerable<ExaminationApprovalDomainModel>>> Approve([FromBody] ExaminationApprovalDomainModel examinationModel) 
+        [Route("approve/{id}")]
+        public async Task<ActionResult<IEnumerable<ExaminationApprovalDomainModel>>> Approve(decimal id) 
         {
             try
             {
-                ExaminationApprovalDomainModel examinationApproval = await _examinationApprovalService.Approve(examinationModel);
+                ExaminationApprovalDomainModel examinationApproval = await _examinationApprovalService.Approve(id);
                 return Ok(examinationApproval);
             }
             catch (Exception exception)

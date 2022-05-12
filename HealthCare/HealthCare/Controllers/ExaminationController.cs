@@ -57,7 +57,7 @@ namespace HealthCareAPI.Controllers
         // https://localhost:7195/api/examination/sort/
         [HttpGet]
         [Route("sort")]
-        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForPatientSorted([FromBody] SortExaminationDTO dto)
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForPatientSorted([FromQuery] SortExaminationDTO dto)
         {
             try
             {
@@ -150,8 +150,8 @@ namespace HealthCareAPI.Controllers
 
         // https://localhost:7195/api/examination/search
         [HttpGet]
-        [Route("search/patientId={id}/substring={substring}")]
-        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetByName(SearchByNameDTO dto)
+        [Route("search/")]
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetByName([FromQuery] SearchByNameDTO dto)
         {
             try
             {
