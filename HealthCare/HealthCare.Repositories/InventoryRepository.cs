@@ -15,6 +15,8 @@ namespace HealthCare.Repositories
         public Task<Inventory> GetInventoryById(decimal roomId, decimal equipmentId);
         public Inventory Update(Inventory updatedInventory);
         public Inventory Post(Inventory newInventory);
+        public Task<IEnumerable<Inventory>> Get(Room splitRoom);
+        public Task<Inventory> Get(Room storageRoom, Equipment equipment);
     }
     public class InventioryRepository : IInventoryRepository 
     {
@@ -29,6 +31,19 @@ namespace HealthCare.Repositories
             return await _healthCareContext.Inventories
                 .Include(x => x.Equipment)
                 .ToListAsync();
+        }
+        public async Task<IEnumerable<Inventory>> Get(Room splitRoom)
+        {
+            return await _healthCareContext.Inventories.
+                Where(i => i.RoomId == splitRoom.Id).
+                ToListAsync();
+        }
+
+        public async Task<Inventory> Get(Room room, Equipment equipment)
+        {
+            return await _healthCareContext.Inventories.
+                Where(i => i.EquipmentId == equipment.Id && i.RoomId == room.Id).
+                FirstOrDefaultAsync();
         }
 
         public void Save()

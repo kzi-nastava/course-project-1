@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace HealthCare.Repositories {
     public interface IEquipmentRepository : IRepository<Equipment>
     {
+        public Task<Equipment> GetById(decimal equipmentId);
     }
 
     public class EquipmentRepository : IEquipmentRepository 
@@ -23,6 +24,11 @@ namespace HealthCare.Repositories {
         public async Task<IEnumerable<Equipment>> GetAll() 
         {
             return await _healthCareContext.Equipments.Include(x => x.EquipmentType).ToListAsync();
+        }
+
+        public async Task<Equipment> GetById(decimal equipmentId)
+        {
+            return await _healthCareContext.Equipments.FindAsync(equipmentId);
         }
 
         public void Save()

@@ -1,4 +1,5 @@
 ﻿using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -19,6 +20,8 @@ namespace HealthCare.Domain.Services
         private readonly IRoomTypeRepository _roomTypeRepository;
         private readonly IExaminationRepository _examinationRepository;
         private readonly IOperationRepository _operationRepository;
+        private readonly IInventoryRepository _inventoryRepository;
+        private readonly IEquipmentRepository _equipmentRepository;
 
 
         public RenovationService(IJoinRenovationRepository joinRenovationRepository,
@@ -27,7 +30,9 @@ namespace HealthCare.Domain.Services
             IRoomRepository roomRepository,
             IRoomTypeRepository roomTypeRepository,
             IExaminationRepository examinationRepository,
-            IOperationRepository operationRepository)
+            IOperationRepository operationRepository,
+            IInventoryRepository inventoryRepository,
+            IEquipmentRepository equipmentRepository)
         {
             _joinRenovationRepository = joinRenovationRepository;
             _splitRenovationRepository = splitRenovationRepository;
@@ -36,6 +41,8 @@ namespace HealthCare.Domain.Services
             _roomTypeRepository = roomTypeRepository;
             _examinationRepository = examinationRepository;
             _operationRepository = operationRepository;
+            _inventoryRepository = inventoryRepository;
+            _equipmentRepository = equipmentRepository;
         }
 
 
@@ -84,7 +91,7 @@ namespace HealthCare.Domain.Services
 
 
 
-        private async Task<bool> validateSimpleRenovation(SimpleRenovationDomainModel renovation)
+        private async Task<bool> validateSimpleRenovation(CreateSimpleRenovationDTO renovation)
         {
             if (renovation.StartDate >= renovation.EndDate)
                 throw new Exception("Start is equal or after end");
@@ -97,54 +104,52 @@ namespace HealthCare.Domain.Services
             return true;
         }
 
-        private async Task<bool> validateJoinRenovation(JoinRenovationDomainModel renovation, string resultRoomName, decimal roomTypeId)
+        private async Task<bool> validateJoinRenovation(CreateJoinRenovationDTO dto)
         {
-            if (renovation.StartDate >= renovation.EndDate)
+            if (dto.StartDate >= dto.EndDate)
                 throw new Exception("Start is equal or after end");
 
-            if (resultRoomName.Trim().Equals(String.Empty))
+            if (dto.resultRoomName.Trim().Equals(String.Empty))
                 throw new Exception("Invalid room name given");
 
-            Room join1 = await _roomRepository.GetRoomById(renovation.JoinRoomId1);
-            Room join2 = await _roomRepository.GetRoomById(renovation.JoinRoomId2);
+            Room join1 = await _roomRepository.GetRoomById(dto.JoinRoomId1);
+            Room join2 = await _roomRepository.GetRoomById(dto.JoinRoomId2);
             if (join1 == null || join2 == null)
                 throw new Exception("Non existant room");
 
-            RoomType roomType = await _roomTypeRepository.GetById(roomTypeId);
+            RoomType roomType = await _roomTypeRepository.GetById(dto.roomTypeId);
             if (roomType == null)
                 throw new Exception("Non existant room type");
 
-            if (!IsAvaliable(join1, renovation).Result || !IsAvaliable(join2, renovation).Result)
+            if (!IsAvaliable(join1, dto).Result || !IsAvaliable(join2, dto).Result)
                 throw new Exception("Room is already renovating in that period");
 
             return true;
         }
 
-        private async Task<bool> validateSplitRenovation(SplitRenovationDomainModel renovation,
-            string resultRoomName1, string resultRoomName2,
-            decimal roomTypeId1, decimal roomTypeId2)
+        private async Task<bool> validateSplitRenovation(CreateSplitRenovationDTO dto)
         {
-            if (resultRoomName1.Trim().Equals(String.Empty) || resultRoomName2.Trim().Equals(String.Empty))
+            if (dto.resultRoomName1.Trim().Equals(String.Empty) || dto.resultRoomName2.Trim().Equals(String.Empty))
                 throw new Exception("Invalid room name given");
 
-            RoomType roomType1 = await _roomTypeRepository.GetById(roomTypeId1);
-            RoomType roomType2 = await _roomTypeRepository.GetById(roomTypeId2);
+            RoomType roomType1 = await _roomTypeRepository.GetById(dto.roomTypeId1);
+            RoomType roomType2 = await _roomTypeRepository.GetById(dto.roomTypeId2);
             if (roomType1 == null || roomType2 == null)
                 throw new Exception("No room type with such id exists");
 
-            if (renovation.StartDate >= renovation.EndDate)
+            if (dto.StartDate >= dto.EndDate)
                 throw new Exception("Start is equal or after end");
-            Room split = await _roomRepository.GetRoomById(renovation.SplitRoomId);
+            Room split = await _roomRepository.GetRoomById(dto.SplitRoomId);
             if (split == null)
                 throw new Exception("Non existant room");
 
-            if (!IsAvaliable(split, renovation).Result)
+            if (!IsAvaliable(split, dto).Result)
                 throw new Exception("Room is already renovating in that period");
             return true;
         }
 
 
-        private async Task<bool> IsAvaliable(Room room, RenovationDomainModel renovationToCheck)
+        private async Task<bool> IsAvaliable(Room room, CreateRenovationDTO renovationToCheck)
         {
             IEnumerable<Renovation> roomRenovations = await GetRenovation(room);
             foreach(Renovation renovation in roomRenovations)
@@ -192,16 +197,15 @@ namespace HealthCare.Domain.Services
         }
 
 
-        public async Task<SimpleRenovationDomainModel> Create(SimpleRenovationDomainModel newSimpleRenovationModel)
+        public async Task<SimpleRenovationDomainModel> Create(CreateSimpleRenovationDTO dto)
         {
-            if (validateSimpleRenovation(newSimpleRenovationModel).Result)
+            if (validateSimpleRenovation(dto).Result)
             {
                 SimpleRenovation newSimpleRenovation = new SimpleRenovation
                 {
-                    Id = newSimpleRenovationModel.Id,
-                    StartDate = newSimpleRenovationModel.StartDate,
-                    EndDate = newSimpleRenovationModel.EndDate,
-                    RoomId = newSimpleRenovationModel.RoomId
+                    StartDate = dto.StartDate,
+                    EndDate = dto.EndDate,
+                    RoomId = dto.RoomId
                 };
                 _simpleRenovationRepository.Post(newSimpleRenovation);
                 _simpleRenovationRepository.Save();
@@ -211,27 +215,114 @@ namespace HealthCare.Domain.Services
 
         }
 
-        public async Task<JoinRenovationDomainModel> Create(JoinRenovationDomainModel newRenovationModel,
-            string resultRoomName, decimal roomTypeId)
+        public async Task ExecuteComplexRenovations()
         {
-            if (validateJoinRenovation(newRenovationModel, resultRoomName, roomTypeId).Result)
-            {
-                Room joinRoom1 = await _roomRepository.GetRoomById(newRenovationModel.JoinRoomId1);
-                joinRoom1.IsDeleted = true;
+            await ExecuteJoinRenovations();
+            await ExecuteSplitRenovations();
+        }
 
-                Room joinRoom2 = await _roomRepository.GetRoomById(newRenovationModel.JoinRoomId2);
-                joinRoom2.IsDeleted = true;
+        public async Task ExecuteSplitRenovations()
+        {
+            IEnumerable<SplitRenovation> renovations = await _splitRenovationRepository.GetAll();
+            foreach(SplitRenovation renovation in renovations)
+            {
+                Room splitRoom = await _roomRepository.GetRoomById(renovation.SplitRoomId);
+                Room resultRoom1 = await _roomRepository.GetRoomById(renovation.ResultRoomId1);
+                Room resultRoom2 = await _roomRepository.GetRoomById(renovation.ResultRoomId2);
+                if(renovation.EndDate < DateTime.Now && !resultRoom1.IsFormed && !resultRoom2.IsFormed)
+                {
+                    splitRoom.IsDeleted = true;
+                    await TransferEquipmentToStorage(splitRoom);
+                    resultRoom1.IsFormed = true;
+                    resultRoom2.IsFormed = true;
+
+                    _roomRepository.Update(splitRoom);
+                    _roomRepository.Update(resultRoom1);
+                    _roomRepository.Update(resultRoom2);
+                    _roomRepository.Save();
+                }
+            }
+        }
+
+        public async Task ExecuteJoinRenovations()
+        {
+            IEnumerable<JoinRenovation> renovations = await _joinRenovationRepository.GetAll();
+            foreach (JoinRenovation renovation in renovations)
+            {
+                Room joinRoom1 = await _roomRepository.GetRoomById(renovation.JoinRoomId1);
+                Room joinRoom2 = await _roomRepository.GetRoomById(renovation.JoinRoomId2);
+                Room resultRoom = await _roomRepository.GetRoomById(renovation.ResultRoomId);
+                if (renovation.EndDate < DateTime.Now && !resultRoom.IsFormed)
+                {
+                    joinRoom1.IsDeleted = true;
+                    joinRoom2.IsDeleted = true;
+                    await TransferEquipmentToStorage(joinRoom1);
+                    await TransferEquipmentToStorage(joinRoom2);
+                    resultRoom.IsFormed = true;
+                    
+                    _roomRepository.Update(joinRoom1);
+                    _roomRepository.Update(joinRoom2);
+                    _roomRepository.Update(resultRoom);
+                    _roomRepository.Save();
+                }
+            }
+        }
+
+        private async Task TransferEquipmentToStorage(Room room)
+        {
+            // get all inventories that posses room equipment
+            IEnumerable<Inventory> roomInventories = await _inventoryRepository.Get(room);
+
+            // get storage room
+            Room storageRoom = await _roomRepository.GetRoomByName("storage");
+            if (storageRoom == null)
+                throw new Exception("No storage in system");
+            
+            // move all equipment to storage room
+            foreach(Inventory roomInventory in roomInventories)
+            {
+                Equipment equipment = await _equipmentRepository.GetById(roomInventory.EquipmentId);
+                Inventory storageRoomInventory = await _inventoryRepository.Get(storageRoom, equipment);
+
+                // make new inventory if it doesn't exist
+                if(storageRoomInventory == null)
+                {
+                    storageRoomInventory = new Inventory
+                    {
+                        RoomId = storageRoom.Id,
+                        EquipmentId = equipment.Id,
+                        Amount = roomInventory.Amount,
+                        IsDeleted = false,
+                    };
+                    _inventoryRepository.Post(storageRoomInventory);
+                }
+                else
+                {
+                    storageRoomInventory.Amount += roomInventory.Amount;
+                    _inventoryRepository.Update(storageRoomInventory);
+                }
+                roomInventory.Amount = 0;
+                _inventoryRepository.Update(roomInventory);   
+                _inventoryRepository.Save();
+                
+
+            }
+        }
+
+        public async Task<JoinRenovationDomainModel> Create(CreateJoinRenovationDTO dto)
+        {
+            if (validateJoinRenovation(dto).Result)
+            {
 
                 Room result = new Room
                 {
-                    RoomName = resultRoomName,
-                    RoomTypeId = roomTypeId,
+                    RoomName = dto.resultRoomName,
+                    RoomTypeId = dto.roomTypeId,
                     IsDeleted = false,
+                    IsFormed = false
                 };
 
                 _roomRepository.Post(result);
-                _roomRepository.Update(joinRoom1);
-                _roomRepository.Update(joinRoom2);
                 _roomRepository.Save();
 
                 //divide equipment here
@@ -239,11 +330,10 @@ namespace HealthCare.Domain.Services
 
                 JoinRenovation newJoinRenovation = new JoinRenovation
                 {
-                    Id = newRenovationModel.Id,
-                    EndDate = newRenovationModel.EndDate,
-                    StartDate = newRenovationModel.StartDate,
-                    JoinRoomId1 = newRenovationModel.JoinRoomId1,
-                    JoinRoomId2 = newRenovationModel.JoinRoomId2,
+                    EndDate = dto.EndDate,
+                    StartDate = dto.StartDate,
+                    JoinRoomId1 = dto.JoinRoomId1,
+                    JoinRoomId2 = dto.JoinRoomId2,
                     ResultRoomId = result.Id,
                 };
                 _joinRenovationRepository.Post(newJoinRenovation);
@@ -253,42 +343,38 @@ namespace HealthCare.Domain.Services
             return null;
         }
 
-        public async Task<SplitRenovationDomainModel> Create(SplitRenovationDomainModel newRenovationModel,
-            string resultRoomName1, string resultRoomName2, decimal roomTypeId1, decimal roomTypeId2)
+        public async Task<SplitRenovationDomainModel> Create(CreateSplitRenovationDTO dto)
         {
-            if (validateSplitRenovation(newRenovationModel, resultRoomName1, resultRoomName2, roomTypeId1, roomTypeId2).Result)
+            if (validateSplitRenovation(dto).Result)
             {
-                Room split = await _roomRepository.GetRoomById(newRenovationModel.SplitRoomId);
-                split.IsDeleted = true;
-                _roomRepository.Update(split);
-
                 //divide equipment here
 
                 Room result1 = new Room
                 {
-                    RoomName = resultRoomName1,
-                    RoomTypeId = roomTypeId1,
+                    RoomName = dto.resultRoomName1,
+                    RoomTypeId = dto.roomTypeId1,
                     IsDeleted = false,
+                    IsFormed = false,
                 };
                 _roomRepository.Post(result1);
 
                 Room result2 = new Room
                 {
-                    RoomName = resultRoomName2,
-                    RoomTypeId = roomTypeId2,
+                    RoomName = dto.resultRoomName2,
+                    RoomTypeId = dto.roomTypeId2,
                     IsDeleted = false,
+                    IsFormed = false,
                 };
                 _roomRepository.Post(result2);
                 _roomRepository.Save();
 
                 SplitRenovation newRenovation = new SplitRenovation
                 {
-                    Id = newRenovationModel.Id,
-                    EndDate = newRenovationModel.EndDate,
-                    StartDate = newRenovationModel.StartDate,
+                    EndDate = dto.EndDate,
+                    StartDate = dto.StartDate,
                     ResultRoomId1 = result1.Id,
                     ResultRoomId2 = result2.Id,
-                    SplitRoomId = newRenovationModel.SplitRoomId,
+                    SplitRoomId = dto.SplitRoomId,
                 };
                 _splitRenovationRepository.Post(newRenovation);
                 _splitRenovationRepository.Save();

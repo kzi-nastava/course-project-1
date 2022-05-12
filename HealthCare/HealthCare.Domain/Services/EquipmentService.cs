@@ -20,8 +20,6 @@ public class EquipmentService : IEquipmentService
         _roomRepository = roomRepository;
     }
 
-    // Async awaits info from database
-    // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<EquipmentDomainModel>> ReadAll()
     {
         IEnumerable<EquipmentDomainModel> equipment = await GetAll();

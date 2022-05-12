@@ -19,6 +19,7 @@ namespace HealthCare.Repositories
         public Room Post(Room r);
         public Task<Room> GetRoomById(decimal id);
         public Room Update(Room r);
+        Task<Room> GetRoomByName(string v);
     }
 
     public class RoomRepository : IRoomRepository 
@@ -36,6 +37,11 @@ namespace HealthCare.Repositories
                 .Include(x => x.Inventories).ThenInclude(x => x.Equipment).ThenInclude(x => x.EquipmentType)
                 .Include(x => x.Operations)
                 .ToListAsync();
+        }
+        public async Task<Room> GetRoomByName(string name)
+        {
+            return await _healthCareContext.Rooms.
+                FirstOrDefaultAsync(r => r.RoomName == name);
         }
 
         // Argument roomPurpose differantiates if the fetched rooms should be rooms for operation/examination
