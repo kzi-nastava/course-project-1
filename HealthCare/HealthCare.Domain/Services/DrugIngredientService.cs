@@ -1,10 +1,16 @@
 using HealthCare.Data.Entities;
+using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 
 namespace HealthCare.Domain.Services;
 
-public class DrugIngredientService
+public class DrugIngredientService : IDrugIngredientService
 {
+    //TODO: Add repositories when implemented
+    public DrugIngredientService()
+    {
+    }
+
     public static DrugIngredientDomainModel parseToModel(DrugIngredient drugIngredient)
     {
         DrugIngredientDomainModel drugIngredientModel = new DrugIngredientDomainModel
@@ -27,5 +33,11 @@ public class DrugIngredientService
         };
         
         return drugIngredient;
+    }
+
+    public Task<IEnumerable<DrugIngredientDomainModel>> GetAll()
+    {
+        //TODO: Implement this
+        throw new NotImplementedException();
     }
 }

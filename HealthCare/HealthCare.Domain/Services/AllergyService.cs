@@ -1,10 +1,16 @@
 using HealthCare.Data.Entities;
+using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 
 namespace HealthCare.Domain.Services;
 
-public class AllergyService
+public class AllergyService : IAllergyService
 {
+    //TODO: Add repositories when implemented
+    public AllergyService()
+    {
+    }
+
     public static AllergyDomainModel parseToModel(Allergy allergy)
     {
         AllergyDomainModel allergyModel = new AllergyDomainModel
@@ -25,5 +31,11 @@ public class AllergyService
         };
         
         return allergy;
+    }
+
+    public Task<IEnumerable<AllergyDomainModel>> GetAll()
+    {
+        // TODO: Implement this
+        throw new NotImplementedException();
     }
 }
