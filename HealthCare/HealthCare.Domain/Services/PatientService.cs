@@ -13,14 +13,17 @@ public class PatientService : IPatientService
     private IPatientRepository _patientRepository;
     private ICredentialsRepository _credentialsRepository;
     private IMedicalRecordRepository _medicalRecordRepository;
+    private IUserRoleRepository _userRoleRepository;
 
     public PatientService(IPatientRepository patientRepository, 
                           ICredentialsRepository credentialsRepository, 
-                          IMedicalRecordRepository medicalRecordRepository) 
+                          IMedicalRecordRepository medicalRecordRepository,
+                          IUserRoleRepository userRoleRepository) 
     {
         _patientRepository = patientRepository;
         _credentialsRepository = credentialsRepository;
         _medicalRecordRepository = medicalRecordRepository;
+        _userRoleRepository = userRoleRepository;
     }
 
     public static PatientDomainModel ParseToModel(Patient patient) 
@@ -121,8 +124,9 @@ public class PatientService : IPatientService
 
     public async Task<PatientDomainModel> Block(decimal patientId)
     {
+        // Secretary block
         Patient patient = await _patientRepository.GetPatientById(patientId);
-        // TODO: Fix this with a cookie in the future
+        if (patient.IsDeleted || !patient.BlockedBy.Equals("")) throw new DataIsNullException();
         patient.BlockedBy = "Secretary";
         patient.BlockingCounter++;
         _ = _patientRepository.Update(patient);
@@ -132,18 +136,18 @@ public class PatientService : IPatientService
 
     public async Task<PatientDomainModel> Unblock(decimal patientId)
     {
+        // Secretary Unblock
         Patient patient = await _patientRepository.GetPatientById(patientId);
-        // TODO: Fix this with a cookie in the future
+        if (patient.IsDeleted) throw new DataIsNullException();
         patient.BlockedBy = "";
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
-
         return ParseToModel(patient);
     }
 
-    public async Task<PatientDomainModel> Create(CUPatientDTO dto)
+    public Patient CreateDefaultPatient(CUPatientDTO dto)
     {
-        Patient newPatient = new Patient
+        Patient patient = new Patient
         {
             IsDeleted = false,
             BirthDate = dto.BirthDate,
@@ -152,41 +156,57 @@ public class PatientService : IPatientService
             Surname = dto.Surname,
             Phone = dto.Phone
         };
+        return patient;
+    }
 
+    public MedicalRecord CreateDefaultMedicalRecord(CUPatientDTO dto, decimal patientId)
+    {
+        MedicalRecord medicalRecord = new MedicalRecord
+        {
+            Height = dto.MedicalRecordDTO.Height,
+            Weight = dto.MedicalRecordDTO.Weight,
+            BedriddenDiseases = dto.MedicalRecordDTO.BedriddenDiseases,
+            IsDeleted = dto.MedicalRecordDTO.IsDeleted,
+            PatientId = patientId
+        };
+        return medicalRecord;
+    }
 
+    public Credentials CreateDefaultCredentials(CUPatientDTO dto, decimal patientId, decimal userRoleId)
+    {
+        Credentials credentials = new Credentials
+        {
+            Username = dto.LoginDTO.Username,
+            Password = dto.LoginDTO.Password,
+            DoctorId = null,
+            SecretaryId = null,
+            ManagerId = null,
+            PatientId = patientId,
+            UserRoleId = userRoleId,
+            IsDeleted = false
+        };
+        return credentials;
+    }
+
+    public async Task<PatientDomainModel> Create(CUPatientDTO dto)
+    {
+        Patient newPatient = CreateDefaultPatient(dto);
         Patient insertedPatient = _patientRepository.Post(newPatient);
-        _patientRepository.Save();
-
-        MedicalRecord medicalRecord = new MedicalRecord();
-        medicalRecord.Height = dto.MedicalRecordDTO.Height;
-        medicalRecord.Weight = dto.MedicalRecordDTO.Weight;
-        medicalRecord.BedriddenDiseases = dto.MedicalRecordDTO.BedriddenDiseases;
-        medicalRecord.IsDeleted = false;
-        medicalRecord.PatientId = insertedPatient.Id;
+        MedicalRecord medicalRecord = CreateDefaultMedicalRecord(dto, insertedPatient.Id);
+        UserRole userRole = await _userRoleRepository.GetByRoleName("patient");
+        Credentials credentials = CreateDefaultCredentials(dto, insertedPatient.Id, userRole.Id);
 
         _ = _medicalRecordRepository.Post(medicalRecord);
+        _ = _credentialsRepository.Post(credentials);
         _medicalRecordRepository.Save();
-
-        Credentials newCredentials = new Credentials();
-        newCredentials.Username = dto.LoginDTO.Username;
-        newCredentials.Password = dto.LoginDTO.Password;
-        newCredentials.DoctorId = null;
-        newCredentials.SecretaryId = null;
-        newCredentials.ManagerId = null;
-        newCredentials.PatientId = insertedPatient.Id;
-        newCredentials.UserRoleId = 726243269;
-        newCredentials.IsDeleted = false;
-        newCredentials.Id = 0;
-
-        _ = _credentialsRepository.Post(newCredentials);
         _credentialsRepository.Save();
-
+        _patientRepository.Save();
+        
         return ParseToModel(insertedPatient);
     }
 
-    public async Task<PatientDomainModel> Update(CUPatientDTO dto)
+    public async Task<Patient> UpdatePatientInfo(CUPatientDTO dto)
     {
-
         Patient patient = await _patientRepository.GetPatientById(dto.Id);
         patient.Name = dto.Name;
         patient.Surname = dto.Surname;
@@ -195,39 +215,66 @@ public class PatientService : IPatientService
         patient.Phone = dto.Phone;
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
+        return patient;
+    }
 
-        MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(patient.Id);
+    public async void UpdateMedicalRecordInfo(CUPatientDTO dto, decimal patientId)
+    {
+        MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(patientId);
         medicalRecord.Height = dto.MedicalRecordDTO.Height;
         medicalRecord.Weight = dto.MedicalRecordDTO.Weight;
         medicalRecord.BedriddenDiseases = dto.MedicalRecordDTO.BedriddenDiseases;
         _ = _medicalRecordRepository.Update(medicalRecord);
         _medicalRecordRepository.Save();
+    }
 
-
-        Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(patient.Id);
+    public async void UpdateCredentialsInfo(CUPatientDTO dto, decimal patientId)
+    {
+        Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(patientId);
         credentials.Username = dto.LoginDTO.Username;
         credentials.Password = dto.LoginDTO.Password;
         _ = _credentialsRepository.Update(credentials);
         _credentialsRepository.Save();
+    }
+
+    public async Task<PatientDomainModel> Update(CUPatientDTO dto)
+    {
+        Patient patient = await UpdatePatientInfo(dto);
+        UpdateMedicalRecordInfo(dto, patient.Id);
+        UpdateCredentialsInfo(dto, patient.Id);
         return ParseToModel(patient);
     }
 
-
-    public async Task<PatientDomainModel> Delete(decimal id)
+    public async Task<Patient> DeletePatientInfo(decimal patientId)
     {
-        Patient patient = await _patientRepository.GetPatientById(id);
+        Patient patient = await _patientRepository.GetPatientById(patientId);
         patient.IsDeleted = true;
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
-        
-        MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(id);
+        return patient;
+    }
+    public async void DeleteMedicalRecordInfo(decimal patientId)
+    {
+        MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(patientId);
         medicalRecord.IsDeleted = true;
         _ = _medicalRecordRepository.Update(medicalRecord);
         _medicalRecordRepository.Save();
-        Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(id);
+    }
+
+    public async void DeleteCredentialsInfo(decimal patientId)
+    {
+        Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(patientId);
         credentials.IsDeleted = true;
         _ = _credentialsRepository.Update(credentials);
         _credentialsRepository.Save();
+    }
+    
+
+    public async Task<PatientDomainModel> Delete(decimal patientId)
+    {
+        Patient patient = await DeletePatientInfo(patientId);
+        DeleteMedicalRecordInfo(patientId);
+        DeleteCredentialsInfo(patientId);
         
         return ParseToModel(patient);
     }
@@ -237,12 +284,8 @@ public class PatientService : IPatientService
         IEnumerable<PatientDomainModel> patients = await GetAll();
         List<PatientDomainModel> blockedPatients = new List<PatientDomainModel>();
         foreach (PatientDomainModel patientModel in patients)
-        {
             if (patientModel.BlockedBy != null && !patientModel.BlockedBy.Equals(""))
-            {
                 blockedPatients.Add(patientModel);
-            }
-        }
 
         return blockedPatients;
     }

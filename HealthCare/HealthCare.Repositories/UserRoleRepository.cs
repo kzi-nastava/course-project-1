@@ -12,6 +12,7 @@ namespace HealthCare.Repositories
     public interface IUserRoleRepository : IRepository<UserRole> 
     {
         public Task<UserRole> GetById(decimal id);
+        public Task<UserRole> GetByRoleName(string roleName);
     }
     public class UserRoleRepository : IUserRoleRepository 
     {
@@ -32,6 +33,9 @@ namespace HealthCare.Repositories
 
         public async Task<UserRole> GetById(decimal id) {
             return await _healthCareContext.UserRoles.FirstAsync(x => x.Id == id);
+        }
+        public async Task<UserRole> GetByRoleName(string roleName) {
+            return await _healthCareContext.UserRoles.FirstAsync(x => x.RoleName.Equals(roleName));
         }
     }
 }
