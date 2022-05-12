@@ -29,18 +29,36 @@ public class ExaminationApprovalService : IExaminationApprovalService
         ExaminationApprovalDomainModel examinationApprovalModel;
         foreach (ExaminationApproval item in data)
         {
-            examinationApprovalModel = new ExaminationApprovalDomainModel
-            {
-                Id = item.Id,
-                IsDeleted = item.IsDeleted,
-                State = item.State,
-                NewExaminationId = item.NewExaminationId,
-                OldExaminationId = item.OldExaminationId
-            };
-            results.Add(examinationApprovalModel);
         }
 
         return results;
+    }
+    
+    public static ExaminationApproval parseFromModel(ExaminationApprovalDomainModel examinationApprovalModel)
+    {
+        ExaminationApproval examinationApproval = new ExaminationApproval
+        {
+            Id = examinationApprovalModel.Id,
+            IsDeleted = examinationApprovalModel.IsDeleted,
+            State = examinationApprovalModel.State,
+            NewExaminationId = examinationApprovalModel.NewExaminationId,
+            OldExaminationId = examinationApprovalModel.OldExaminationId
+        };
+        
+        return examinationApproval;
+    }
+    public static ExaminationApprovalDomainModel parseToModel(ExaminationApproval examinationApproval)
+    {
+        ExaminationApprovalDomainModel examinationApprovalModel = new ExaminationApprovalDomainModel
+        {
+            Id = examinationApproval.Id,
+            IsDeleted = examinationApproval.IsDeleted,
+            State = examinationApproval.State,
+            NewExaminationId = examinationApproval.NewExaminationId,
+            OldExaminationId = examinationApproval.OldExaminationId
+        };
+        
+        return examinationApprovalModel;
     }
     public async Task<IEnumerable<ExaminationApprovalDomainModel>> ReadAll()
     {

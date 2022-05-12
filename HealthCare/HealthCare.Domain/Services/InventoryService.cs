@@ -21,41 +21,45 @@ public class InventoryService : IInventoryService
             return new List<InventoryDomainModel>();
 
         List<InventoryDomainModel> results = new List<InventoryDomainModel>();
-        InventoryDomainModel inventoryModel;
         foreach (Inventory item in inventories)
         {
-            inventoryModel = new InventoryDomainModel
-            {
-                IsDeleted = item.IsDeleted,
-                RoomId = item.RoomId,
-                Amount = item.Amount,
-                EquipmentId = item.EquipmentId,
-            };
-            if (item.Equipment != null) 
-            {
-                inventoryModel.Equipment = new EquipmentDomainModel 
-                {
-                    Id = item.Equipment.Id,
-                    EquipmentTypeId = item.Equipment.equipmentTypeId,
-                    IsDeleted = item.Equipment.IsDeleted,
-                    Name = item.Equipment.Name,
-                };
-                if (inventoryModel.Equipment.EquipmentType != null)
-                {
-                    inventoryModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
-                    {
-                        Id = item.Equipment.EquipmentType.Id,
-                        Name = item.Equipment.EquipmentType.Name,
-                        IsDeleted = item.Equipment.EquipmentType.IsDeleted
-                    };
-                }
-            }
-            results.Add(inventoryModel);
+            results.Add(parseToModel(item));
         }
 
         return results;
 
-    }    
+    }
+
+    public static Inventory parseFromModel(InventoryDomainModel inventoryModel)
+    {
+        Inventory inventory = new Inventory
+        {
+            EquipmentId = inventoryModel.EquipmentId,
+            Amount = inventoryModel.Amount,
+            IsDeleted = inventoryModel.IsDeleted,
+            RoomId = inventoryModel.RoomId
+        };
+
+        if (inventoryModel.Equipment != null)
+            inventory.Equipment = EquipmentService.parseFromModel(inventoryModel.Equipment);
+
+        return inventory;
+    } 
+    public static InventoryDomainModel parseToModel(Inventory inventory)
+    {
+        InventoryDomainModel inventoryModel = new InventoryDomainModel
+        {
+            EquipmentId = inventory.EquipmentId,
+            Amount = inventory.Amount,
+            IsDeleted = inventory.IsDeleted,
+            RoomId = inventory.RoomId
+        };
+
+        if (inventory.Equipment != null)
+            inventoryModel.Equipment = EquipmentService.parseToModel(inventory.Equipment);
+
+        return inventoryModel;
+    } 
     public async Task<IEnumerable<InventoryDomainModel>> ReadAll()
     {
         IEnumerable<InventoryDomainModel> inventory = await GetAll();

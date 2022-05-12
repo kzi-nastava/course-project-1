@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HealthCare.Domain.Services
 {
@@ -44,7 +45,7 @@ namespace HealthCare.Domain.Services
             return results;
         }
 
-        private AppointmentDomainModel parseToModel(Examination examination)
+        public static AppointmentDomainModel parseToModel(Examination examination)
         {
             AppointmentDomainModel appointmentModel = new AppointmentDomainModel
             {
@@ -59,18 +60,12 @@ namespace HealthCare.Domain.Services
             };
             if (examination.Anamnesis != null)
             {
-                appointmentModel.Anamnesis = new AnamnesisDomainModel
-                {
-                    Id = examination.Anamnesis.Id,
-                    Description = examination.Anamnesis.Description,
-                    ExaminationId = examination.Anamnesis.ExaminationId,
-                    IsDeleted = examination.Anamnesis.IsDeleted
-                };
+                appointmentModel.Anamnesis = AnamnesisService.parseToModel(examination.Anamnesis);
             }
             return appointmentModel;
         }
 
-        private AppointmentDomainModel parseToModel(Operation operation)
+        public static AppointmentDomainModel parseToModel(Operation operation)
         {
             AppointmentDomainModel appointmentModel = new AppointmentDomainModel
             {

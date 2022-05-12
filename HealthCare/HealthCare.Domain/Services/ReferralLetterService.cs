@@ -25,7 +25,7 @@ namespace HealthCare.Domain.Services
             _specializationRepository = specializationRepository;
         }
 
-        private ReferralLetterDomainModel parseToModel(ReferralLetter referralLetter)
+        public static ReferralLetterDomainModel parseToModel(ReferralLetter referralLetter)
         {
             ReferralLetterDomainModel referralLetterModel = new ReferralLetterDomainModel
             {
@@ -37,17 +37,12 @@ namespace HealthCare.Domain.Services
                 State = referralLetter.State
             };
             if (referralLetter.Specialization != null)
-            {
-                referralLetterModel.Specialization = new SpecializationDomainModel
-                {
-                    Id = referralLetter.Specialization.Id,
-                    Name = referralLetter.Specialization.Name
-                };
-            }
+                referralLetterModel.Specialization = SpecializationService.parseToModel(referralLetter.Specialization); 
+                    
             return referralLetterModel;
         }
 
-        private ReferralLetter parseFromModel(ReferralLetterDomainModel referralLetterModel)
+        public static ReferralLetter parseFromModel(ReferralLetterDomainModel referralLetterModel)
         {
             ReferralLetter referralLetter = new ReferralLetter
             {
@@ -59,13 +54,8 @@ namespace HealthCare.Domain.Services
                 State = referralLetterModel.State
             };
             if (referralLetterModel.Specialization != null)
-            {
-                referralLetter.Specialization = new Specialization
-                {
-                    Id = referralLetterModel.Specialization.Id,
-                    Name = referralLetterModel.Specialization.Name
-                };
-            }
+                referralLetter.Specialization = SpecializationService.parseFromModel(referralLetterModel.Specialization); 
+                    
             return referralLetter;
         }
 
