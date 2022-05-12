@@ -89,6 +89,17 @@ namespace HealthCare.Domain.Services
             return prescription;
         }
 
+        private DateTime removeSeconds(DateTime dateTime)
+        {
+            int year = dateTime.Year;
+            int month = dateTime.Month;
+            int day = dateTime.Day;
+            int hour = dateTime.Hour;
+            int minute = dateTime.Minute;
+            int second = 0;
+            return new DateTime(year, month, day, hour, minute, second);
+        }
+
         private PrescriptionDomainModel parseToModel(Prescription prescription)
         {
             PrescriptionDomainModel prescriptionModel = new PrescriptionDomainModel
