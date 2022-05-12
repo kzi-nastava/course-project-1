@@ -41,8 +41,7 @@ namespace HealthCare.Repositories
         public async Task<Room> GetRoomByName(string name)
         {
             return await _healthCareContext.Rooms.
-                Where(r => r.RoomName == name).
-                FirstOrDefaultAsync();
+                FirstOrDefaultAsync(r => r.RoomName == name);
         }
 
         // Argument roomPurpose differantiates if the fetched rooms should be rooms for operation/examination

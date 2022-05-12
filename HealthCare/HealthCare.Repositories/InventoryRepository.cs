@@ -15,8 +15,8 @@ namespace HealthCare.Repositories
         public Task<Inventory> GetInventoryById(decimal roomId, decimal equipmentId);
         public Inventory Update(Inventory updatedInventory);
         public Inventory Post(Inventory newInventory);
-        Task<IEnumerable<Inventory>> Get(Room splitRoom);
-        Task<Inventory> Get(Room storageRoom, Equipment equipment);
+        public Task<IEnumerable<Inventory>> Get(Room splitRoom);
+        public Task<Inventory> Get(Room storageRoom, Equipment equipment);
     }
     public class InventioryRepository : IInventoryRepository 
     {

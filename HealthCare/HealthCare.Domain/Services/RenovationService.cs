@@ -215,14 +215,13 @@ namespace HealthCare.Domain.Services
 
         }
 
-        public async Task<bool> ExecuteComplexRenovations()
+        public async Task ExecuteComplexRenovations()
         {
-            ExecuteJoinRenovations();
-            ExecuteSplitRenovations();
-            return true;
+            await ExecuteJoinRenovations();
+            await ExecuteSplitRenovations();
         }
 
-        public async Task<bool> ExecuteSplitRenovations()
+        public async Task ExecuteSplitRenovations()
         {
             IEnumerable<SplitRenovation> renovations = await _splitRenovationRepository.GetAll();
             foreach(SplitRenovation renovation in renovations)
@@ -233,7 +232,7 @@ namespace HealthCare.Domain.Services
                 if(renovation.EndDate < DateTime.Now && !resultRoom1.IsFormed && !resultRoom2.IsFormed)
                 {
                     splitRoom.IsDeleted = true;
-                    TransferEquipmentToStorage(splitRoom);
+                    await TransferEquipmentToStorage(splitRoom);
                     resultRoom1.IsFormed = true;
                     resultRoom2.IsFormed = true;
 
@@ -243,10 +242,9 @@ namespace HealthCare.Domain.Services
                     _roomRepository.Save();
                 }
             }
-            return true;
         }
 
-        public async Task<bool> ExecuteJoinRenovations()
+        public async Task ExecuteJoinRenovations()
         {
             IEnumerable<JoinRenovation> renovations = await _joinRenovationRepository.GetAll();
             foreach (JoinRenovation renovation in renovations)
@@ -258,8 +256,8 @@ namespace HealthCare.Domain.Services
                 {
                     joinRoom1.IsDeleted = true;
                     joinRoom2.IsDeleted = true;
-                    TransferEquipmentToStorage(joinRoom1);
-                    TransferEquipmentToStorage(joinRoom2);
+                    await TransferEquipmentToStorage(joinRoom1);
+                    await TransferEquipmentToStorage(joinRoom2);
                     resultRoom.IsFormed = true;
                     
                     _roomRepository.Update(joinRoom1);
@@ -268,10 +266,9 @@ namespace HealthCare.Domain.Services
                     _roomRepository.Save();
                 }
             }
-            return true;
         }
 
-        private async void TransferEquipmentToStorage(Room room)
+        private async Task TransferEquipmentToStorage(Room room)
         {
             // get all inventories that posses room equipment
             IEnumerable<Inventory> roomInventories = await _inventoryRepository.Get(room);
@@ -298,9 +295,17 @@ namespace HealthCare.Domain.Services
                         IsDeleted = false,
                     };
                     _inventoryRepository.Post(storageRoomInventory);
-                    _inventoryRepository.Save();
+                }
+                else
+                {
+                    storageRoomInventory.Amount += roomInventory.Amount;
+                    _inventoryRepository.Update(storageRoomInventory);
                 }
                 roomInventory.Amount = 0;
+                _inventoryRepository.Update(roomInventory);   
+                _inventoryRepository.Save();
+                
+
             }
         }
 

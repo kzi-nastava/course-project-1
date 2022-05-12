@@ -18,6 +18,6 @@ namespace HealthCare.Domain.Interfaces
         Task<IEnumerable<SplitRenovationDomainModel>> GetSplit();
         Task<IEnumerable<SimpleRenovationDomainModel>> GetSimple();
 
-        public Task<bool> ExecuteComplexRenovations();
+        public Task ExecuteComplexRenovations();
     }
 }
