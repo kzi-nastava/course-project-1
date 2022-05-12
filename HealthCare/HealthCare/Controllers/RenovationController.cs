@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -50,11 +51,11 @@ namespace HealthCareAPI.Controllers
 
         [HttpPost]
         [Route("create/simple")]
-        public async Task<ActionResult<SimpleRenovationDomainModel>> CreateSimple([FromBody] SimpleRenovationDomainModel newRenovationModel)
+        public async Task<ActionResult<SimpleRenovationDomainModel>> CreateSimple([FromBody] CreateSimpleRenovationDTO dto)
         {
             try
             {
-                SimpleRenovationDomainModel renovationModel = await _renovationService.Create(newRenovationModel);
+                SimpleRenovationDomainModel renovationModel = await _renovationService.Create(dto);
                 return Ok(renovationModel);
             }
             catch (Exception exception)
@@ -65,13 +66,12 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpPost]
-        [Route("create/join/{resultRoomName}&{roomTypeId}")]
-        public async Task<ActionResult<JoinRenovationDomainModel>> CreateJoin([FromBody] JoinRenovationDomainModel newRenovationModel,
-            string resultRoomName, decimal roomTypeId)
+        [Route("create/join")]
+        public async Task<ActionResult<JoinRenovationDomainModel>> CreateJoin([FromBody] CreateJoinRenovationDTO dto)
         {
             try
             {
-                JoinRenovationDomainModel renovationModel = await _renovationService.Create(newRenovationModel, resultRoomName, roomTypeId);
+                JoinRenovationDomainModel renovationModel = await _renovationService.Create(dto);
                 return Ok(renovationModel);
             }
             catch (Exception exception)
@@ -82,14 +82,29 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpPost]
-        [Route("create/split/{resultRoomName1}&{resultRoomName2}&{roomTypeId1}&{roomTypeId2}")]
-        public async Task<ActionResult<SplitRenovationDomainModel>> CreateSplit([FromBody] SplitRenovationDomainModel newRenovationModel,
-            string resultRoomName1, string resultRoomName2, decimal roomTypeId1, decimal roomTypeId2)
+        [Route("create/split")]
+        public async Task<ActionResult<SplitRenovationDomainModel>> CreateSplit([FromBody] CreateSplitRenovationDTO dto)
         {
             try
             {
-                SplitRenovationDomainModel renovationModel = await _renovationService.Create(newRenovationModel, resultRoomName1, resultRoomName2, roomTypeId1, roomTypeId2);
+                SplitRenovationDomainModel renovationModel = await _renovationService.Create(dto);
                 return Ok(renovationModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+
+        }
+
+        [HttpGet]
+        [Route("executeComplex")]
+        public async Task<ActionResult<bool>> ExecuteComplex()
+        {
+            try
+            {
+                bool result = await _renovationService.ExecuteComplexRenovations();
+                return Ok(result);
             }
             catch (Exception exception)
             {

@@ -44,6 +44,7 @@ public class RoomService : IRoomService
                 Id = item.Id,
                 RoomName = item.RoomName,
                 RoomTypeId = item.RoomTypeId,
+                IsFormed = item.IsFormed
             };
             if(item.RoomType != null) 
             {
@@ -113,6 +114,7 @@ public class RoomService : IRoomService
         Room newRoom = new Room();
         newRoom.IsDeleted = false;
         newRoom.RoomName = dto.RoomName;
+        newRoom.IsFormed = true;
         RoomType roomType = await _roomTypeRepository.GetById(dto.RoomTypeId);
         if (roomType == null)
             throw new RoomTypeNotFoundException();
@@ -155,7 +157,8 @@ public class RoomService : IRoomService
             Id = room.Id,
             RoomName = room.RoomName,
             RoomTypeId = room.RoomTypeId,
-            IsDeleted = room.IsDeleted
+            IsDeleted = room.IsDeleted,
+            IsFormed = room.IsFormed,
         };
         
         return roomModel;
@@ -168,7 +171,8 @@ public class RoomService : IRoomService
             Id = roomModel.Id,
             RoomName = roomModel.RoomName,
             RoomTypeId = roomModel.RoomTypeId,
-            IsDeleted = roomModel.IsDeleted
+            IsDeleted = roomModel.IsDeleted,
+            IsFormed = roomModel.IsFormed,
         };
         
         return room;

@@ -23,6 +23,9 @@ namespace HealthCare.Data.Entities
         [Column("deleted")]
         public bool IsDeleted { get; set; }
 
+        [Column("formed")]
+        public bool IsFormed { get; set; }
+
         public List<Inventory> Inventories { get; set; }
         public RoomType RoomType { get; set; }
         public List<Operation> Operations { get; set; }

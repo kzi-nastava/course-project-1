@@ -12,6 +12,8 @@ public class RoomDomainModel
 
     public bool IsDeleted { get; set; }
 
+    public bool IsFormed { get; set; }
+
     public List<InventoryDomainModel> Inventories { get; set; }
     public RoomTypeDomainModel RoomType { get; set; }
     public List<OperationDomainModel> Operations { get; set; }
