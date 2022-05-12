@@ -265,7 +265,7 @@ public class OperationService : IOperationService
         return parseToModel(operation);
     }
 
-    private OperationDomainModel parseToModel(Operation operation)
+    public static OperationDomainModel parseToModel(Operation operation)
     {
         OperationDomainModel operationModel = new OperationDomainModel
         {
@@ -282,7 +282,7 @@ public class OperationService : IOperationService
         return operationModel;
     }
     
-    private Operation parseFromModel(OperationDomainModel operationModel)
+    public static Operation parseFromModel(OperationDomainModel operationModel)
     {
         Operation operation = new Operation
         {

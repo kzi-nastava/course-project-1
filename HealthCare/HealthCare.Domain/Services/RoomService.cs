@@ -148,7 +148,7 @@ public class RoomService : IRoomService
         return parseToModel(deletedRoom);
     }
 
-    private RoomDomainModel parseToModel(Room room)
+    public static RoomDomainModel parseToModel(Room room)
     {
         RoomDomainModel roomModel = new RoomDomainModel 
         {
@@ -157,6 +157,20 @@ public class RoomService : IRoomService
             RoomTypeId = room.RoomTypeId,
             IsDeleted = room.IsDeleted
         };
+        
         return roomModel;
+    }
+    
+    public static Room parseFromModel(RoomDomainModel roomModel)
+    {
+        Room room = new Room 
+        {
+            Id = roomModel.Id,
+            RoomName = roomModel.RoomName,
+            RoomTypeId = roomModel.RoomTypeId,
+            IsDeleted = roomModel.IsDeleted
+        };
+        
+        return room;
     }
 }

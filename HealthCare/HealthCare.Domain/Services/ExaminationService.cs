@@ -60,7 +60,7 @@ public class ExaminationService : IExaminationService
         return isCreate ? createCounter > 8 : updateCounter > 5;
     }
 
-    private ExaminationDomainModel parseToModel(Examination examination)
+    public static ExaminationDomainModel parseToModel(Examination examination)
     {
         ExaminationDomainModel examinationModel = new ExaminationDomainModel
         {
@@ -72,20 +72,14 @@ public class ExaminationService : IExaminationService
             RoomId = examination.RoomId,
             IsEmergency = examination.IsEmergency
         };
+        
         if (examination.Anamnesis != null)
-        {
-            examinationModel.Anamnesis = new AnamnesisDomainModel
-            {
-                Id = examination.Anamnesis.Id,
-                Description = examination.Anamnesis.Description,
-                ExaminationId = examination.Anamnesis.ExaminationId,
-                IsDeleted = examination.Anamnesis.IsDeleted
-            };
-        }
+            examinationModel.Anamnesis = AnamnesisService.parseToModel(examination.Anamnesis);
+        
         return examinationModel;
     }
 
-    private Examination parseFromModel(ExaminationDomainModel examinationModel)
+    public static Examination parseFromModel(ExaminationDomainModel examinationModel)
     {
         Examination examination = new Examination
         {
@@ -97,16 +91,10 @@ public class ExaminationService : IExaminationService
             RoomId = examinationModel.RoomId,
             IsEmergency = examinationModel.IsEmergency
         };
+        
         if (examinationModel.Anamnesis != null)
-        {
-            examination.Anamnesis = new Anamnesis
-            {
-                Id = examinationModel.Anamnesis.Id,
-                Description = examinationModel.Anamnesis.Description,
-                ExaminationId = examinationModel.Anamnesis.ExaminationId,
-                IsDeleted = examinationModel.Anamnesis.IsDeleted
-            };
-        }
+            examination.Anamnesis = AnamnesisService.parseFromModel(examinationModel.Anamnesis);
+        
         return examination;
     }
     public async Task<IEnumerable<ExaminationDomainModel>> GetAll()

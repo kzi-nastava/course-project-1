@@ -18,8 +18,6 @@ public class AnamnesisService : IAnamnesisService
         _examinationRepository = examinationRepository;
     }
 
-    // Async awaits info from database
-    // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<AnamnesisDomainModel>> GetAll()
     {
         IEnumerable<Anamnesis> data = await _anamnesisRepository.GetAll();
@@ -77,7 +75,7 @@ public class AnamnesisService : IAnamnesisService
         return parseToModel(anamesis);
     }
 
-    private AnamnesisDomainModel parseToModel(Anamnesis anamnesis)
+    public static AnamnesisDomainModel parseToModel(Anamnesis anamnesis)
     {
         AnamnesisDomainModel anamnesisModel = new AnamnesisDomainModel
         {
@@ -88,5 +86,18 @@ public class AnamnesisService : IAnamnesisService
         };
 
         return anamnesisModel;
+    }
+    
+    public static Anamnesis parseFromModel(AnamnesisDomainModel anamnesisModel)
+    {
+        Anamnesis anamnesis = new Anamnesis
+        {
+            Id = anamnesisModel.Id,
+            Description = anamnesisModel.Description,
+            ExaminationId = anamnesisModel.ExaminationId,
+            IsDeleted = anamnesisModel.IsDeleted,
+        };
+
+        return anamnesis;
     }
 }

@@ -45,25 +45,6 @@ namespace HealthCare.Domain.Services
             CredentialsDomainModel credentialsModel;
             foreach (Credentials item in data)
             {
-                credentialsModel = new CredentialsDomainModel {
-                    Id = item.Id,
-                    Username = item.Username,
-                    Password = item.Password,
-                    DoctorId = item.DoctorId,
-                    SecretaryId = item.SecretaryId,
-                    ManagerId = item.ManagerId,
-                    PatientId = item.PatientId,
-                    UserRoleId = item.UserRoleId,
-                    IsDeleted = item.isDeleted
-                };
-                if (item.UserRole != null) {
-                    credentialsModel.UserRole = new UserRoleDomainModel {
-                        Id = item.UserRole.Id,
-                        RoleName = item.UserRole.RoleName,
-                        IsDeleted = item.UserRole.IsDeleted
-                    };
-                }
-                results.Add(credentialsModel);
             }
             
             return results;
@@ -91,6 +72,48 @@ namespace HealthCare.Domain.Services
                 }
             }
             throw new UserNotFoundException();
+        }
+        
+        public static CredentialsDomainModel parseToModel(Credentials credentials)
+        {
+            CredentialsDomainModel credentialsModel = new CredentialsDomainModel
+            {
+                Id = credentials.Id,
+                Username = credentials.Username,
+                Password = credentials.Password,
+                DoctorId = credentials.DoctorId,
+                SecretaryId = credentials.SecretaryId,
+                ManagerId = credentials.ManagerId,
+                PatientId = credentials.PatientId,
+                UserRoleId = credentials.UserRoleId,
+                IsDeleted = credentials.isDeleted
+            };
+            if (credentials.UserRole != null)
+            {
+                credentialsModel.UserRole = UserRoleService.parseToModel(credentials.UserRole);
+            }
+            return credentialsModel;
+        }
+        
+        public static Credentials parseFromModel(CredentialsDomainModel credentialsModel)
+        {
+            Credentials credentials = new Credentials 
+            {
+                Id = credentialsModel.Id,
+                Username = credentialsModel.Username,
+                Password = credentialsModel.Password,
+                DoctorId = credentialsModel.DoctorId,
+                SecretaryId = credentialsModel.SecretaryId,
+                ManagerId = credentialsModel.ManagerId,
+                PatientId = credentialsModel.PatientId,
+                UserRoleId = credentialsModel.UserRoleId,
+                isDeleted = credentialsModel.IsDeleted
+            };
+            if (credentialsModel.UserRole != null)
+            {
+                credentials.UserRole = UserRoleService.parseFromModel(credentialsModel.UserRole);
+            }
+            return credentials;
         }
     }
 }

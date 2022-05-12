@@ -47,4 +47,28 @@ public class UserRoleService : IUserRoleService
         }
         return result;
     }
+
+    public static UserRoleDomainModel parseToModel(UserRole userRole)
+    {
+        UserRoleDomainModel userRoleModel = new UserRoleDomainModel
+        {
+            Id = userRole.Id,
+            IsDeleted = userRole.IsDeleted,
+            RoleName = userRole.RoleName
+        };
+        
+        return userRoleModel;
+    }
+    
+    public static UserRole parseFromModel(UserRoleDomainModel userRoleModel)
+    {
+        UserRole userRole = new UserRole
+        {
+            Id = userRoleModel.Id,
+            IsDeleted = userRoleModel.IsDeleted,
+            RoleName = userRoleModel.RoleName
+        };
+        
+        return userRole;
+    }
 }

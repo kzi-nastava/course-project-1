@@ -75,7 +75,7 @@ public class TransferService : ITransferService
         return parseToModel(transfer);
     }
 
-    private TransferDomainModel parseToModel(Transfer transfer)
+    public static TransferDomainModel parseToModel(Transfer transfer)
     {
         TransferDomainModel transferModel = new TransferDomainModel
         {
@@ -87,26 +87,30 @@ public class TransferService : ITransferService
             EquipmentId = transfer.EquipmentId,
             Executed = transfer.Executed
         };
+        
         if (transfer.Equipment != null)
-        {
-            transferModel.Equipment = new EquipmentDomainModel
-            {
-                Id = transfer.Equipment.Id,
-                EquipmentTypeId = transfer.Equipment.equipmentTypeId,
-                IsDeleted = transfer.Equipment.IsDeleted,
-                Name = transfer.Equipment.Name
-            };
-            if (transfer.Equipment.EquipmentType != null)
-            {
-                transferModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
-                {
-                    Id = transfer.Equipment.EquipmentType.Id,
-                    Name = transfer.Equipment.EquipmentType.Name,
-                    IsDeleted = transfer.Equipment.EquipmentType.IsDeleted
-                };
-            }
-        }
+            transferModel.Equipment = EquipmentService.parseToModel(transfer.Equipment);
+        
         return transferModel;
+    }
+    
+    public static Transfer parseFromModel(TransferDomainModel transferModel)
+    {
+        Transfer transfer = new Transfer
+        {
+            Id = transferModel.Id,
+            RoomIdOut = transferModel.RoomIdOut,
+            RoomIdIn = transferModel.RoomIdIn,
+            TransferTime = transferModel.TransferTime,
+            Amount = transferModel.Amount,
+            EquipmentId = transferModel.EquipmentId,
+            Executed = transferModel.Executed
+        };
+        
+        if (transferModel.Equipment != null)
+            transfer.Equipment = EquipmentService.parseFromModel(transferModel.Equipment);
+        
+        return transfer;
     }
 
     public async Task<IEnumerable<TransferDomainModel>> DoTransfers()

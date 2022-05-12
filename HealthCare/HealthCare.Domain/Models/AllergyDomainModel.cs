@@ -11,7 +11,5 @@ namespace HealthCare.Domain.Models
         public decimal PatientId { get; set; }
 
         public decimal IngredientId { get; set; }
-
-        public MedicalRecordDomainModel MedicalRecord { get; set; }
     }
 }

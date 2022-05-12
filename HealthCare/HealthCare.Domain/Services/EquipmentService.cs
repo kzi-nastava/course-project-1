@@ -40,27 +40,9 @@ public class EquipmentService : IEquipmentService
             return new List<EquipmentDomainModel>();
 
         List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
-        EquipmentDomainModel equipmentModel;
         foreach (Equipment item in equipment)
         {
-            equipmentModel = new EquipmentDomainModel
-            {
-                Id = item.Id,
-                EquipmentTypeId = item.equipmentTypeId,
-                IsDeleted = item.IsDeleted,
-                Name = item.Name,
-            };
-            if (item.EquipmentType != null)
-            {
-                equipmentModel.EquipmentType = new EquipmentTypeDomainModel
-                {
-                    Id = item.EquipmentType.Id,
-                    Name = item.EquipmentType.Name,
-                    IsDeleted = item.EquipmentType.IsDeleted,
-                };
-            }
-
-            results.Add(equipmentModel);
+            results.Add(parseToModel(item));
         }
 
         return results;
@@ -83,25 +65,36 @@ public class EquipmentService : IEquipmentService
         return results;
     }
 
-    private EquipmentDomainModel parseToModel(Equipment item)
+    public static EquipmentDomainModel parseToModel(Equipment equipment)
     {
         EquipmentDomainModel equipmentModel = new EquipmentDomainModel 
         {
-            Id = item.Id,
-            EquipmentTypeId = item.equipmentTypeId,
-            Name = item.Name,
-            IsDeleted = item.IsDeleted,
+            Id = equipment.Id,
+            EquipmentTypeId = equipment.equipmentTypeId,
+            Name = equipment.Name,
+            IsDeleted = equipment.IsDeleted
         };
-        if (item.EquipmentType != null) 
-        {
-            equipmentModel.EquipmentType = new EquipmentTypeDomainModel 
-            {
-                Id = item.EquipmentType.Id,
-                Name = item.EquipmentType.Name,
-                IsDeleted = item.EquipmentType.IsDeleted,
-            };
-        }
+        
+        if (equipment.EquipmentType != null)
+            equipmentModel.EquipmentType = EquipmentTypeService.parseToModel(equipment.EquipmentType);
+        
         return equipmentModel;
+    }
+    
+    public static Equipment parseFromModel(EquipmentDomainModel equipmentModel)
+    {
+        Equipment equipment = new Equipment 
+        {
+            Id = equipmentModel.Id,
+            equipmentTypeId = equipmentModel.EquipmentTypeId,
+            Name = equipmentModel.Name,
+            IsDeleted = equipmentModel.IsDeleted
+        };
+        
+        if (equipmentModel.EquipmentType != null)
+            equipment.EquipmentType = EquipmentTypeService.parseFromModel(equipmentModel.EquipmentType);
+        
+        return equipment;
     }
 
     private IEnumerable<EquipmentDomainModel> parseToModels(IEnumerable<Equipment> equipments)
