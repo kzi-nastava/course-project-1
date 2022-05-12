@@ -37,6 +37,10 @@ namespace HealthCare.Data.Context
         public DbSet<Transfer> Transfers { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
 
+        public DbSet<SimpleRenovation> SimpleRenovations{ get; set; }
+        public DbSet<JoinRenovation> JoinRenovations { get; set; }
+        public DbSet<SplitRenovation> SplitRenovations { get; set; }
+
         public HealthCareContext(DbContextOptions options) : base(options)
         {
             
@@ -106,6 +110,9 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<ReferralLetter>().HasKey(x => x.Id);
             modelBuilder.Entity<Ingredient>().HasKey(x => x.Id);
             modelBuilder.Entity<Specialization>().HasKey(x => x.Id);
+            modelBuilder.Entity<SimpleRenovation>().HasKey(x => x.Id);
+            modelBuilder.Entity<JoinRenovation>().HasKey(x => x.Id);
+            modelBuilder.Entity<SplitRenovation>().HasKey(x => x.Id);
         }
     }
 }
