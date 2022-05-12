@@ -34,7 +34,7 @@ namespace HealthCare.Domain.Services
             return results;
         }
 
-        private DrugDomainModel parseToModel(Drug drug)
+        public static DrugDomainModel parseToModel(Drug drug)
         {
             DrugDomainModel drugModel = new DrugDomainModel
             {
@@ -45,20 +45,27 @@ namespace HealthCare.Domain.Services
 
             drugModel.DrugIngredients = new List<DrugIngredientDomainModel>();
             if (drug.DrugIngredients != null)
-            {
                 foreach (DrugIngredient drugIngredient in drug.DrugIngredients)
-                {
-                    DrugIngredientDomainModel drugIngredientModel = new DrugIngredientDomainModel
-                    {
-                        DrugId = drugIngredient.DrugId,
-                        IngredientId = drugIngredient.IngredientId,
-                        Amount = drugIngredient.Amount
-                    };
-                    drugModel.DrugIngredients.Add(drugIngredientModel);
-                }
-            }
+                    drugModel.DrugIngredients.Add(DrugIngredientService.parseToModel(drugIngredient));
 
             return drugModel;
+        }
+        
+        public static Drug parseFromModel(DrugDomainModel drugModel)
+        {
+            Drug drug = new Drug
+            {
+                Id = drugModel.Id,
+                Name = drugModel.Name,
+                IsDeleted = drugModel.IsDeleted
+            };
+
+            drugModel.DrugIngredients = new List<DrugIngredientDomainModel>();
+            if (drugModel.DrugIngredients != null)
+                foreach (DrugIngredientDomainModel drugIngredient in drugModel.DrugIngredients)
+                    drug.DrugIngredients.Add(DrugIngredientService.parseFromModel(drugIngredient));
+
+            return drug;
         }
     }
 }

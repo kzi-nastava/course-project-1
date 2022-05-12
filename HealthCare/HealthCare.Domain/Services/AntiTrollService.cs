@@ -18,7 +18,7 @@ public class AntiTrollService : IAntiTrollService
     // Async awaits info from database
     // GetAll is the equivalent of SELECT *
 
-    private AntiTrollDomainModel parseToModel(AntiTroll antiTroll) 
+    public static AntiTrollDomainModel parseToModel(AntiTroll antiTroll) 
     {
         AntiTrollDomainModel antiTrollModel = new AntiTrollDomainModel 
         {
@@ -28,6 +28,18 @@ public class AntiTrollService : IAntiTrollService
             State = antiTroll.State
         };
         return antiTrollModel;
+    }
+    
+    public static AntiTroll parseFromModel(AntiTrollDomainModel antiTrollModel) 
+    {
+        AntiTroll antiTroll = new AntiTroll 
+        {
+            Id = antiTrollModel.Id,
+            PatientId = antiTrollModel.PatientId,
+            DateCreated = antiTrollModel.DateCreated,
+            State = antiTrollModel.State
+        };
+        return antiTroll;
     }
 
     public async Task<IEnumerable<AntiTrollDomainModel>> GetAll() 
@@ -58,5 +70,4 @@ public class AntiTrollService : IAntiTrollService
 
         return results;
     }
-    
 }

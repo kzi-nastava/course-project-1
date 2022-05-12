@@ -19,7 +19,7 @@ namespace HealthCare.Domain.Services
             _specializationRepository = specializationRepository;
         }
 
-        private SpecializationDomainModel parseToModel(Specialization specialization)
+        public static SpecializationDomainModel parseToModel(Specialization specialization)
         {
             SpecializationDomainModel specializationModel = new SpecializationDomainModel
             {
@@ -29,7 +29,7 @@ namespace HealthCare.Domain.Services
             return specializationModel;
         }
 
-        private Specialization parseFromModel(SpecializationDomainModel specializationModel)
+        public static Specialization parseFromModel(SpecializationDomainModel specializationModel)
         {
             Specialization specialization = new Specialization
             {

@@ -34,46 +34,48 @@ public class SecretaryService : ISecretaryService
             return new List<SecretaryDomainModel>();
 
         List<SecretaryDomainModel> results = new List<SecretaryDomainModel>();
-        SecretaryDomainModel secretaryModel;
-        foreach (Secretary item in data)
+        foreach (Secretary secretary in data)
         {
-            secretaryModel = new SecretaryDomainModel
-            {
-                IsDeleted = item.IsDeleted,
-                Id = item.Id,
-                BirthDate = item.BirthDate,
-                Email = item.Email,
-                Name = item.Name,
-                Phone = item.Phone,
-                Surname = item.Surname
-            };
-            if (item.Credentials != null) 
-            {
-                secretaryModel.Credentials = new CredentialsDomainModel 
-                {
-                    Id = item.Credentials.Id,
-                    Username = item.Credentials.Username,
-                    Password = item.Credentials.Password,
-                    DoctorId = item.Credentials.DoctorId,
-                    SecretaryId = item.Credentials.SecretaryId,
-                    ManagerId = item.Credentials.ManagerId,
-                    PatientId = item.Credentials.PatientId,
-                    UserRoleId = item.Credentials.UserRoleId
-
-                };
-                if (item.Credentials.UserRole != null) 
-                {
-                    secretaryModel.Credentials.UserRole = new UserRoleDomainModel 
-                    {
-                        Id = item.Credentials.UserRole.Id,
-                        RoleName = item.Credentials.UserRole.RoleName,
-                        IsDeleted = item.Credentials.UserRole.IsDeleted
-                    };
-                }
-            }
-            results.Add(secretaryModel);
+            results.Add(parseToModel(secretary));
         }
 
         return results;
-    } 
+    }
+
+    public static SecretaryDomainModel parseToModel(Secretary secretary)
+    {
+        SecretaryDomainModel secretaryModel = new SecretaryDomainModel
+        {
+            IsDeleted = secretary.IsDeleted,
+            Id = secretary.Id,
+            BirthDate = secretary.BirthDate,
+            Email = secretary.Email,
+            Name = secretary.Name,
+            Phone = secretary.Phone,
+            Surname = secretary.Surname
+        };
+        if (secretary.Credentials != null)
+            secretaryModel.Credentials = CredentialsService.parseToModel(secretary.Credentials);
+
+        return secretaryModel;
+    }
+    
+    public static Secretary parseFromModel(SecretaryDomainModel secretaryModel)
+    {
+        Secretary secretary = new Secretary
+        {
+            IsDeleted = secretaryModel.IsDeleted,
+            Id = secretaryModel.Id,
+            BirthDate = secretaryModel.BirthDate,
+            Email = secretaryModel.Email,
+            Name = secretaryModel.Name,
+            Phone = secretaryModel.Phone,
+            Surname = secretaryModel.Surname
+        };
+        
+        if (secretaryModel.Credentials != null)
+            secretary.Credentials = CredentialsService.parseFromModel(secretaryModel.Credentials);
+
+        return secretary;
+    }
 }

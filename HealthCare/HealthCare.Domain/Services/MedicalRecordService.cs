@@ -1,6 +1,7 @@
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
 using HealthCare.Data.Entities;
+using HealthCare.Domain.Services;
 
 namespace HealthCare.Domain.Interfaces;
 
@@ -56,7 +57,7 @@ public class MedicalRecordService : IMedicalRecordService
         return parseToModel(medicalRecord);
     }
 
-    private MedicalRecordDomainModel parseToModel(MedicalRecord medicalRecord)
+    public static MedicalRecordDomainModel parseToModel(MedicalRecord medicalRecord)
     {
         MedicalRecordDomainModel medicalRecordModel = new MedicalRecordDomainModel 
         {
@@ -69,59 +70,23 @@ public class MedicalRecordService : IMedicalRecordService
 
         medicalRecordModel.AllergiesList = new List<AllergyDomainModel>();
         if (medicalRecord.AllergiesList != null)
-        {
             foreach (Allergy item in medicalRecord.AllergiesList)
-            {
-                AllergyDomainModel allergy = new AllergyDomainModel
-                {
-                    IngredientId = item.IngredientId,
-                    PatientId = item.PatientId
-                };
-                medicalRecordModel.AllergiesList.Add(allergy);
-            }
-        }
-
+                medicalRecordModel.AllergiesList.Add(AllergyService.parseToModel(item));
 
         medicalRecordModel.ReferralLetters = new List<ReferralLetterDomainModel>();
         if (medicalRecord.ReferralLetters != null)
-        {
             foreach (ReferralLetter item in medicalRecord.ReferralLetters)
-            {
-                ReferralLetterDomainModel referralLetterModel = new ReferralLetterDomainModel
-                {
-                    Id = item.Id,
-                    FromDoctorId = item.FromDoctorId,
-                    ToDoctorId = item.ToDoctorId,
-                    PatientId = item.PatientId
-                };
-                medicalRecordModel.ReferralLetters.Add(referralLetterModel);
-            }
-
-        }
+                medicalRecordModel.ReferralLetters.Add(ReferralLetterService.parseToModel(item));
 
         medicalRecordModel.Prescriptions = new List<PrescriptionDomainModel>();
         if (medicalRecord.Prescriptions != null)
-        {
             foreach (Prescription item in medicalRecord.Prescriptions)
-            {
-                PrescriptionDomainModel prescription = new PrescriptionDomainModel
-                {
-                    Id = item.Id,
-                    DrugId = item.DrugId,
-                    PatientId = item.PatientId,
-                    DoctorId = item.DoctorId,
-                    TakeAt = item.TakeAt,
-                    PerDay = item.PerDay,
-                    IsDeleted = item.IsDeleted,
-                    MealCombination = (MealCombination)Enum.Parse(typeof(MealCombination), item.MealCombination)
-                };
-                medicalRecordModel.Prescriptions.Add(prescription);
-            }
-        }
+                medicalRecordModel.Prescriptions.Add(PrescriptionService.parseToModel(item));
+                
         return medicalRecordModel;
     }
 
-    private MedicalRecord parseFromModel(MedicalRecordDomainModel medicalRecordModel)
+    public static MedicalRecord parseFromModel(MedicalRecordDomainModel medicalRecordModel)
     {
         MedicalRecord medicalRecord = new MedicalRecord 
         {
@@ -134,53 +99,19 @@ public class MedicalRecordService : IMedicalRecordService
 
         medicalRecord.AllergiesList = new List<Allergy>();
         if (medicalRecordModel.AllergiesList != null)
-        {
             foreach (AllergyDomainModel item in medicalRecordModel.AllergiesList)
-            {
-                Allergy allergy = new Allergy
-                {
-                    IngredientId = item.IngredientId,
-                    PatientId = item.PatientId
-                };
-                medicalRecord.AllergiesList.Add(allergy);
-            }
-        }
+                medicalRecord.AllergiesList.Add(AllergyService.parseFromModel(item));
 
         medicalRecord.ReferralLetters = new List<ReferralLetter>();
         if (medicalRecordModel.ReferralLetters != null)
-        {
             foreach(ReferralLetterDomainModel item in medicalRecordModel.ReferralLetters)
-            {
-                ReferralLetter referralLetter = new ReferralLetter
-                {
-                    Id = item.Id,
-                    FromDoctorId = item.FromDoctorId,
-                    ToDoctorId = item.ToDoctorId,
-                    PatientId = item.PatientId
-                };
-                medicalRecord.ReferralLetters.Add(referralLetter);
-            }
-
-        }
+                medicalRecord.ReferralLetters.Add(ReferralLetterService.parseFromModel(item));
 
         medicalRecord.Prescriptions = new List<Prescription>();
         if (medicalRecordModel.Prescriptions != null)
-        {
             foreach(PrescriptionDomainModel item in medicalRecordModel.Prescriptions)
-            {
-                Prescription prescription = new Prescription
-                {
-                    Id = item.Id,
-                    PatientId = item.PatientId,
-                    DoctorId = item.DoctorId,
-                    TakeAt = item.TakeAt,
-                    PerDay = item.PerDay,
-                    IsDeleted = item.IsDeleted,
-                    MealCombination = item.MealCombination.ToString()
-                };
-                medicalRecord.Prescriptions.Add(prescription);
-            }
-        }
+                medicalRecord.Prescriptions.Add(PrescriptionService.parseFromModel(item));
+        
         return medicalRecord;
     }
 }

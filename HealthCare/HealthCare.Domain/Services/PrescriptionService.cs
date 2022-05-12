@@ -74,7 +74,7 @@ namespace HealthCare.Domain.Services
             return results;
         }
 
-        private Prescription parseFromDTO(PrescriptionDTO prescriptionDTO)
+        public static Prescription parseFromDTO(PrescriptionDTO prescriptionDTO)
         {
             Prescription prescription = new Prescription
             {
@@ -100,7 +100,7 @@ namespace HealthCare.Domain.Services
             return new DateTime(year, month, day, hour, minute, second);
         }
 
-        private PrescriptionDomainModel parseToModel(Prescription prescription)
+        public static PrescriptionDomainModel parseToModel(Prescription prescription)
         {
             PrescriptionDomainModel prescriptionModel = new PrescriptionDomainModel
             {
@@ -115,16 +115,30 @@ namespace HealthCare.Domain.Services
             };
 
             if (prescription.Drug != null)
-            {
-                prescriptionModel.Drug = new DrugDomainModel
-                {
-                    Id = prescription.Drug.Id,
-                    Name = prescription.Drug.Name,
-                    IsDeleted = prescription.Drug.IsDeleted
-                };
-            }
+                prescriptionModel.Drug = DrugService.parseToModel(prescription.Drug);
 
             return prescriptionModel;
         }
+        public static Prescription parseFromModel(PrescriptionDomainModel prescriptionModel)
+        {
+            Prescription prescription = new Prescription
+            {
+                Id = prescriptionModel.Id,
+                DrugId = prescriptionModel.DrugId,
+                PatientId = prescriptionModel.PatientId,
+                DoctorId = prescriptionModel.DoctorId,
+                TakeAt = prescriptionModel.TakeAt,
+                PerDay = prescriptionModel.PerDay,
+                IsDeleted = prescriptionModel.IsDeleted,
+                // TODO: Sta?
+                //MealCombination = (MealCombination)Enum.Parse(typeof(MealCombination), prescriptionModel.MealCombination)
+            };
+
+            if (prescriptionModel.Drug != null)
+                prescription.Drug = DrugService.parseFromModel(prescriptionModel.Drug);
+
+            return prescription;
+        }
     }
+    
 }
