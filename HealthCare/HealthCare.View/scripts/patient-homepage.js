@@ -80,7 +80,7 @@ function currentTime() {
   
     document.getElementById("clock").innerText = time; 
     document.getElementById("date").innerText = date.toLocaleDateString();
-    document.getElementById("year").innerText = days[date.getDay()]; 
+    document.getElementById("year").innerText = days[date.getDay() - 1]; 
     let t = setTimeout(function(){ currentTime() }, 1000);
   }
   
