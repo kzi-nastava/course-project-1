@@ -40,6 +40,7 @@ namespace HealthCare.Data.Context
         public DbSet<SimpleRenovation> SimpleRenovations{ get; set; }
         public DbSet<JoinRenovation> JoinRenovations { get; set; }
         public DbSet<SplitRenovation> SplitRenovations { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         public HealthCareContext(DbContextOptions options) : base(options)
         {
@@ -113,6 +114,7 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<SimpleRenovation>().HasKey(x => x.Id);
             modelBuilder.Entity<JoinRenovation>().HasKey(x => x.Id);
             modelBuilder.Entity<SplitRenovation>().HasKey(x => x.Id);
+            modelBuilder.Entity<Notification>().HasKey(x => x.Id);
         }
     }
 }
