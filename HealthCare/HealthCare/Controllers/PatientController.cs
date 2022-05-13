@@ -35,7 +35,7 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpGet]
-        [Route("medical_record/patientId={id}")]
+        [Route("patientId={id}")]
         public async Task<ActionResult<PatientDomainModel>> GetWithMedicalRecord(decimal id)
         {
             try
