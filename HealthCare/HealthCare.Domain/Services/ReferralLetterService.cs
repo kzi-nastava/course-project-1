@@ -146,6 +146,7 @@ namespace HealthCare.Domain.Services
             ReferralLetter referralLetter = await _referralLetterRepository.GetById(dto.ReferralId);
             ReferralLetterDomainModel referralLetterModel = ParseToModel(referralLetter);
             if (!referralLetterModel.State.Equals("created")) throw new ReferralCannotBeUsedException();
+            if (dto.StartTime < DateTime.Now) throw new DateInPastExeption();
             
             ReferralLetterDomainModel? returnModel;
             CUExaminationDTO examinationModel = MakeMockup(referralLetterModel.PatientId, dto.StartTime);

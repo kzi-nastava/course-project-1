@@ -192,6 +192,7 @@ public class PatientService : IPatientService
     {
         Patient newPatient = CreateDefaultPatient(dto);
         Patient insertedPatient = _patientRepository.Post(newPatient);
+        _patientRepository.Save();
         MedicalRecord medicalRecord = CreateDefaultMedicalRecord(dto, insertedPatient.Id);
         UserRole userRole = await _userRoleRepository.GetByRoleName("patient");
         Credentials credentials = CreateDefaultCredentials(dto, insertedPatient.Id, userRole.Id);
@@ -200,7 +201,6 @@ public class PatientService : IPatientService
         _ = _credentialsRepository.Post(credentials);
         _medicalRecordRepository.Save();
         _credentialsRepository.Save();
-        _patientRepository.Save();
         
         return ParseToModel(insertedPatient);
     }
@@ -218,7 +218,7 @@ public class PatientService : IPatientService
         return patient;
     }
 
-    public async void UpdateMedicalRecordInfo(CUPatientDTO dto, decimal patientId)
+    public async Task<MedicalRecordDomainModel> UpdateMedicalRecordInfo(CUPatientDTO dto, decimal patientId)
     {
         MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(patientId);
         medicalRecord.Height = dto.MedicalRecordDTO.Height;
@@ -226,22 +226,24 @@ public class PatientService : IPatientService
         medicalRecord.BedriddenDiseases = dto.MedicalRecordDTO.BedriddenDiseases;
         _ = _medicalRecordRepository.Update(medicalRecord);
         _medicalRecordRepository.Save();
+        return MedicalRecordService.ParseToModel(medicalRecord);
     }
 
-    public async void UpdateCredentialsInfo(CUPatientDTO dto, decimal patientId)
+    public async Task<CredentialsDomainModel> UpdateCredentialsInfo(CUPatientDTO dto, decimal patientId)
     {
         Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(patientId);
         credentials.Username = dto.LoginDTO.Username;
         credentials.Password = dto.LoginDTO.Password;
         _ = _credentialsRepository.Update(credentials);
         _credentialsRepository.Save();
+        return CredentialsService.ParseToModel(credentials);
     }
 
     public async Task<PatientDomainModel> Update(CUPatientDTO dto)
     {
         Patient patient = await UpdatePatientInfo(dto);
-        UpdateMedicalRecordInfo(dto, patient.Id);
-        UpdateCredentialsInfo(dto, patient.Id);
+        _ = await UpdateMedicalRecordInfo(dto, patient.Id);
+        _ = await UpdateCredentialsInfo(dto, patient.Id);
         return ParseToModel(patient);
     }
 
@@ -253,28 +255,30 @@ public class PatientService : IPatientService
         _patientRepository.Save();
         return patient;
     }
-    public async void DeleteMedicalRecordInfo(decimal patientId)
+    public async Task<MedicalRecordDomainModel> DeleteMedicalRecordInfo(decimal patientId)
     {
         MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(patientId);
         medicalRecord.IsDeleted = true;
         _ = _medicalRecordRepository.Update(medicalRecord);
         _medicalRecordRepository.Save();
+        return MedicalRecordService.ParseToModel(medicalRecord);
     }
 
-    public async void DeleteCredentialsInfo(decimal patientId)
+    public async Task<CredentialsDomainModel> DeleteCredentialsInfo(decimal patientId)
     {
         Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(patientId);
         credentials.IsDeleted = true;
         _ = _credentialsRepository.Update(credentials);
         _credentialsRepository.Save();
+        return CredentialsService.ParseToModel(credentials);
     }
     
 
     public async Task<PatientDomainModel> Delete(decimal patientId)
     {
         Patient patient = await DeletePatientInfo(patientId);
-        DeleteMedicalRecordInfo(patientId);
-        DeleteCredentialsInfo(patientId);
+        _ = await DeleteMedicalRecordInfo(patientId);
+        _ = await DeleteCredentialsInfo(patientId);
         
         return ParseToModel(patient);
     }
