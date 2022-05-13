@@ -684,7 +684,8 @@ public class ExaminationService : IExaminationService
     }
 
     // DoctorService is needed for doctor's schedule
-    public async Task<ExaminationDomainModel> CreateUrgent(CreateUrgentExaminationDTO dto, IDoctorService doctorService)
+    public async Task<ExaminationDomainModel> CreateUrgent(CreateUrgentExaminationDTO dto, IDoctorService doctorService,
+        INotificationService notificationService)
     {
         ExaminationDomainModel examinationModel = new ExaminationDomainModel
         {
@@ -701,6 +702,7 @@ public class ExaminationService : IExaminationService
         urgentStartTimes.Sort((x, y) => x.Key.CompareTo(y.Key));
         // Try to create examination
         ExaminationDomainModel? createdModel = await ParsePairs(examinationModel, urgentStartTimes);
+        _ = SendNotifications(notificationService, examinationModel.DoctorId, examinationModel.PatientId);
         return createdModel;
     }
 
@@ -1058,9 +1060,19 @@ public class ExaminationService : IExaminationService
         examination.StartTime = dto.RescheduleTime;
         _ = _examinationRepository.Update(examination);
         _examinationRepository.Save();
-        _ = await notificationService.SendToDoctor(dto.DoctorId);
-        _ = await notificationService.SendToPatient(dto.PatientId);
+        _ = await SendNotifications(notificationService, dto.DoctorId, dto.PatientId);
         return ParseToModel(examination);
+    }
+
+    public async Task<Boolean> SendNotifications(INotificationService notificationService, decimal doctorId=0, decimal patientId=0)
+    {
+        KeyValuePair<string, string> content = new KeyValuePair<string, string>("Rescheduling",
+            "Your appointment has been rescheduled. Please check your schedule");
+       if (doctorId != 0) 
+           _ = await notificationService.Send(new SendNotificationDTO{IsPatient = false, Content = content, PersonId = doctorId});
+       if (patientId != 0) 
+           _ = await notificationService.Send(new SendNotificationDTO{IsPatient = true, Content = content, PersonId = patientId});
+       return true;
     }
 
     public async Task<ExaminationDomainModel> MakeUrgent(RescheduleDTO dto)

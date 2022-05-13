@@ -17,7 +17,7 @@ public interface IExaminationService : IService<ExaminationDomainModel>
     public Task<IEnumerable<ExaminationDomainModel>> ReadAll();
     public Task<IEnumerable<ExaminationDomainModel>> SearchByAnamnesis(SearchByNameDTO dto);
 
-    public Task<ExaminationDomainModel> CreateUrgent(CreateUrgentExaminationDTO dto, IDoctorService doctorService);
+    public Task<ExaminationDomainModel> CreateUrgent(CreateUrgentExaminationDTO dto, IDoctorService doctorService, INotificationService notificationService);
 
     public Task<IEnumerable<IEnumerable<RescheduleDTO>>> FindFiveAppointments(CreateUrgentExaminationDTO dto,
         IDoctorService doctorService, IPatientService patientService);
