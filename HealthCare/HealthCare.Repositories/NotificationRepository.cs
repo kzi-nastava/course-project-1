@@ -6,8 +6,10 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace HealthCare.Repositories 
 {
-    public interface INotificationRepository: IRepository<Notification> 
+    public interface INotificationRepository: IRepository<Notification>
     {
+        public Notification Post(Notification notification);
+        public Notification Update(Notification notification);
     }
     public class NotificationRepository : INotificationRepository 
     {

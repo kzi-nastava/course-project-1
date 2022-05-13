@@ -9,10 +9,12 @@ namespace HealthCare.Domain.Services;
 public class NotificationService : INotificationService
 {
     private INotificationRepository _notificationRepository;
+    private ICredentialsRepository _credentialsRepository;
 
-    public NotificationService(INotificationRepository notificationRepository)
+    public NotificationService(INotificationRepository notificationRepository, ICredentialsRepository credentialsRepository)
     {
         _notificationRepository = notificationRepository;
+        _credentialsRepository = credentialsRepository;
     }
 
     public async Task<IEnumerable<NotificationDomainModel>> GetAll()
@@ -61,4 +63,25 @@ public class NotificationService : INotificationService
 
         return notification;
     }
+
+    public async Task<NotificationDomainModel> Send(SendNotificationDTO dto)
+    {
+        Credentials credentials;
+        if (dto.IsPatient)
+            credentials = await _credentialsRepository.GetCredentialsByPatientId(dto.PersonId);
+        else
+            credentials = await _credentialsRepository.GetCredentialsByDoctorId(dto.PersonId);
+
+        NotificationDomainModel notificationModel = new NotificationDomainModel
+        {
+            Content = dto.Content.Value,
+            Title = dto.Content.Key,
+            CredentialsId = credentials.Id,
+            IsSeen = false
+        };
+        _ = _notificationRepository.Post(ParseFromModel(notificationModel));
+        _notificationRepository.Save();
+        return notificationModel;
+    }
+
 }

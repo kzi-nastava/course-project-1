@@ -1,3 +1,4 @@
+using HealthCare.Data.Entities;
 using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
@@ -30,6 +31,14 @@ namespace HealthCareAPI.Controllers
             {
                 return NotFound(exception.Message);
             }
+        }
+
+        [HttpPut]
+        [Route("send")]
+        public async Task<ActionResult<NotificationDomainModel>> Send(SendNotificationDTO dto)
+        {
+            NotificationDomainModel notification = await _notificationService.Send(dto);
+            return Ok(notification);
         }
     }
 }

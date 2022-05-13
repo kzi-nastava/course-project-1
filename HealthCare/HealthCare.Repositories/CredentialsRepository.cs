@@ -17,6 +17,7 @@ namespace HealthCare.Repositories
         public Task<Credentials> GetCredentialsById(decimal id);
         public Task<Credentials> GetCredentialsByPatientId(decimal id);
         public Credentials Update(Credentials credentials);
+        public Task<Credentials> GetCredentialsByDoctorId(decimal id);
     }
     public class CredentialsRepository : ICredentialsRepository
     {
@@ -40,6 +41,9 @@ namespace HealthCare.Repositories
 
         public async Task<Credentials> GetCredentialsByPatientId(decimal id) {
             return await _healthCareContext.Credentials.FirstAsync(x => x.PatientId == id);
+        }
+        public async Task<Credentials> GetCredentialsByDoctorId(decimal id) {
+            return await _healthCareContext.Credentials.FirstAsync(x => x.DoctorId == id);
         }
         public Credentials Post(Credentials credentials) {
             EntityEntry<Credentials> result = _healthCareContext.Add(credentials);

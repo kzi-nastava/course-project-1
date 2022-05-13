@@ -6,6 +6,7 @@ namespace HealthCare.Data.Entities;
 public class Notification
 {
     [Column("id")] 
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public decimal Id { get; set; }
     
     [Column("description")] 
