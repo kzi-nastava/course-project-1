@@ -1,5 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
-using HealthCare.Domain.DataTransferObjects;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -42,46 +42,57 @@ namespace HealthCareAPI.Controllers
         [Route("patientId={id}")]
         public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForPatient(decimal id) 
         {
-            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatient(id);
-            if (examinations == null) {
-                examinations = new List<ExaminationDomainModel>();
+            try
+            {
+                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatient(id);
+                return Ok(examinations);
             }
-            return Ok(examinations);
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+
         }
 
-        // https://localhost:7195/api/examination/patientId=___
+        // https://localhost:7195/api/examination/sort/
         [HttpGet]
-        [Route("patientId={id}/sortParam={sortParam}")]
-        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForPatientSorted(decimal id, string sortParam)
+        [Route("sort")]
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForPatientSorted([FromBody] SortExaminationDTO dto)
         {
-            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatientSorted(id, sortParam, _doctorService);
-            if (examinations == null)
+            try
             {
-                examinations = new List<ExaminationDomainModel>();
+                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatientSorted(dto, _doctorService);
+                return Ok(examinations);
             }
-            return Ok(examinations);
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
         [HttpGet]
         [Route("doctorId={id}")]
         public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetAllForDoctor(decimal id)
         {
-            IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForDoctor(id);
-            if (examinations == null)
+            try
             {
-                examinations = new List<ExaminationDomainModel>();
+                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForDoctor(id);
+                return Ok(examinations);
             }
-            return Ok(examinations);
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
         // https://localhost:7195/api/examination/delete
         [HttpPut]
         [Route("delete")]
-        public async Task<ActionResult<ExaminationDomainModel>> DeleteExamination([FromBody] ExaminationDomainModel examinationModel, bool isPatient) 
+        public async Task<ActionResult<ExaminationDomainModel>> DeleteExamination([FromBody] DeleteExaminationDTO dto) 
         {
             try
             {
-                ExaminationDomainModel deletedExaminationModel = await _examinationService.Delete(examinationModel, isPatient);
+                ExaminationDomainModel deletedExaminationModel = await _examinationService.Delete(dto);
                 return Ok(deletedExaminationModel);
             }
             catch (Exception exception)
@@ -92,11 +103,11 @@ namespace HealthCareAPI.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<ExaminationDomainModel>> CreateExamination([FromBody] ExaminationDomainModel examinationModel, bool isPatient) 
+        public async Task<ActionResult<ExaminationDomainModel>> CreateExamination([FromBody] CUExaminationDTO dto) 
         {
             try
             {
-                ExaminationDomainModel createdExaminationModel = await _examinationService.Create(examinationModel, isPatient);
+                ExaminationDomainModel createdExaminationModel = await _examinationService.Create(dto);
                 return Ok(createdExaminationModel);
             }
             catch(Exception exception)
@@ -107,11 +118,11 @@ namespace HealthCareAPI.Controllers
 
         [HttpPut]
         [Route("update")]
-        public async Task<ActionResult<ExaminationDomainModel>> UpdateExamination([FromBody] ExaminationDomainModel examinationModel, bool isPatient) 
+        public async Task<ActionResult<CUExaminationDTO>> UpdateExamination([FromBody] CUExaminationDTO dto) 
         {
             try
             {
-                ExaminationDomainModel updatedExaminationModel = await _examinationService.Update(examinationModel, isPatient);
+                ExaminationDomainModel updatedExaminationModel = await _examinationService.Update(dto);
                 return Ok(updatedExaminationModel);
             }
             catch (Exception exception)
@@ -123,11 +134,11 @@ namespace HealthCareAPI.Controllers
 
         [HttpPost]
         [Route("recommend")]
-        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> RecommendExaminations([FromBody] ParamsForRecommendingFreeExaminationsDTO paramsDTO)
+        public async Task<ActionResult<IEnumerable<CUExaminationDTO>>> RecommendExaminations([FromBody] ParamsForRecommendingFreeExaminationsDTO paramsDTO)
         {
             try
             {
-                IEnumerable<ExaminationDomainModel> recommendedExaminations = await _examinationService.GetRecommendedExaminations(paramsDTO, _doctorService);
+                IEnumerable<CUExaminationDTO> recommendedExaminations = await _examinationService.GetRecommendedExaminations(paramsDTO, _doctorService);
                 return Ok(recommendedExaminations);
             }
             catch (Exception exception)
@@ -140,11 +151,11 @@ namespace HealthCareAPI.Controllers
         // https://localhost:7195/api/examination/search
         [HttpGet]
         [Route("search/patientId={id}/substring={substring}")]
-        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetByName(decimal id, string substring)
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> GetByName(SearchByNameDTO dto)
         {
             try
             {
-                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.SearchByAnamnesis(id, substring);
+                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.SearchByAnamnesis(dto);
                 return Ok(examinations);
 
             }
@@ -155,11 +166,11 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpPut]
-        [Route("urgent/{patientId}/{specializationId}")]
-        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> CreateUrgentExamination(decimal patientId, decimal specializationId)
+        [Route("urgent")]
+        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> CreateUrgentExamination(CreateUrgentExaminationDTO dto)
         {
             List<ExaminationDomainModel> operationModels =
-                (List<ExaminationDomainModel>) await _examinationService.CreateUrgent(patientId, specializationId, _doctorService, _patientService);
+                (List<ExaminationDomainModel>) await _examinationService.CreateUrgent(dto, _doctorService, _patientService);
             if (operationModels.Count == 0) return Ok();
             return operationModels;
         }

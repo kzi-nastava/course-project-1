@@ -1,3 +1,4 @@
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,6 @@ namespace HealthCare.Domain.Interfaces
 {
     public interface IAppointmentService : IService<AppointmentDomainModel>
     { 
-        public Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(decimal id, DateTime date);
+        public Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(DoctorsScheduleDTO dto);
     }
 }

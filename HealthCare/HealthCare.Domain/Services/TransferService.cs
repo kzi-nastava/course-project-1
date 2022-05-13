@@ -30,7 +30,7 @@ public class TransferService : ITransferService
         TransferDomainModel transferModel;
         foreach (Transfer item in transfers)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -72,10 +72,10 @@ public class TransferService : ITransferService
         
         _transferRepository.Post(transfer);
         _inventoryRepository.Save();
-        return parseToModel(transfer);
+        return ParseToModel(transfer);
     }
 
-    private TransferDomainModel parseToModel(Transfer transfer)
+    public static TransferDomainModel ParseToModel(Transfer transfer)
     {
         TransferDomainModel transferModel = new TransferDomainModel
         {
@@ -85,28 +85,34 @@ public class TransferService : ITransferService
             TransferTime = transfer.TransferTime,
             Amount = transfer.Amount,
             EquipmentId = transfer.EquipmentId,
-            Executed = transfer.Executed
+            Executed = transfer.Executed,
+            IsDeleted = transfer.IsDeleted
         };
+        
         if (transfer.Equipment != null)
-        {
-            transferModel.Equipment = new EquipmentDomainModel
-            {
-                Id = transfer.Equipment.Id,
-                EquipmentTypeId = transfer.Equipment.equipmentTypeId,
-                IsDeleted = transfer.Equipment.IsDeleted,
-                Name = transfer.Equipment.Name
-            };
-            if (transfer.Equipment.EquipmentType != null)
-            {
-                transferModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
-                {
-                    Id = transfer.Equipment.EquipmentType.Id,
-                    Name = transfer.Equipment.EquipmentType.Name,
-                    IsDeleted = transfer.Equipment.EquipmentType.IsDeleted
-                };
-            }
-        }
+            transferModel.Equipment = EquipmentService.ParseToModel(transfer.Equipment);
+        
         return transferModel;
+    }
+    
+    public static Transfer ParseFromModel(TransferDomainModel transferModel)
+    {
+        Transfer transfer = new Transfer
+        {
+            Id = transferModel.Id,
+            RoomIdOut = transferModel.RoomIdOut,
+            RoomIdIn = transferModel.RoomIdIn,
+            TransferTime = transferModel.TransferTime,
+            Amount = transferModel.Amount,
+            EquipmentId = transferModel.EquipmentId,
+            Executed = transferModel.Executed,
+            IsDeleted = transferModel.IsDeleted
+        };
+        
+        if (transferModel.Equipment != null)
+            transfer.Equipment = EquipmentService.ParseFromModel(transferModel.Equipment);
+        
+        return transfer;
     }
 
     public async Task<IEnumerable<TransferDomainModel>> DoTransfers()
@@ -130,7 +136,7 @@ public class TransferService : ITransferService
                 _inventoryRepository.Update(roomOut);
                 _transferRepository.Update(transfer);
                 _transferRepository.Save();
-                transfersExecuted.Add(parseToModel(transfer));
+                transfersExecuted.Add(ParseToModel(transfer));
             }
         }
         return transfersExecuted;

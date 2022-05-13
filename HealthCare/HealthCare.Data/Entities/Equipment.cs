@@ -18,7 +18,7 @@ namespace HealthCare.Data.Entities
         public string Name { get; set; }
 
         [Column("Equipment_type_id")]
-        public decimal equipmentTypeId { get; set; }
+        public decimal EquipmentTypeId { get; set; }
 
         [Column("deleted")]
         public bool IsDeleted { get; set; }

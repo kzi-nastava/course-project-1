@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -53,11 +54,11 @@ namespace HealthCareAPI.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<OperationDomainModel>> Create([FromBody] OperationDomainModel operationModel) 
+        public async Task<ActionResult<OperationDomainModel>> Create([FromBody] CUOperationDTO dto) 
         {
             try
             {
-                OperationDomainModel createdOperationModel = await _operationService.Create(operationModel);
+                OperationDomainModel createdOperationModel = await _operationService.Create(dto);
                 return Ok(createdOperationModel);
             }
             catch (Exception exception)
@@ -69,11 +70,11 @@ namespace HealthCareAPI.Controllers
 
         [HttpPut]
         [Route("update")]
-        public async Task<ActionResult<OperationDomainModel>>  Update([FromBody] OperationDomainModel operationModel) 
+        public async Task<ActionResult<OperationDomainModel>>  Update([FromBody] CUOperationDTO dto) 
         {
             try
             {
-                OperationDomainModel updatedOperationModel = await _operationService.Update(operationModel);
+                OperationDomainModel updatedOperationModel = await _operationService.Update(dto);
                 return Ok(updatedOperationModel);
             }
             catch (Exception exception)
@@ -83,12 +84,12 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpPut]
-        [Route("delete/operationId={id}")]
-        public async Task<ActionResult<OperationDomainModel>> DeleteOperation([FromBody] OperationDomainModel operationModel)
+        [Route("delete/{id}")]
+        public async Task<ActionResult<OperationDomainModel>> DeleteOperation(decimal id)
         {
             try
             {
-                OperationDomainModel deletedOperationModel = await _operationService.Delete(operationModel);
+                OperationDomainModel deletedOperationModel = await _operationService.Delete(id);
                 return Ok(deletedOperationModel);
             }
             catch (Exception exception)

@@ -1,4 +1,5 @@
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
 
@@ -6,9 +7,9 @@ namespace HealthCare.Domain.Interfaces;
 
 public interface IPatientService : IService<PatientDomainModel>
 {
-    public Task<PatientDomainModel> Create(PatientDomainModel patientModel);
-    public Task<PatientDomainModel> Update(PatientDomainModel patientModel);
-    public Task<PatientDomainModel> Delete(PatientDomainModel patientModel);
+    public Task<PatientDomainModel> Create(CUPatientDTO dto);
+    public Task<PatientDomainModel> Update(CUPatientDTO dto);
+    public Task<PatientDomainModel> Delete(decimal id);
     public Task<PatientDomainModel> Block(decimal id);
     public Task<PatientDomainModel> Unblock(decimal id);
     public Task<IEnumerable<PatientDomainModel>> GetBlockedPatients();

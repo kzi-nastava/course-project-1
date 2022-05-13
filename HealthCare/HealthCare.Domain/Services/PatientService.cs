@@ -1,5 +1,6 @@
 using System.Collections;
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -12,132 +13,54 @@ public class PatientService : IPatientService
     private IPatientRepository _patientRepository;
     private ICredentialsRepository _credentialsRepository;
     private IMedicalRecordRepository _medicalRecordRepository;
+    private IUserRoleRepository _userRoleRepository;
 
     public PatientService(IPatientRepository patientRepository, 
                           ICredentialsRepository credentialsRepository, 
-                          IMedicalRecordRepository medicalRecordRepository) 
+                          IMedicalRecordRepository medicalRecordRepository,
+                          IUserRoleRepository userRoleRepository) 
     {
         _patientRepository = patientRepository;
         _credentialsRepository = credentialsRepository;
         _medicalRecordRepository = medicalRecordRepository;
+        _userRoleRepository = userRoleRepository;
     }
 
-    private PatientDomainModel parseToModel(Patient item) 
+    public static PatientDomainModel ParseToModel(Patient patient) 
     {
         PatientDomainModel patientModel = new PatientDomainModel 
         {
-            IsDeleted = item.IsDeleted,
-            BirthDate = item.BirthDate,
-            BlockedBy = item.BlockedBy,
-            BlockingCounter = item.BlockingCounter,
-            Email = item.Email,
-            Id = item.Id,
-            Name = item.Name,
-            Surname = item.Surname,
-            Phone = item.Phone
+            IsDeleted = patient.IsDeleted,
+            BirthDate = patient.BirthDate,
+            BlockedBy = patient.BlockedBy,
+            BlockingCounter = patient.BlockingCounter,
+            Email = patient.Email,
+            Id = patient.Id,
+            Name = patient.Name,
+            Surname = patient.Surname,
+            Phone = patient.Phone
         };
-        if (item.Credentials != null) 
-        {
-            patientModel.Credentials = new CredentialsDomainModel 
-            {
-                Id = item.Credentials.Id,
-                Username = item.Credentials.Username,
-                Password = item.Credentials.Password,
-                DoctorId = item.Credentials.DoctorId,
-                SecretaryId = item.Credentials.SecretaryId,
-                ManagerId = item.Credentials.ManagerId,
-                PatientId = item.Credentials.PatientId,
-                UserRoleId = item.Credentials.UserRoleId
-
-            };
-            if (item.Credentials.UserRole != null) 
-            {
-                patientModel.Credentials.UserRole = new UserRoleDomainModel 
-                {
-                    Id = item.Credentials.UserRole.Id,
-                    RoleName = item.Credentials.UserRole.RoleName,
-                    IsDeleted = item.Credentials.UserRole.IsDeleted
-                };
-            }
-        }
-        if (item.MedicalRecord != null) 
-        {
-            MedicalRecordDomainModel medicalRecordModel = new MedicalRecordDomainModel 
-            {
-                IsDeleted = item.MedicalRecord.IsDeleted,
-                BedriddenDiseases = item.MedicalRecord.BedriddenDiseases,
-                Height = item.MedicalRecord.Height,
-                PatientId = item.MedicalRecord.PatientId,
-                Weight = item.MedicalRecord.Weight
-            };
-
-            medicalRecordModel.ReferralLetters = new List<ReferralLetterDomainModel>();
-            if (item.MedicalRecord.ReferralLetters != null)
-            {
-                foreach (ReferralLetter referral in item.MedicalRecord.ReferralLetters)
-                {
-                    ReferralLetterDomainModel referralLetterModel = new ReferralLetterDomainModel
-                    {
-                        Id = referral.Id,
-                        FromDoctorId = referral.FromDoctorId,
-                        ToDoctorId = referral.ToDoctorId,
-                        PatientId = referral.PatientId
-                    };
-                    medicalRecordModel.ReferralLetters.Add(referralLetterModel);
-                }
-
-            }
-
-            patientModel.MedicalRecord = medicalRecordModel;
-        }
+        
+        if (patient.Credentials != null)
+            patientModel.Credentials = CredentialsService.ParseToModel(patient.Credentials);
+            
+        if (patient.MedicalRecord != null) 
+            patientModel.MedicalRecord = MedicalRecordService.ParseToModel(patient.MedicalRecord);
+        
         patientModel.Examinations = new List<ExaminationDomainModel>();
         patientModel.Operations = new List<OperationDomainModel>();
-        if (item.Examinations != null) 
-        {
-            foreach (Examination examination in item.Examinations) 
-            {
-                ExaminationDomainModel examinationModel = new ExaminationDomainModel 
-                {
-                    DoctorId = examination.DoctorId,
-                    RoomId = examination.RoomId,
-                    PatientId = examination.PatientId,
-                    StartTime = examination.StartTime,
-                    IsDeleted = examination.IsDeleted
-                };
-                if (examination.Anamnesis != null) 
-                {
-                    AnamnesisDomainModel anamnesisModel = new AnamnesisDomainModel 
-                    {
-                        Id = examination.Anamnesis.Id,
-                        Description = examination.Anamnesis.Description,
-                        ExaminationId = examination.Anamnesis.ExaminationId,
-                        IsDeleted = examination.Anamnesis.IsDeleted
-                    };
-                    examinationModel.Anamnesis = anamnesisModel;
-                }
-                patientModel.Examinations.Add(examinationModel);
-            }
-        }
-        if (item.Operations != null) 
-        {
-            foreach (Operation operation in item.Operations) 
-            {
-                OperationDomainModel operationModel = new OperationDomainModel 
-                {
-                    DoctorId = operation.DoctorId,
-                    RoomId = operation.RoomId,
-                    PatientId = operation.PatientId,
-                    Duration = operation.Duration,
-                    IsDeleted = operation.IsDeleted,
-                    IsEmergency = operation.IsEmergency
-                };
-                patientModel.Operations.Add(operationModel);
-            }
-        }
+        if (patient.Examinations != null) 
+            foreach (Examination examination in patient.Examinations) 
+                patientModel.Examinations.Add(ExaminationService.ParseToModel(examination));
+        
+        if (patient.Operations != null) 
+            foreach (Operation operation in patient.Operations) 
+                patientModel.Operations.Add(OperationService.ParseToModel(operation));
+        
         return patientModel;
     }
 
-    private Patient parseFromModel(PatientDomainModel patientModel) 
+    public static Patient ParseFromModel(PatientDomainModel patientModel) 
     {
         Patient patient = new Patient 
         {
@@ -151,88 +74,24 @@ public class PatientService : IPatientService
             Surname = patientModel.Surname,
             Phone = patientModel.Phone
         };
-        if (patientModel.Credentials != null) 
-        {
-            patient.Credentials = new Credentials 
-            {
-                Id = patientModel.Credentials.Id,
-                Username = patientModel.Credentials.Username,
-                Password = patientModel.Credentials.Password,
-                DoctorId = patientModel.Credentials.DoctorId,
-                SecretaryId = patientModel.Credentials.SecretaryId,
-                ManagerId = patientModel.Credentials.ManagerId,
-                PatientId = patientModel.Credentials.PatientId,
-                UserRoleId = patientModel.Credentials.UserRoleId
+        if (patientModel.Credentials != null)
+            patient.Credentials = CredentialsService.ParseFromModel(patientModel.Credentials);
 
-            };
-            if (patientModel.Credentials.UserRole != null) 
-            {
-                patient.Credentials.UserRole = new UserRole 
-                {
-                    Id = patientModel.Credentials.UserRole.Id,
-                    RoleName = patientModel.Credentials.UserRole.RoleName,
-                    IsDeleted = patientModel.Credentials.UserRole.IsDeleted
-                };
-            }
-        }
-        if (patientModel.MedicalRecord != null) 
-        {
-            patient.MedicalRecord = new MedicalRecord 
-            {
-                IsDeleted = patientModel.MedicalRecord.IsDeleted,
-                BedriddenDiseases = patientModel.MedicalRecord.BedriddenDiseases,
-                Height = patientModel.MedicalRecord.Height,
-                PatientId = patientModel.MedicalRecord.PatientId,
-                Weight = patientModel.MedicalRecord.Weight
-            };
+        if (patientModel.MedicalRecord != null)
+            patient.MedicalRecord = MedicalRecordService.ParseFromModel(patientModel.MedicalRecord);
 
-        }
         patient.Examinations = new List<Examination>();
         patient.Operations = new List<Operation>();
-        if (patientModel.Examinations != null) {
+        if (patientModel.Examinations != null) 
             foreach (ExaminationDomainModel examinationModel in patientModel.Examinations) 
-            {
-                Examination examination = new Examination 
-                {
-                    DoctorId = examinationModel.DoctorId,
-                    RoomId = examinationModel.RoomId,
-                    PatientId = examinationModel.PatientId,
-                    StartTime = examinationModel.StartTime,
-                    IsDeleted = examinationModel.IsDeleted
-                };
-                if (examinationModel.Anamnesis != null) 
-                {
-                    Anamnesis anamnesis = new Anamnesis 
-                    {
-                        Id = examinationModel.Anamnesis.Id,
-                        Description = examinationModel.Anamnesis.Description,
-                        ExaminationId = examinationModel.Anamnesis.ExaminationId,
-                        IsDeleted = examinationModel.Anamnesis.IsDeleted
-                    };
-                    examination.Anamnesis = anamnesis;
-                }
-                patient.Examinations.Add(examination);
-            }
-        }
+                patient.Examinations.Add(ExaminationService.ParseFromModel(examinationModel));
+            
         if (patientModel.Operations != null) 
-        {
             foreach (OperationDomainModel operationModel in patientModel.Operations) 
-            {
-                Operation operation = new Operation 
-                {
-                    DoctorId = operationModel.DoctorId,
-                    RoomId = operationModel.RoomId,
-                    PatientId = operationModel.PatientId,
-                    Duration = operationModel.Duration,
-                    IsDeleted = operationModel.IsDeleted,
-                    IsEmergency = operationModel.IsEmergency
-                };
-                patient.Operations.Add(operation);
-            }
-        }
+                patient.Operations.Add(OperationService.ParseFromModel(operationModel));
+        
         return patient;
     }
-
 
 
     // Async awaits info from database
@@ -246,7 +105,7 @@ public class PatientService : IPatientService
         List<PatientDomainModel> results = new List<PatientDomainModel>();
         foreach (Patient item in data)
         {
-            results.Add(parseToModel(item));
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -265,111 +124,159 @@ public class PatientService : IPatientService
 
     public async Task<PatientDomainModel> Block(decimal patientId)
     {
+        // Secretary block
         Patient patient = await _patientRepository.GetPatientById(patientId);
-        // TODO: Fix this with a cookie in the future
+        if (patient.IsDeleted || !patient.BlockedBy.Equals("")) throw new DataIsNullException();
         patient.BlockedBy = "Secretary";
         patient.BlockingCounter++;
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
-        return parseToModel(patient);
+        return ParseToModel(patient);
     }
 
     public async Task<PatientDomainModel> Unblock(decimal patientId)
     {
+        // Secretary Unblock
         Patient patient = await _patientRepository.GetPatientById(patientId);
-        // TODO: Fix this with a cookie in the future
+        if (patient.IsDeleted) throw new DataIsNullException();
         patient.BlockedBy = "";
         _ = _patientRepository.Update(patient);
         _patientRepository.Save();
-
-        return parseToModel(patient);
+        return ParseToModel(patient);
     }
 
-    public async Task<PatientDomainModel> Create(PatientDomainModel patientModel)
+    public Patient CreateDefaultPatient(CUPatientDTO dto)
     {
-        Patient newPatient = parseFromModel(patientModel);
+        Patient patient = new Patient
+        {
+            IsDeleted = false,
+            BirthDate = dto.BirthDate,
+            Email = dto.Email,
+            Name = dto.Name,
+            Surname = dto.Surname,
+            Phone = dto.Phone
+        };
+        return patient;
+    }
 
+    public MedicalRecord CreateDefaultMedicalRecord(CUPatientDTO dto, decimal patientId)
+    {
+        MedicalRecord medicalRecord = new MedicalRecord
+        {
+            Height = dto.MedicalRecordDTO.Height,
+            Weight = dto.MedicalRecordDTO.Weight,
+            BedriddenDiseases = dto.MedicalRecordDTO.BedriddenDiseases,
+            IsDeleted = dto.MedicalRecordDTO.IsDeleted,
+            PatientId = patientId
+        };
+        return medicalRecord;
+    }
+
+    public Credentials CreateDefaultCredentials(CUPatientDTO dto, decimal patientId, decimal userRoleId)
+    {
+        Credentials credentials = new Credentials
+        {
+            Username = dto.LoginDTO.Username,
+            Password = dto.LoginDTO.Password,
+            DoctorId = null,
+            SecretaryId = null,
+            ManagerId = null,
+            PatientId = patientId,
+            UserRoleId = userRoleId,
+            IsDeleted = false
+        };
+        return credentials;
+    }
+
+    public async Task<PatientDomainModel> Create(CUPatientDTO dto)
+    {
+        Patient newPatient = CreateDefaultPatient(dto);
         Patient insertedPatient = _patientRepository.Post(newPatient);
-        _patientRepository.Save();
-
-        MedicalRecord medicalRecord = new MedicalRecord();
-        medicalRecord.Height = patientModel.MedicalRecord.Height;
-        medicalRecord.Weight = patientModel.MedicalRecord.Weight;
-        medicalRecord.BedriddenDiseases = patientModel.MedicalRecord.BedriddenDiseases;
-        medicalRecord.IsDeleted = false;
-        medicalRecord.PatientId = insertedPatient.Id;
+        MedicalRecord medicalRecord = CreateDefaultMedicalRecord(dto, insertedPatient.Id);
+        UserRole userRole = await _userRoleRepository.GetByRoleName("patient");
+        Credentials credentials = CreateDefaultCredentials(dto, insertedPatient.Id, userRole.Id);
 
         _ = _medicalRecordRepository.Post(medicalRecord);
+        _ = _credentialsRepository.Post(credentials);
         _medicalRecordRepository.Save();
-
-        Credentials newCredentials = new Credentials();
-        newCredentials.Username = patientModel.Credentials.Username;
-        newCredentials.Password = patientModel.Credentials.Password;
-        newCredentials.DoctorId = null;
-        newCredentials.SecretaryId = null;
-        newCredentials.ManagerId = null;
-        newCredentials.PatientId = insertedPatient.Id;
-        newCredentials.UserRoleId = 726243269;
-        newCredentials.isDeleted = false;
-        newCredentials.Id = 0;
-
-        _ = _credentialsRepository.Post(newCredentials);
         _credentialsRepository.Save();
-
-        return patientModel;
-    }
-
-    public async Task<PatientDomainModel> Update(PatientDomainModel patientModel)
-    {
-
-        Patient patient = await _patientRepository.GetPatientById(patientModel.Id);
-        patient.Name = patientModel.Name;
-        patient.Surname = patientModel.Surname;
-        patient.Email = patientModel.Email;
-        patient.BirthDate = patientModel.BirthDate;
-        patient.Phone = patientModel.Phone;
-        patient.BlockedBy = patientModel.BlockedBy;
-        patient.BlockingCounter = patientModel.BlockingCounter;
-        patient.IsDeleted = patientModel.IsDeleted;
-        _ = _patientRepository.Update(patient);
-        _patientRepository.Save();
-
-        MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(patient.Id);
-        medicalRecord.Height = patientModel.MedicalRecord.Height;
-        medicalRecord.Weight = patientModel.MedicalRecord.Weight;
-        medicalRecord.BedriddenDiseases = patientModel.MedicalRecord.BedriddenDiseases;
-        medicalRecord.IsDeleted = patientModel.MedicalRecord.IsDeleted;
-        _ = _medicalRecordRepository.Update(medicalRecord);
-        _medicalRecordRepository.Save();
-
-
-        Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(patient.Id);
-        credentials.Username = patientModel.Credentials.Username;
-        credentials.Password = patientModel.Credentials.Password;
-        _ = _credentialsRepository.Update(credentials);
-        _credentialsRepository.Save();
-        return parseToModel(patient);
-    }
-
-
-    public async Task<PatientDomainModel> Delete(PatientDomainModel patientModel)
-    {
-        Patient patient = await _patientRepository.GetPatientById(patientModel.Id);
-        patient.IsDeleted = true;
-        patientModel.IsDeleted = true;
-        _ = _patientRepository.Update(patient);
         _patientRepository.Save();
         
-        MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(patientModel.Id);
+        return ParseToModel(insertedPatient);
+    }
+
+    public async Task<Patient> UpdatePatientInfo(CUPatientDTO dto)
+    {
+        Patient patient = await _patientRepository.GetPatientById(dto.Id);
+        patient.Name = dto.Name;
+        patient.Surname = dto.Surname;
+        patient.Email = dto.Email;
+        patient.BirthDate = dto.BirthDate;
+        patient.Phone = dto.Phone;
+        _ = _patientRepository.Update(patient);
+        _patientRepository.Save();
+        return patient;
+    }
+
+    public async void UpdateMedicalRecordInfo(CUPatientDTO dto, decimal patientId)
+    {
+        MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(patientId);
+        medicalRecord.Height = dto.MedicalRecordDTO.Height;
+        medicalRecord.Weight = dto.MedicalRecordDTO.Weight;
+        medicalRecord.BedriddenDiseases = dto.MedicalRecordDTO.BedriddenDiseases;
+        _ = _medicalRecordRepository.Update(medicalRecord);
+        _medicalRecordRepository.Save();
+    }
+
+    public async void UpdateCredentialsInfo(CUPatientDTO dto, decimal patientId)
+    {
+        Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(patientId);
+        credentials.Username = dto.LoginDTO.Username;
+        credentials.Password = dto.LoginDTO.Password;
+        _ = _credentialsRepository.Update(credentials);
+        _credentialsRepository.Save();
+    }
+
+    public async Task<PatientDomainModel> Update(CUPatientDTO dto)
+    {
+        Patient patient = await UpdatePatientInfo(dto);
+        UpdateMedicalRecordInfo(dto, patient.Id);
+        UpdateCredentialsInfo(dto, patient.Id);
+        return ParseToModel(patient);
+    }
+
+    public async Task<Patient> DeletePatientInfo(decimal patientId)
+    {
+        Patient patient = await _patientRepository.GetPatientById(patientId);
+        patient.IsDeleted = true;
+        _ = _patientRepository.Update(patient);
+        _patientRepository.Save();
+        return patient;
+    }
+    public async void DeleteMedicalRecordInfo(decimal patientId)
+    {
+        MedicalRecord medicalRecord = await _medicalRecordRepository.GetByPatientId(patientId);
         medicalRecord.IsDeleted = true;
         _ = _medicalRecordRepository.Update(medicalRecord);
         _medicalRecordRepository.Save();
-        Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(patientModel.Id);
-        credentials.isDeleted = true;
+    }
+
+    public async void DeleteCredentialsInfo(decimal patientId)
+    {
+        Credentials credentials = await _credentialsRepository.GetCredentialsByPatientId(patientId);
+        credentials.IsDeleted = true;
         _ = _credentialsRepository.Update(credentials);
         _credentialsRepository.Save();
+    }
+    
+
+    public async Task<PatientDomainModel> Delete(decimal patientId)
+    {
+        Patient patient = await DeletePatientInfo(patientId);
+        DeleteMedicalRecordInfo(patientId);
+        DeleteCredentialsInfo(patientId);
         
-        return patientModel;
+        return ParseToModel(patient);
     }
 
     public async Task<IEnumerable<PatientDomainModel>> GetBlockedPatients()
@@ -377,12 +284,8 @@ public class PatientService : IPatientService
         IEnumerable<PatientDomainModel> patients = await GetAll();
         List<PatientDomainModel> blockedPatients = new List<PatientDomainModel>();
         foreach (PatientDomainModel patientModel in patients)
-        {
             if (patientModel.BlockedBy != null && !patientModel.BlockedBy.Equals(""))
-            {
                 blockedPatients.Add(patientModel);
-            }
-        }
 
         return blockedPatients;
     }
@@ -394,36 +297,7 @@ public class PatientService : IPatientService
         if (patient == null)
             throw new DataIsNullException();
 
-        //PatientDomainModel patientModel = new PatientDomainModel
-        //{
-        //    IsDeleted = patient.IsDeleted,
-        //    BirthDate = patient.BirthDate,
-        //    BlockedBy = patient.BlockedBy,
-        //    BlockingCounter = patient.BlockingCounter,
-        //    Email = patient.Email,
-        //    Id = patient.Id,
-        //    Name = patient.Name,
-        //    Surname = patient.Surname,
-        //    Phone = patient.Phone
-        //};
-
-
-        //if (patient.MedicalRecord != null)
-        //{
-        //    patientModel.MedicalRecord = new MedicalRecordDomainModel
-        //    {
-        //        IsDeleted = patient.MedicalRecord.IsDeleted,
-        //        Allergies = patient.MedicalRecord.Allergies,
-        //        BedriddenDiseases = patient.MedicalRecord.BedriddenDiseases,
-        //        Height = patient.MedicalRecord.Height,
-        //        PatientId = patient.MedicalRecord.PatientId,
-        //        Weight = patient.MedicalRecord.Weight
-        //    };
-        //}
-
-        //return patientModel;
-
-        return parseToModel(patient);
+        return ParseToModel(patient);
     }
 
     public async Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetSchedule(decimal id)

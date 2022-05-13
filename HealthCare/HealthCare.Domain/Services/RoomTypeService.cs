@@ -24,14 +24,7 @@ public class RoomTypeService : IRoomTypeService
         RoomTypeDomainModel roomTypeModel;
         foreach (RoomType item in roomTypes)
         {
-            roomTypeModel = new RoomTypeDomainModel
-            {
-                IsDeleted = item.IsDeleted,
-                Id = item.Id,
-                RoleName = item.RoleName,
-                Purpose = item.Purpose,
-            };
-            results.Add(roomTypeModel);
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -45,5 +38,30 @@ public class RoomTypeService : IRoomTypeService
             if (!item.IsDeleted) result.Add(item);
         }
         return result;
-    } 
+    }
+
+    public static RoomTypeDomainModel ParseToModel(RoomType roomType)
+    {
+        RoomTypeDomainModel roomTypeModel = new RoomTypeDomainModel
+        {
+            IsDeleted = roomType.IsDeleted,
+            Id = roomType.Id,
+            RoleName = roomType.RoleName,
+            Purpose = roomType.Purpose
+        };
+        return roomTypeModel;
+    }
+    
+    public static RoomType ParseFromModel(RoomTypeDomainModel roomTypeModel)
+    {
+        RoomType roomType = new RoomType
+        {
+            IsDeleted = roomTypeModel.IsDeleted,
+            Id = roomTypeModel.Id,
+            RoleName = roomTypeModel.RoleName,
+            Purpose = roomTypeModel.Purpose
+        };
+        
+        return roomType;
+    }
 }

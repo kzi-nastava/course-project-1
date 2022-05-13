@@ -25,7 +25,7 @@ namespace HealthCare.Domain.Services
             _specializationRepository = specializationRepository;
         }
 
-        private ReferralLetterDomainModel parseToModel(ReferralLetter referralLetter)
+        public static ReferralLetterDomainModel ParseToModel(ReferralLetter referralLetter)
         {
             ReferralLetterDomainModel referralLetterModel = new ReferralLetterDomainModel
             {
@@ -37,17 +37,12 @@ namespace HealthCare.Domain.Services
                 State = referralLetter.State
             };
             if (referralLetter.Specialization != null)
-            {
-                referralLetterModel.Specialization = new SpecializationDomainModel
-                {
-                    Id = referralLetter.Specialization.Id,
-                    Name = referralLetter.Specialization.Name
-                };
-            }
+                referralLetterModel.Specialization = SpecializationService.ParseToModel(referralLetter.Specialization); 
+                    
             return referralLetterModel;
         }
 
-        private ReferralLetter parseFromModel(ReferralLetterDomainModel referralLetterModel)
+        public static ReferralLetter ParseFromModel(ReferralLetterDomainModel referralLetterModel)
         {
             ReferralLetter referralLetter = new ReferralLetter
             {
@@ -59,13 +54,8 @@ namespace HealthCare.Domain.Services
                 State = referralLetterModel.State
             };
             if (referralLetterModel.Specialization != null)
-            {
-                referralLetter.Specialization = new Specialization
-                {
-                    Id = referralLetterModel.Specialization.Id,
-                    Name = referralLetterModel.Specialization.Name
-                };
-            }
+                referralLetter.Specialization = SpecializationService.ParseFromModel(referralLetterModel.Specialization); 
+                    
             return referralLetter;
         }
 
@@ -78,17 +68,17 @@ namespace HealthCare.Domain.Services
             List<ReferralLetterDomainModel> results = new List<ReferralLetterDomainModel>();
             foreach (ReferralLetter item in data)
             {
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
             }
 
             return results;
         }
 
-        public async Task<Boolean> TryCreateExamination(ExaminationDomainModel examinationModel, IExaminationService examinationService)
+        public async Task<Boolean> TryCreateExamination(CUExaminationDTO dto, IExaminationService examinationService)
         {
             try
             {
-                ExaminationDomainModel createdExamination = await examinationService.Create(examinationModel, false);
+                await examinationService.Create(dto);
             }
             catch (Exception exception)
             {
@@ -98,67 +88,79 @@ namespace HealthCare.Domain.Services
             return true;
         }
 
-        public async Task<ReferralLetterDomainModel> CreateAppointment(decimal referralId, DateTime time, IExaminationService examinationService)
+        public CUExaminationDTO MakeMockup(decimal patientId, DateTime startTime)
         {
-            ReferralLetter referralLetter = await _referralLetterRepository.GetById(referralId);
-            ReferralLetterDomainModel referralLetterModel = parseToModel(referralLetter);
-            
+            CUExaminationDTO examinationModel = new CUExaminationDTO
+            {
+                PatientId = patientId,
+                StartTime = startTime,
+                IsPatient = false
+            };
+            return examinationModel;
+        }
+
+        public async Task<ReferralLetterDomainModel?> DoctorSpecifiedAppointment(CUExaminationDTO examinationModel, IExaminationService examinationService,
+            ReferralLetterDomainModel referralLetterModel, ReferralLetter referralLetter)
+        {
+            examinationModel.DoctorId = referralLetterModel.ToDoctorId.GetValueOrDefault();
+            Boolean flag = await TryCreateExamination(examinationModel, examinationService);
+            if (flag == false) return null;
+            UpdateReferralLetter(referralLetter);
+            return referralLetterModel;
+        }
+
+        public void UpdateReferralLetter(ReferralLetter referralLetter)
+        {
+            referralLetter.State = "accepted";
+            _ = _referralLetterRepository.Update(referralLetter);
+            _referralLetterRepository.Save();
+        }
+        public async Task<ReferralLetterDomainModel?> DoctorNotSpecifiedAppointment(CUExaminationDTO examinationModel, 
+            IExaminationService examinationService, ReferralLetterDomainModel referralLetterModel, ReferralLetter referralLetter)
+        {
+            IEnumerable<Doctor> allDoctors = await _doctorRepository.GetAll();
+            Boolean created = false;
+            foreach (Doctor doctor in allDoctors)
+            {
+                if (doctor.Id == referralLetterModel.FromDoctorId) continue;
+
+                if (doctor.SpecializationId == referralLetterModel.SpecializationId)
+                {
+                    examinationModel.DoctorId = doctor.Id;
+                    created = await TryCreateExamination(examinationModel, examinationService);
+                    if (created)
+                    {
+                        referralLetter.ToDoctorId = doctor.Id;
+                        UpdateReferralLetter(referralLetter);
+                        break;
+                    }
+                }
+            }
+
+            if (!created) return null;
+            return referralLetterModel;
+        }
+
+        public async Task<ReferralLetterDomainModel> CreateAppointment(CreateAppointmentDTO dto, IExaminationService examinationService)
+        {
+            ReferralLetter referralLetter = await _referralLetterRepository.GetById(dto.ReferralId);
+            ReferralLetterDomainModel referralLetterModel = ParseToModel(referralLetter);
             if (!referralLetterModel.State.Equals("created")) throw new ReferralCannotBeUsedException();
             
-            ExaminationDomainModel examinationModel = new ExaminationDomainModel
-            {
-                IsDeleted = false,
-                IsEmergency = false,
-                PatientId = referralLetterModel.PatientId,
-                StartTime = time
-            };
-            
+            ReferralLetterDomainModel? returnModel;
+            CUExaminationDTO examinationModel = MakeMockup(referralLetterModel.PatientId, dto.StartTime);
             if (referralLetterModel.ToDoctorId != null)
             {
-                examinationModel.DoctorId = referralLetterModel.ToDoctorId.GetValueOrDefault();
-                try
-                {
-                    ExaminationDomainModel createdExamination = await examinationService.Create(examinationModel, false);
-                }
-                catch (Exception exception)
-                {
-                    throw exception;
-                }
-
-                referralLetterModel.State = "accepted";
-                referralLetter.State = "accepted";
-                _ = _referralLetterRepository.Update(referralLetter);
-                _referralLetterRepository.Save();
-                return referralLetterModel;
+                returnModel = await DoctorSpecifiedAppointment(examinationModel, examinationService, referralLetterModel, referralLetter);
+                if (returnModel == null) throw new NoFreeRoomsException();
             }
             else
             {
-                IEnumerable<Doctor> allDoctors = await _doctorRepository.GetAll();
-                Boolean created = false;
-                foreach (Doctor doctor in allDoctors)
-                {
-                    if (doctor.Id == referralLetterModel.FromDoctorId) continue;
-                    
-                    if (doctor.SpecializationId == referralLetterModel.SpecializationId)
-                    {
-                        examinationModel.DoctorId = doctor.Id;
-                        created = await TryCreateExamination(examinationModel, examinationService);
-                        if (created)
-                        {
-                            referralLetterModel.ToDoctorId = doctor.Id;
-                            referralLetterModel.State = "accepted";
-                            referralLetter.ToDoctorId = doctor.Id;
-                            referralLetter.State = "accepted";
-                            _ = _referralLetterRepository.Update(referralLetter);
-                            _referralLetterRepository.Save();
-                            return referralLetterModel;
-                        }
-                    }
-                }
-                if (!created) throw new NoAvailableSpecialistsException();
+                returnModel = await DoctorNotSpecifiedAppointment(examinationModel, examinationService, referralLetterModel, referralLetter);
+                if (returnModel == null) throw new NoAvailableSpecialistsException();
             }
 
-            return referralLetterModel;
+            return returnModel;
         }
 
         public async Task<ReferralLetterDomainModel> Create(ReferralLetterDTO referralDTO)
@@ -182,7 +184,7 @@ namespace HealthCare.Domain.Services
             _referralLetterRepository.Post(newReferral);
             _referralLetterRepository.Save();
 
-            return parseToModel(newReferral);
+            return ParseToModel(newReferral);
         }
     }
 }

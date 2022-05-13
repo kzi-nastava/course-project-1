@@ -13,6 +13,6 @@ namespace HealthCare.Domain.Interfaces
     {
         public Task<ReferralLetterDomainModel> Create(ReferralLetterDTO referralDTO);
 
-        public Task<ReferralLetterDomainModel> CreateAppointment(decimal referralId, DateTime time, IExaminationService examinationService);
+        public Task<ReferralLetterDomainModel> CreateAppointment(CreateAppointmentDTO dto, IExaminationService examinationService);
     }
 }

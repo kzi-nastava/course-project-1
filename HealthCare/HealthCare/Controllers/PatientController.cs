@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.JsonPatch;
@@ -51,20 +52,20 @@ namespace HealthCareAPI.Controllers
         // https://localhost:7195/api/patient/create
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<PatientDomainModel>> CreatePatient([FromBody] PatientDomainModel patientModel)
+        public async Task<ActionResult<PatientDomainModel>> CreatePatient([FromBody] CUPatientDTO dto)
         {
-            PatientDomainModel insertedPatientModel = await _patientService.Create(patientModel);
+            PatientDomainModel insertedPatientModel = await _patientService.Create(dto);
             return Ok(insertedPatientModel);
         }
         
         // https://localhost:7195/api/patient/update
         [HttpPut]
         [Route("update/{id}")]
-        public async Task<ActionResult<PatientDomainModel>> UpdatePatient([FromBody] PatientDomainModel patientModel)
+        public async Task<ActionResult<PatientDomainModel>> UpdatePatient([FromBody] CUPatientDTO dto)
         {
             try
             {
-                PatientDomainModel updatedPatientModel = await _patientService.Update(patientModel);
+                PatientDomainModel updatedPatientModel = await _patientService.Update(dto);
                 return Ok(updatedPatientModel);
             }
             catch (Exception exception)
@@ -76,11 +77,11 @@ namespace HealthCareAPI.Controllers
         // https://localhost:7195/api/patient/delete
         [HttpPut]
         [Route("delete/{id}")]
-        public async Task<ActionResult<PatientDomainModel>> DeletePatient([FromBody] PatientDomainModel patientModel)
+        public async Task<ActionResult<PatientDomainModel>> DeletePatient(decimal id)
         {
             try
             {
-                PatientDomainModel deletedPatientModel = await _patientService.Delete(patientModel);
+                PatientDomainModel deletedPatientModel = await _patientService.Delete(id);
                 return Ok(deletedPatientModel);
             }
             catch (Exception exception)
@@ -94,8 +95,15 @@ namespace HealthCareAPI.Controllers
         [Route("block/{id}")]
         public async Task<ActionResult<PatientDomainModel>> BlockPatient(decimal id)
         {
-            PatientDomainModel blockedPatient = await _patientService.Block(id);
-            return Ok(blockedPatient);
+            try
+            {
+                PatientDomainModel blockedPatient = await _patientService.Block(id);
+                return Ok(blockedPatient);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
         
         [HttpGet]
@@ -111,8 +119,15 @@ namespace HealthCareAPI.Controllers
         [Route("unblock/{id}")]
         public async Task<ActionResult<PatientDomainModel>> UnblockPatient(decimal id)
         {
-            PatientDomainModel blockedPatient = await _patientService.Unblock(id);
-            return Ok(blockedPatient);
+            try
+            {
+                PatientDomainModel blockedPatient = await _patientService.Unblock(id);
+                return Ok(blockedPatient);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
     }
 }

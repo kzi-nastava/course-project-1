@@ -19,7 +19,7 @@ namespace HealthCare.Domain.Services
             _specializationRepository = specializationRepository;
         }
 
-        private SpecializationDomainModel parseToModel(Specialization specialization)
+        public static SpecializationDomainModel ParseToModel(Specialization specialization)
         {
             SpecializationDomainModel specializationModel = new SpecializationDomainModel
             {
@@ -29,7 +29,7 @@ namespace HealthCare.Domain.Services
             return specializationModel;
         }
 
-        private Specialization parseFromModel(SpecializationDomainModel specializationModel)
+        public static Specialization ParseFromModel(SpecializationDomainModel specializationModel)
         {
             Specialization specialization = new Specialization
             {
@@ -48,7 +48,7 @@ namespace HealthCare.Domain.Services
             List<SpecializationDomainModel> results = new List<SpecializationDomainModel>();
             foreach (Specialization item in data)
             {
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
             }
 
             return results;

@@ -74,5 +74,43 @@ public class ManagerService : IManagerService
         }
 
         return results;
-    } 
+    }
+
+    public static ManagerDomainModel ParseToModel(Manager manager)
+    {
+        ManagerDomainModel managerModel = new ManagerDomainModel
+        {
+            IsDeleted = manager.IsDeleted,
+            BirthDate = manager.BirthDate,
+            Email = manager.Email,
+            Id = manager.Id,
+            Name = manager.Name,
+            Phone = manager.Phone,
+            Surname = manager.Surname
+        };
+        
+        if (manager.Credentials != null)
+            managerModel.Credentials = CredentialsService.ParseToModel(manager.Credentials);
+        
+        return managerModel;
+    }
+    
+    public static Manager ParseFromModel (ManagerDomainModel managerModel)
+    {
+        Manager manager = new Manager
+        {
+            IsDeleted = managerModel.IsDeleted,
+            BirthDate = managerModel.BirthDate,
+            Email = managerModel.Email,
+            Id = managerModel.Id,
+            Name = managerModel.Name,
+            Phone = managerModel.Phone,
+            Surname = managerModel.Surname
+        };
+        
+        if (managerModel.Credentials != null)
+            manager.Credentials = CredentialsService.ParseFromModel(managerModel.Credentials);
+        
+        return manager;
+    }
 }

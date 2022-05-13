@@ -12,14 +12,14 @@ namespace HealthCare.Domain.Services
 {
     public class IngredientService : IIngredientService
     {
-        private IIngredientRepository _ingridientRepository;
+        private IIngredientRepository _ingredientRepository;
 
-        public IngredientService(IIngredientRepository ingridientRepository)
+        public IngredientService(IIngredientRepository ingredientRepository)
         {
-            _ingridientRepository = ingridientRepository;
+            _ingredientRepository = ingredientRepository;
         }
 
-        private IngredientDomainModel parseToModel(Ingredient ingredient)
+        public static IngredientDomainModel ParseToModel(Ingredient ingredient)
         {
             IngredientDomainModel ingredientModel = new IngredientDomainModel
             {
@@ -30,43 +30,40 @@ namespace HealthCare.Domain.Services
 
             ingredientModel.DrugIngredients = new List<DrugIngredientDomainModel>();
             if (ingredient.DrugIngredients != null)
-            {
                 foreach (DrugIngredient drugIngredient in ingredient.DrugIngredients)
-                {
-                    DrugIngredientDomainModel drugIngredientModel = new DrugIngredientDomainModel
-                    {
-                        DrugId = drugIngredient.DrugId,
-                        IngredientId = drugIngredient.IngredientId,
-                        Amount = drugIngredient.Amount
-                    };
-                    ingredientModel.DrugIngredients.Add(drugIngredientModel);
-                }
-            }
+                    ingredientModel.DrugIngredients.Add(DrugIngredientService.ParseToModel(drugIngredient));
 
             return ingredientModel;
         }
 
-        private Ingredient parseFromModel(IngredientDomainModel ingridientModel)
+        public static Ingredient ParseFromModel(IngredientDomainModel ingredientModel)
         {
-            Ingredient ingridient = new Ingredient
+            Ingredient ingredient = new Ingredient
             {
-                Id = ingridientModel.Id,
-                IsAllergen = ingridientModel.IsAllergen,
-                Name = ingridientModel.Name
+                Id = ingredientModel.Id,
+                IsAllergen = ingredientModel.IsAllergen,
+                Name = ingredientModel.Name
             };
-            return ingridient;
+            
+            ingredient.DrugIngredients = new List<DrugIngredient>();
+            
+            if (ingredientModel.DrugIngredients != null)
+                foreach (DrugIngredientDomainModel drugIngredientModel in ingredientModel.DrugIngredients)
+                    ingredient.DrugIngredients.Add(DrugIngredientService.ParseFromModel(drugIngredientModel));
+            
+            return ingredient;
         }
 
         public async Task<IEnumerable<IngredientDomainModel>> GetAll()
         {
-            IEnumerable<Ingredient> data = await _ingridientRepository.GetAll();
+            IEnumerable<Ingredient> data = await _ingredientRepository.GetAll();
             if (data == null)
                 return new List<IngredientDomainModel>();
 
             List<IngredientDomainModel> results = new List<IngredientDomainModel>();
             foreach (Ingredient item in data)
             {
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
             }
 
             return results;

@@ -1,4 +1,5 @@
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -70,7 +71,7 @@ public class RoomService : IRoomService
                     inventoryModel.Equipment = new EquipmentDomainModel 
                     {
                         Id = inventory.Equipment.Id,
-                        EquipmentTypeId = inventory.Equipment.equipmentTypeId,
+                        EquipmentTypeId = inventory.Equipment.EquipmentTypeId,
                         IsDeleted = inventory.Equipment.IsDeleted,
                         Name = inventory.Equipment.Name,
                     };
@@ -107,12 +108,12 @@ public class RoomService : IRoomService
         return results;
     }
 
-    public async Task<RoomDomainModel> Create(RoomDomainModel roomModel)
+    public async Task<RoomDomainModel> Create(CURoomDTO dto)
     {
         Room newRoom = new Room();
-        newRoom.IsDeleted = roomModel.IsDeleted;
-        newRoom.RoomName = roomModel.RoomName;
-        RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);
+        newRoom.IsDeleted = false;
+        newRoom.RoomName = dto.RoomName;
+        RoomType roomType = await _roomTypeRepository.GetById(dto.RoomTypeId);
         if (roomType == null)
             throw new RoomTypeNotFoundException();
         newRoom.RoomType = roomType;
@@ -120,15 +121,14 @@ public class RoomService : IRoomService
         _ = _roomRepository.Post(newRoom);
         _roomRepository.Save();
 
-        return roomModel;
+        return ParseToModel(newRoom);
     }
 
-    public async Task<RoomDomainModel> Update(RoomDomainModel roomModel)
+    public async Task<RoomDomainModel> Update(CURoomDTO dto)
     {
-        Room room = await _roomRepository.GetRoomById(roomModel.Id);
-        room.IsDeleted = roomModel.IsDeleted;
-        room.RoomName = roomModel.RoomName;
-        RoomType roomType = await _roomTypeRepository.GetById(roomModel.RoomTypeId);
+        Room room = await _roomRepository.GetRoomById(dto.RoomId);
+        room.RoomName = dto.RoomName;
+        RoomType roomType = await _roomTypeRepository.GetById(dto.RoomTypeId);
         if (roomType == null)
             throw new RoomTypeNotFoundException();
         room.RoomType = roomType;
@@ -136,7 +136,7 @@ public class RoomService : IRoomService
         _ = _roomRepository.Update(room);
         _roomRepository.Save();
 
-        return roomModel;
+        return ParseToModel(room);
     }
 
     public async Task<RoomDomainModel> Delete(decimal id)
@@ -145,10 +145,10 @@ public class RoomService : IRoomService
         deletedRoom.IsDeleted = true;
         _ = _roomRepository.Update(deletedRoom);
         _roomRepository.Save();
-        return parseToModel(deletedRoom);
+        return ParseToModel(deletedRoom);
     }
 
-    private RoomDomainModel parseToModel(Room room)
+    public static RoomDomainModel ParseToModel(Room room)
     {
         RoomDomainModel roomModel = new RoomDomainModel 
         {
@@ -157,6 +157,20 @@ public class RoomService : IRoomService
             RoomTypeId = room.RoomTypeId,
             IsDeleted = room.IsDeleted
         };
+        
         return roomModel;
+    }
+    
+    public static Room ParseFromModel(RoomDomainModel roomModel)
+    {
+        Room room = new Room 
+        {
+            Id = roomModel.Id,
+            RoomName = roomModel.RoomName,
+            RoomTypeId = roomModel.RoomTypeId,
+            IsDeleted = roomModel.IsDeleted
+        };
+        
+        return room;
     }
 }

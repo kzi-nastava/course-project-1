@@ -1,4 +1,5 @@
 ﻿using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -7,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HealthCare.Domain.Services
 {
@@ -26,25 +28,25 @@ namespace HealthCare.Domain.Services
             return new List<AppointmentDomainModel>();
         }
 
-        public async Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(decimal id, DateTime date)
+        public async Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(DoctorsScheduleDTO dto)
         {
-            IEnumerable<Examination> examinationData = await _examinationRepository.GetAllByDoctorId(id, date);
+            IEnumerable<Examination> examinationData = await _examinationRepository.GetAllByDoctorId(dto.DoctorId, dto.Date);
             List<AppointmentDomainModel> results = new List<AppointmentDomainModel>();
             foreach (Examination item in examinationData)
             {
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
             }
 
-            IEnumerable<Operation> operationData = await _operationRepository.GetAllByDoctorId(id, date);
+            IEnumerable<Operation> operationData = await _operationRepository.GetAllByDoctorId(dto.DoctorId, dto.Date);
             foreach (Operation item in operationData)
             {
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
             }
 
             return results;
         }
 
-        private AppointmentDomainModel parseToModel(Examination examination)
+        public static AppointmentDomainModel ParseToModel(Examination examination)
         {
             AppointmentDomainModel appointmentModel = new AppointmentDomainModel
             {
@@ -59,18 +61,12 @@ namespace HealthCare.Domain.Services
             };
             if (examination.Anamnesis != null)
             {
-                appointmentModel.Anamnesis = new AnamnesisDomainModel
-                {
-                    Id = examination.Anamnesis.Id,
-                    Description = examination.Anamnesis.Description,
-                    ExaminationId = examination.Anamnesis.ExaminationId,
-                    IsDeleted = examination.Anamnesis.IsDeleted
-                };
+                appointmentModel.Anamnesis = AnamnesisService.ParseToModel(examination.Anamnesis);
             }
             return appointmentModel;
         }
 
-        private AppointmentDomainModel parseToModel(Operation operation)
+        public static AppointmentDomainModel ParseToModel(Operation operation)
         {
             AppointmentDomainModel appointmentModel = new AppointmentDomainModel
             {

@@ -1,5 +1,6 @@
 using System.Data;
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -17,8 +18,6 @@ public class AnamnesisService : IAnamnesisService
         _examinationRepository = examinationRepository;
     }
 
-    // Async awaits info from database
-    // GetAll is the equivalent of SELECT *
     public async Task<IEnumerable<AnamnesisDomainModel>> GetAll()
     {
         IEnumerable<Anamnesis> data = await _anamnesisRepository.GetAll();
@@ -54,9 +53,9 @@ public class AnamnesisService : IAnamnesisService
         return result;
     }
 
-    public async Task<AnamnesisDomainModel> Create(AnamnesisDomainModel anamnesisModel)
+    public async Task<AnamnesisDomainModel> Create(CreateAnamnesisDTO dto)
     {
-        Examination examination = await _examinationRepository.GetExamination(anamnesisModel.ExaminationId);
+        Examination examination = await _examinationRepository.GetExamination(dto.ExaminationId);
         // can't create another anamnesis for examination that already has one
         if (examination.Anamnesis != null)
             throw new AnamnesisAlreadyExistsException();
@@ -66,17 +65,17 @@ public class AnamnesisService : IAnamnesisService
   
         Anamnesis anamesis = new Anamnesis
         {
-            ExaminationId = anamnesisModel.ExaminationId,
+            ExaminationId = dto.ExaminationId,
             IsDeleted = false,
-            Description = anamnesisModel.Description
+            Description = dto.Description
         };
         _ = _anamnesisRepository.Post(anamesis);
         _anamnesisRepository.Save();
 
-        return parseToModel(anamesis);
+        return ParseToModel(anamesis);
     }
 
-    private AnamnesisDomainModel parseToModel(Anamnesis anamnesis)
+    public static AnamnesisDomainModel ParseToModel(Anamnesis anamnesis)
     {
         AnamnesisDomainModel anamnesisModel = new AnamnesisDomainModel
         {
@@ -87,5 +86,18 @@ public class AnamnesisService : IAnamnesisService
         };
 
         return anamnesisModel;
+    }
+    
+    public static Anamnesis ParseFromModel(AnamnesisDomainModel anamnesisModel)
+    {
+        Anamnesis anamnesis = new Anamnesis
+        {
+            Id = anamnesisModel.Id,
+            Description = anamnesisModel.Description,
+            ExaminationId = anamnesisModel.ExaminationId,
+            IsDeleted = anamnesisModel.IsDeleted,
+        };
+
+        return anamnesis;
     }
 }

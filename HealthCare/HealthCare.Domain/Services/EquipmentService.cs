@@ -1,4 +1,5 @@
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -39,27 +40,9 @@ public class EquipmentService : IEquipmentService
             return new List<EquipmentDomainModel>();
 
         List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
-        EquipmentDomainModel equipmentModel;
         foreach (Equipment item in equipment)
         {
-            equipmentModel = new EquipmentDomainModel
-            {
-                Id = item.Id,
-                EquipmentTypeId = item.equipmentTypeId,
-                IsDeleted = item.IsDeleted,
-                Name = item.Name,
-            };
-            if (item.EquipmentType != null)
-            {
-                equipmentModel.EquipmentType = new EquipmentTypeDomainModel
-                {
-                    Id = item.EquipmentType.Id,
-                    Name = item.EquipmentType.Name,
-                    IsDeleted = item.EquipmentType.IsDeleted,
-                };
-            }
-
-            results.Add(equipmentModel);
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -77,30 +60,41 @@ public class EquipmentService : IEquipmentService
         {
             // added equipment type to search review
             if(item.Name.ToLower().Contains(substring) || item.EquipmentType.Name.ToLower().Contains(substring))
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
         }
         return results;
     }
 
-    private EquipmentDomainModel parseToModel(Equipment item)
+    public static EquipmentDomainModel ParseToModel(Equipment equipment)
     {
         EquipmentDomainModel equipmentModel = new EquipmentDomainModel 
         {
-            Id = item.Id,
-            EquipmentTypeId = item.equipmentTypeId,
-            Name = item.Name,
-            IsDeleted = item.IsDeleted,
+            Id = equipment.Id,
+            EquipmentTypeId = equipment.EquipmentTypeId,
+            Name = equipment.Name,
+            IsDeleted = equipment.IsDeleted
         };
-        if (item.EquipmentType != null) 
-        {
-            equipmentModel.EquipmentType = new EquipmentTypeDomainModel 
-            {
-                Id = item.EquipmentType.Id,
-                Name = item.EquipmentType.Name,
-                IsDeleted = item.EquipmentType.IsDeleted,
-            };
-        }
+        
+        if (equipment.EquipmentType != null)
+            equipmentModel.EquipmentType = EquipmentTypeService.ParseToModel(equipment.EquipmentType);
+        
         return equipmentModel;
+    }
+    
+    public static Equipment ParseFromModel(EquipmentDomainModel equipmentModel)
+    {
+        Equipment equipment = new Equipment 
+        {
+            Id = equipmentModel.Id,
+            EquipmentTypeId = equipmentModel.EquipmentTypeId,
+            Name = equipmentModel.Name,
+            IsDeleted = equipmentModel.IsDeleted
+        };
+        
+        if (equipmentModel.EquipmentType != null)
+            equipment.EquipmentType = EquipmentTypeService.ParseFromModel(equipmentModel.EquipmentType);
+        
+        return equipment;
     }
 
     private IEnumerable<EquipmentDomainModel> parseToModels(IEnumerable<Equipment> equipments)
@@ -108,25 +102,25 @@ public class EquipmentService : IEquipmentService
         List<EquipmentDomainModel> results = new List<EquipmentDomainModel>();
         foreach (Equipment equipment in equipments)
         {
-            results.Add(parseToModel(equipment));
+            results.Add(ParseToModel(equipment));
         }
         return results;
     }
 
-    public async Task<IEnumerable<EquipmentDomainModel>> Filter(decimal equipmentTypeId, int minAmount, int maxAmount, decimal roomTypeId)
+    public async Task<IEnumerable<EquipmentDomainModel>> Filter(FilterEquipmentDTO dto)
     {
         IEnumerable<Equipment> filterResult = await _equipmentRepository.GetAll();
         if (filterResult == null || filterResult.Count() < 1)
             throw new DataIsNullException();
 
         // filter #1
-        if (equipmentTypeId != -1)
+        if (dto.EquipmentTypeId != null)
         {
-            filterResult = filterResult.Where(e => e.equipmentTypeId == equipmentTypeId);
+            filterResult = filterResult.Where(e => e.EquipmentTypeId == dto.EquipmentTypeId);
         }
 
 
-        if (minAmount != -1 || maxAmount != -1)
+        if (dto.MinAmount != null || dto.MaxAmount != null)
         {
             IEnumerable<Inventory> inventories = await _inventoryRepository.GetAll();
             // group inventories by equipment and sum the amount
@@ -137,18 +131,18 @@ public class EquipmentService : IEquipmentService
                     TotalAmount = group.Sum(i => i.Amount),
                 });
             //filter #2
-            if (minAmount != -1)
+            if (dto.MinAmount != null)
             {
-                IEnumerable<decimal> minFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount > minAmount)
+                IEnumerable<decimal> minFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount > dto.MinAmount)
                     .Select(group => group.EquipmentId);
 
                 filterResult = filterResult.Where(x => minFilteredEquipmentIds.Contains(x.Id));
             }
 
             // filter #3
-            if (maxAmount != -1)
+            if (dto.MaxAmount != null)
             {
-                IEnumerable<decimal> maxFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount < maxAmount)
+                IEnumerable<decimal> maxFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount < dto.MaxAmount)
                     .Select(group => group.EquipmentId);
 
                 filterResult = filterResult.Where(x => maxFilteredEquipmentIds.Contains(x.Id));
@@ -156,11 +150,11 @@ public class EquipmentService : IEquipmentService
         }
 
         // filter #4
-        if(roomTypeId != -1)
+        if(dto.RoomTypeId != null)
         {
             // get rooms ids of that room type
             IEnumerable<Room> rooms = await _roomRepository.GetAll();
-            IEnumerable<decimal> roomIds = rooms.Where(x => x.RoomTypeId == roomTypeId).Select(r => r.Id);
+            IEnumerable<decimal> roomIds = rooms.Where(x => x.RoomTypeId == dto.RoomTypeId).Select(r => r.Id);
 
             // find equipment ids in all inventories stored in the rooms
             IEnumerable<Inventory> inventories = await _inventoryRepository.GetAll();

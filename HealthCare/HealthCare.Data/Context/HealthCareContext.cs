@@ -37,6 +37,10 @@ namespace HealthCare.Data.Context
         public DbSet<Transfer> Transfers { get; set; }
         public DbSet<UserRole> UserRoles { get; set; }
 
+        public DbSet<SimpleRenovation> SimpleRenovations{ get; set; }
+        public DbSet<JoinRenovation> JoinRenovations { get; set; }
+        public DbSet<SplitRenovation> SplitRenovations { get; set; }
+
         public HealthCareContext(DbContextOptions options) : base(options)
         {
             
@@ -54,7 +58,8 @@ namespace HealthCare.Data.Context
                 .HasOne(x => x.Anamnesis)
                 .WithOne(x => x.Examination)
                 .IsRequired(false);
-
+        
+            //TODO: Sort this?
             modelBuilder.Entity<MedicalRecord>()
                 .HasMany(x => x.ReferralLetters)
                 .WithOne(x => x.MedicalRecord)
@@ -89,6 +94,7 @@ namespace HealthCare.Data.Context
 
             modelBuilder.Entity<Anamnesis>().HasKey(x => x.Id);
             modelBuilder.Entity<Drug>().HasKey(x => x.Id);
+            modelBuilder.Entity<DrugIngredient>().HasKey(x => new {x.DrugId, x.IngredientId});
             modelBuilder.Entity<Allergy>().HasKey(x => new { x.PatientId, x.IngredientId });
             modelBuilder.Entity<Examination>().HasKey(x => x.Id);
             modelBuilder.Entity<ExaminationApproval>().HasKey(x => x.Id);
@@ -104,6 +110,9 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<ReferralLetter>().HasKey(x => x.Id);
             modelBuilder.Entity<Ingredient>().HasKey(x => x.Id);
             modelBuilder.Entity<Specialization>().HasKey(x => x.Id);
+            modelBuilder.Entity<SimpleRenovation>().HasKey(x => x.Id);
+            modelBuilder.Entity<JoinRenovation>().HasKey(x => x.Id);
+            modelBuilder.Entity<SplitRenovation>().HasKey(x => x.Id);
         }
     }
 }

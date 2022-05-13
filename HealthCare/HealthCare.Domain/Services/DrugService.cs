@@ -28,13 +28,13 @@ namespace HealthCare.Domain.Services
             List<DrugDomainModel> results = new List<DrugDomainModel>();
             foreach (Drug item in data)
             {
-                results.Add(parseToModel(item));
+                results.Add(ParseToModel(item));
             }
 
             return results;
         }
 
-        private DrugDomainModel parseToModel(Drug drug)
+        public static DrugDomainModel ParseToModel(Drug drug)
         {
             DrugDomainModel drugModel = new DrugDomainModel
             {
@@ -45,20 +45,27 @@ namespace HealthCare.Domain.Services
 
             drugModel.DrugIngredients = new List<DrugIngredientDomainModel>();
             if (drug.DrugIngredients != null)
-            {
                 foreach (DrugIngredient drugIngredient in drug.DrugIngredients)
-                {
-                    DrugIngredientDomainModel drugIngredientModel = new DrugIngredientDomainModel
-                    {
-                        DrugId = drugIngredient.DrugId,
-                        IngredientId = drugIngredient.IngredientId,
-                        Amount = drugIngredient.Amount
-                    };
-                    drugModel.DrugIngredients.Add(drugIngredientModel);
-                }
-            }
+                    drugModel.DrugIngredients.Add(DrugIngredientService.ParseToModel(drugIngredient));
 
             return drugModel;
+        }
+        
+        public static Drug ParseFromModel(DrugDomainModel drugModel)
+        {
+            Drug drug = new Drug
+            {
+                Id = drugModel.Id,
+                Name = drugModel.Name,
+                IsDeleted = drugModel.IsDeleted
+            };
+
+            drugModel.DrugIngredients = new List<DrugIngredientDomainModel>();
+            if (drugModel.DrugIngredients != null)
+                foreach (DrugIngredientDomainModel drugIngredient in drugModel.DrugIngredients)
+                    drug.DrugIngredients.Add(DrugIngredientService.ParseFromModel(drugIngredient));
+
+            return drug;
         }
     }
 }

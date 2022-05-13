@@ -29,18 +29,36 @@ public class ExaminationApprovalService : IExaminationApprovalService
         ExaminationApprovalDomainModel examinationApprovalModel;
         foreach (ExaminationApproval item in data)
         {
-            examinationApprovalModel = new ExaminationApprovalDomainModel
-            {
-                Id = item.Id,
-                IsDeleted = item.IsDeleted,
-                State = item.State,
-                NewExaminationId = item.NewExaminationId,
-                OldExaminationId = item.OldExaminationId
-            };
-            results.Add(examinationApprovalModel);
         }
 
         return results;
+    }
+    
+    public static ExaminationApproval ParseFromModel(ExaminationApprovalDomainModel examinationApprovalModel)
+    {
+        ExaminationApproval examinationApproval = new ExaminationApproval
+        {
+            Id = examinationApprovalModel.Id,
+            IsDeleted = examinationApprovalModel.IsDeleted,
+            State = examinationApprovalModel.State,
+            NewExaminationId = examinationApprovalModel.NewExaminationId,
+            OldExaminationId = examinationApprovalModel.OldExaminationId
+        };
+        
+        return examinationApproval;
+    }
+    public static ExaminationApprovalDomainModel ParseToModel(ExaminationApproval examinationApproval)
+    {
+        ExaminationApprovalDomainModel examinationApprovalModel = new ExaminationApprovalDomainModel
+        {
+            Id = examinationApproval.Id,
+            IsDeleted = examinationApproval.IsDeleted,
+            State = examinationApproval.State,
+            NewExaminationId = examinationApproval.NewExaminationId,
+            OldExaminationId = examinationApproval.OldExaminationId
+        };
+        
+        return examinationApprovalModel;
     }
     public async Task<IEnumerable<ExaminationApprovalDomainModel>> ReadAll()
     {
@@ -53,16 +71,45 @@ public class ExaminationApprovalService : IExaminationApprovalService
         return result;
     }
 
+    public async void HandleReject(decimal approvalId)
+    {
+        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(approvalId);
+        examinationApproval.State = "rejected";
+        _ = _examinationApprovalRepository.Update(examinationApproval);
+        _examinationApprovalRepository.Save();
+    }
+
     public async Task<ExaminationApprovalDomainModel> Reject(ExaminationApprovalDomainModel examinationApprovalModel)
     {
         if (!examinationApprovalModel.State.Equals("created")) 
             throw new AlreadyHandledException();
-        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationApprovalModel.Id);
-        examinationApproval.State = "rejected";
-        _ = _examinationApprovalRepository.Update(examinationApproval);
-        _examinationApprovalRepository.Save();
-        examinationApprovalModel.State = "rejected";
+        
+        HandleReject(examinationApprovalModel.Id);
         return examinationApprovalModel;
+    }
+
+    public async void ApproveDeletion(decimal id)
+    {
+        Examination newExamination = await _examinationRepository.GetExamination(id);
+        newExamination.IsDeleted = false;
+        _ = _examinationRepository.Update(newExamination);
+    }
+
+    public async void HandleApproval(decimal approvalId, decimal newId, decimal oldId)
+    {
+        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(approvalId);
+        examinationApproval.State = "approved";
+
+        Examination oldExamination = await _examinationRepository.GetExamination(oldId);
+        if (examinationApproval.OldExaminationId != examinationApproval.NewExaminationId)
+            ApproveDeletion(newId);
+        
+        oldExamination.IsDeleted = true;
+        
+        _ = _examinationApprovalRepository.Update(examinationApproval);
+        _ = _examinationRepository.Update(oldExamination);
+        _examinationApprovalRepository.Save();
+        _examinationRepository.Save();
     }
 
     public async Task<ExaminationApprovalDomainModel> Approve(ExaminationApprovalDomainModel examinationApprovalModel)
@@ -70,24 +117,7 @@ public class ExaminationApprovalService : IExaminationApprovalService
         if (!examinationApprovalModel.State.Equals("created"))
             throw new AlreadyHandledException();
         
-        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(examinationApprovalModel.Id);
-        examinationApproval.State = "approved";
-        _ = _examinationApprovalRepository.Update(examinationApproval);
-        _examinationApprovalRepository.Save();
-        examinationApprovalModel.State = "approved";
-
-        Examination oldExamination = await _examinationRepository.GetExamination(examinationApprovalModel.OldExaminationId);
-        if (examinationApproval.OldExaminationId != examinationApproval.NewExaminationId)
-        {
-            Examination newExamination = await _examinationRepository.GetExamination(examinationApprovalModel.NewExaminationId);
-            newExamination.IsDeleted = false;
-            _ = _examinationRepository.Update(newExamination);
-        }
-        
-        oldExamination.IsDeleted = true;
-        _ = _examinationRepository.Update(oldExamination);
-        _examinationRepository.Save();
-        
+        HandleApproval(examinationApprovalModel.Id, examinationApprovalModel.NewExaminationId, examinationApprovalModel.OldExaminationId);
         return examinationApprovalModel;
     }
 }

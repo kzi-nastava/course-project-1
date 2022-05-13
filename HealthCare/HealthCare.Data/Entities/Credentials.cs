@@ -39,7 +39,7 @@ namespace HealthCare.Data.Entities
         public decimal UserRoleId { get; set; }
 
         [Column("deleted")]
-        public bool isDeleted { get; set; }
+        public bool IsDeleted { get; set; }
 
         public UserRole UserRole { get; set; }
     }

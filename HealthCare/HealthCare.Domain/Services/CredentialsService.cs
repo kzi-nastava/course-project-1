@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -44,25 +45,6 @@ namespace HealthCare.Domain.Services
             CredentialsDomainModel credentialsModel;
             foreach (Credentials item in data)
             {
-                credentialsModel = new CredentialsDomainModel {
-                    Id = item.Id,
-                    Username = item.Username,
-                    Password = item.Password,
-                    DoctorId = item.DoctorId,
-                    SecretaryId = item.SecretaryId,
-                    ManagerId = item.ManagerId,
-                    PatientId = item.PatientId,
-                    UserRoleId = item.UserRoleId,
-                    IsDeleted = item.isDeleted
-                };
-                if (item.UserRole != null) {
-                    credentialsModel.UserRole = new UserRoleDomainModel {
-                        Id = item.UserRole.Id,
-                        RoleName = item.UserRole.RoleName,
-                        IsDeleted = item.UserRole.IsDeleted
-                    };
-                }
-                results.Add(credentialsModel);
             }
             
             return results;
@@ -75,11 +57,11 @@ namespace HealthCare.Domain.Services
             return true;
         }
 
-        public async Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(string username, string password)
+        public async Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(LoginDTO dto)
         {
             IEnumerable<CredentialsDomainModel> data = await ReadAll();
             foreach (CredentialsDomainModel item in data) {
-                if (item.Username.Equals(username) && item.Password.Equals(password))
+                if (item.Username.Equals(dto.Username) && item.Password.Equals(dto.Password))
                 {
                     if (item.PatientId != null)
                     {
@@ -90,6 +72,48 @@ namespace HealthCare.Domain.Services
                 }
             }
             throw new UserNotFoundException();
+        }
+        
+        public static CredentialsDomainModel ParseToModel(Credentials credentials)
+        {
+            CredentialsDomainModel credentialsModel = new CredentialsDomainModel
+            {
+                Id = credentials.Id,
+                Username = credentials.Username,
+                Password = credentials.Password,
+                DoctorId = credentials.DoctorId,
+                SecretaryId = credentials.SecretaryId,
+                ManagerId = credentials.ManagerId,
+                PatientId = credentials.PatientId,
+                UserRoleId = credentials.UserRoleId,
+                IsDeleted = credentials.IsDeleted
+            };
+            if (credentials.UserRole != null)
+            {
+                credentialsModel.UserRole = UserRoleService.ParseToModel(credentials.UserRole);
+            }
+            return credentialsModel;
+        }
+        
+        public static Credentials ParseFromModel(CredentialsDomainModel credentialsModel)
+        {
+            Credentials credentials = new Credentials 
+            {
+                Id = credentialsModel.Id,
+                Username = credentialsModel.Username,
+                Password = credentialsModel.Password,
+                DoctorId = credentialsModel.DoctorId,
+                SecretaryId = credentialsModel.SecretaryId,
+                ManagerId = credentialsModel.ManagerId,
+                PatientId = credentialsModel.PatientId,
+                UserRoleId = credentialsModel.UserRoleId,
+                IsDeleted = credentialsModel.IsDeleted
+            };
+            if (credentialsModel.UserRole != null)
+            {
+                credentials.UserRole = UserRoleService.ParseFromModel(credentialsModel.UserRole);
+            }
+            return credentials;
         }
     }
 }
