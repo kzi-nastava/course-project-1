@@ -61,4 +61,14 @@ public class NotificationService : INotificationService
 
         return notification;
     }
+
+    public async Task<NotificationDomainModel> SendToDoctor(decimal doctorId)
+    {
+        throw new NotImplementedException();
+    }
+
+    public async Task<NotificationDomainModel> SendToPatient(decimal patientId)
+    {
+        throw new NotImplementedException();
+    }
 }

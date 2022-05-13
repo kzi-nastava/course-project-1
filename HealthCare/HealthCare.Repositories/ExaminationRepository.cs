@@ -20,6 +20,7 @@ namespace HealthCare.Repositories
         public Task<IEnumerable<Examination>> GetAllByDoctorId(decimal id, DateTime date);
         public Task<IEnumerable<Examination>> GetAllByRoomId(decimal id);
         public Task<Examination> GetByParams(decimal doctorId, decimal roomId, decimal patientId, DateTime startTime);
+        public Task<Examination> GetByParams(decimal doctorId, decimal patientId, DateTime startTime);
         public Examination Update(Examination examination);
         public Task<Examination> GetExamination(decimal id);
         public Task<Examination> GetExaminationWithoutAnamnesis(decimal id);
@@ -126,6 +127,15 @@ namespace HealthCare.Repositories
             return await _healthCareContext.Examinations
                 .Include(x => x.Anamnesis)
                 .Where(x => x.DoctorId == doctorId && x.PatientId == patientId && x.StartTime == date)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Examination> GetByParams(decimal doctorId, decimal patientId, DateTime startTime)
+        {
+            return await _healthCareContext.Examinations
+                .Where(x => x.DoctorId == doctorId)
+                .Where(x => x.PatientId == patientId)
+                .Where(x => x.StartTime == startTime)
                 .FirstOrDefaultAsync();
         }
     }
