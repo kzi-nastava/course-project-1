@@ -517,12 +517,12 @@ public class ExaminationService : IExaminationService
         int numOfExaminations = 0;
         int possibleSlotIndex = 0;
 
-        DateTime startTime = paramsDTO.TimeFrom;
-        if (startTime.TimeOfDay < possibleSlots[possibleSlotIndex].Key.TimeOfDay)
-            startTime = possibleSlots[possibleSlotIndex].Key;
-        else
-            startTime = DateTime.Now;
-        paramsDTO.TimeTo = paramsDTO.TimeTo.AddMinutes(-15);
+        DateTime startTime = DateTime.Now;
+        //DateTime startTime = paramsDTO.TimeFrom;
+        //if (startTime.TimeOfDay < possibleSlots[possibleSlotIndex].Key.TimeOfDay)
+        //    startTime = possibleSlots[possibleSlotIndex].Key;
+        //else
+        //    startTime = DateTime.Now;
 
         while (numOfExaminations != 3)
         {
@@ -569,7 +569,7 @@ public class ExaminationService : IExaminationService
         return recommendedExaminaions;
     }
 
-    public async Task<IEnumerable<CUExaminationDTO>> RecommendedByDoctorPriority(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService, decimal numOfExaminations)
+    public async Task<IEnumerable<CUExaminationDTO>> RecommendedByDatePriority(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService, decimal numOfExaminations)
     {
         List<CUExaminationDTO> recommendedExaminations = await getRecommendedExaminationsForOneDoctor(paramsDTO, doctorService);
         DoctorDomainModel doctorModel = await doctorService.GetById(paramsDTO.DoctorId);
@@ -598,7 +598,7 @@ public class ExaminationService : IExaminationService
         return recommendedExaminations;
     }
 
-    public async Task<IEnumerable<CUExaminationDTO>> RecommendedByDatePriority(ParamsForRecommendingFreeExaminationsDTO paramsDTO, decimal numOfExaminations, DateTime startTime)
+    public async Task<IEnumerable<CUExaminationDTO>> RecommendedByDoctorPriority(ParamsForRecommendingFreeExaminationsDTO paramsDTO, decimal numOfExaminations, DateTime startTime)
     {
         List<CUExaminationDTO> recommendedExaminations = new List<CUExaminationDTO>();
         while (numOfExaminations != 3)
@@ -623,14 +623,21 @@ public class ExaminationService : IExaminationService
         int numOfExaminations = recommendedExaminations.Count;
         if (numOfExaminations != 3)
         {
-            // Doctor priority
             if (paramsDTO.IsDoctorPriority)
-                return await RecommendedByDoctorPriority(paramsDTO, doctorService, numOfExaminations);
-            
-            // Date priority
-            DateTime startTime = recommendedExaminations[numOfExaminations - 1].StartTime.AddMinutes(15);
-            return await RecommendedByDatePriority(paramsDTO, numOfExaminations, startTime);
-
+            {
+                if (numOfExaminations == 0)
+                    return null;
+                // Doctor priority
+                DateTime startTime = recommendedExaminations[numOfExaminations - 1].StartTime.AddMinutes(15);
+                foreach (var examination in await RecommendedByDoctorPriority(paramsDTO, numOfExaminations, startTime))
+                    recommendedExaminations.Add(examination);
+            }
+            else
+            {
+                // Date priority
+                foreach (var examination in await RecommendedByDatePriority(paramsDTO, doctorService, numOfExaminations))
+                    recommendedExaminations.Add(examination);
+            }
         }
 
         return recommendedExaminations;

@@ -29,6 +29,7 @@ public class ExaminationApprovalService : IExaminationApprovalService
         ExaminationApprovalDomainModel examinationApprovalModel;
         foreach (ExaminationApproval item in data)
         {
+            results.Add(ParseToModel(item));
         }
 
         return results;
@@ -79,13 +80,14 @@ public class ExaminationApprovalService : IExaminationApprovalService
         _examinationApprovalRepository.Save();
     }
 
-    public async Task<ExaminationApprovalDomainModel> Reject(ExaminationApprovalDomainModel examinationApprovalModel)
+    public async Task<ExaminationApprovalDomainModel> Reject(decimal id)
     {
-        if (!examinationApprovalModel.State.Equals("created")) 
+        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(id);
+        if (!examinationApproval.State.Equals("created")) 
             throw new AlreadyHandledException();
         
-        HandleReject(examinationApprovalModel.Id);
-        return examinationApprovalModel;
+        HandleReject(id);
+        return ParseToModel(examinationApproval);
     }
 
     public async void ApproveDeletion(decimal id)
@@ -112,12 +114,13 @@ public class ExaminationApprovalService : IExaminationApprovalService
         _examinationRepository.Save();
     }
 
-    public async Task<ExaminationApprovalDomainModel> Approve(ExaminationApprovalDomainModel examinationApprovalModel)
+    public async Task<ExaminationApprovalDomainModel> Approve(decimal id)
     {
-        if (!examinationApprovalModel.State.Equals("created"))
+        ExaminationApproval examinationApproval = await _examinationApprovalRepository.GetExaminationApprovalById(id);
+        if (!examinationApproval.State.Equals("created"))
             throw new AlreadyHandledException();
         
-        HandleApproval(examinationApprovalModel.Id, examinationApprovalModel.NewExaminationId, examinationApprovalModel.OldExaminationId);
-        return examinationApprovalModel;
+        HandleApproval(examinationApproval.Id, examinationApproval.NewExaminationId, examinationApproval.OldExaminationId);
+        return ParseToModel(examinationApproval);
     }
 }
