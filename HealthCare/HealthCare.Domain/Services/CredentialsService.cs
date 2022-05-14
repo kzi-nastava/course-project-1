@@ -45,6 +45,7 @@ namespace HealthCare.Domain.Services
             CredentialsDomainModel credentialsModel;
             foreach (Credentials item in data)
             {
+                results.Add(ParseToModel(item));
             }
             
             return results;

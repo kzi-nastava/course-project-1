@@ -1,4 +1,4 @@
-let loginUri = "https://localhost:7195/api/Credentials/login"
+let loginUri = "https://localhost:7195/api/Credentials/login?"
 
 let loggedCreds;
 
@@ -57,7 +57,7 @@ function processLogin(username, password) {
         }
     }
 
-    getRequest.open("GET", loginUri.concat("/" + username + "/" + password), true);
+    getRequest.open("GET", loginUri.concat("Username=" + username + "&Password=" + password), true);
     getRequest.send();
 
 }
