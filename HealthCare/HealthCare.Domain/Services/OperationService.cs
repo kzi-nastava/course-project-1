@@ -339,7 +339,7 @@ public class OperationService : IOperationService
         urgentStartTimes.Sort((x, y) => x.Key.CompareTo(y.Key));
         // Try to create examination
         OperationDomainModel? createdModel = await ParsePairs(operationModel, urgentStartTimes, dto.Duration);
-        _ = SendNotifications(notificationService, operationModel.DoctorId, operationModel.PatientId);
+        _ = await SendNotifications(notificationService, operationModel.DoctorId, operationModel.PatientId);
         return createdModel;
     }
 

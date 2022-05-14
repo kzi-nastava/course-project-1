@@ -702,7 +702,7 @@ public class ExaminationService : IExaminationService
         urgentStartTimes.Sort((x, y) => x.Key.CompareTo(y.Key));
         // Try to create examination
         ExaminationDomainModel? createdModel = await ParsePairs(examinationModel, urgentStartTimes);
-        _ = SendNotifications(notificationService, examinationModel.DoctorId, examinationModel.PatientId);
+        _ = await SendNotifications(notificationService, examinationModel.DoctorId, examinationModel.PatientId);
         return createdModel;
     }
 
