@@ -99,7 +99,7 @@ namespace HealthCareAPI.Controllers
 
         [HttpGet]
         [Route("executeComplex")]
-        public async Task<ActionResult<Task>> ExecuteComplex()
+        public async Task<ActionResult<bool>> ExecuteComplex()
         {
             try
             {
