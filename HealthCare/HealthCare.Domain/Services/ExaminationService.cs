@@ -191,6 +191,7 @@ public class ExaminationService : IExaminationService
     {
         if (dto.IsPatient && await AntiTrollCheck(dto.PatientId, false))
             throw new DataIsNullException();
+
         Examination examination = await _examinationRepository.GetExamination(dto.ExaminationId);
         double daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
 
@@ -403,10 +404,12 @@ public class ExaminationService : IExaminationService
             throw new DateInPastExeption();
         if (await isPatientBlocked(dto.PatientId))
             throw new PatientIsBlockedException();
+
         bool doctorAvailable = await isDoctorAvailable(dto);
-        bool patientAvailable = await isPatientAvailable(dto);
         if (!doctorAvailable)
             throw new DoctorNotAvailableException();
+
+        bool patientAvailable = await isPatientAvailable(dto);
         if (!patientAvailable)
             throw new PatientNotAvailableException();
     }
@@ -428,7 +431,6 @@ public class ExaminationService : IExaminationService
 
         if (daysUntilExamination > 1 || !dto.IsPatient)
             UpdateExamination(dto, roomId, examination);
-
         else 
         {
             Examination newExamination = CreateExamination(dto, roomId);

@@ -16,6 +16,11 @@ namespace HealthCare.Data.Entities
         [Column("ingredient_id")]
         public decimal IngredientId { get; set; }
 
-        public MedicalRecord MedicalRecord { get; set; }   
+        [Column("deleted")]
+        public bool IsDeleted { get; set; }
+
+        public Ingredient? Ingredient { get; set; }
+
+        public MedicalRecord? MedicalRecord { get; set; }   
     }
 }

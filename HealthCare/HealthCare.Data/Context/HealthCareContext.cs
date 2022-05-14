@@ -14,6 +14,7 @@ namespace HealthCare.Data.Context
     {
         public DbSet<AntiTroll> AntiTrolls { get; set; }
         public DbSet<Anamnesis> Anamneses { get; set; }
+        public DbSet<Allergy> Allergies { get; set; }
         public DbSet<Credentials> Credentials { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Drug> Drugs { get; set; }
@@ -83,6 +84,10 @@ namespace HealthCare.Data.Context
                 .HasOne(x => x.Ingredient)
                 .WithMany(i => i.DrugIngredients)
                 .HasForeignKey(x => x.IngredientId);
+
+            modelBuilder.Entity<Allergy>()
+                .HasOne(x => x.Ingredient);
+
 
             modelBuilder.Entity<DrugIngredient>()
                 .HasOne(x => x.Drug)
