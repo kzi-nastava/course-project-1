@@ -27,7 +27,7 @@ namespace HealthCare.Data.Entities
         public DateTime TakeAt { get; set; }
 
         [Column("per_day")]
-        public int PerDay { get; set; }
+        public decimal PerDay { get; set; }
 
         [Column("meal_combination")]
         public string MealCombination { get; set; }

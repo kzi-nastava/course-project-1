@@ -25,7 +25,7 @@ namespace HealthCare.Domain.Models
 
         public DateTime TakeAt { get; set; }
 
-        public int PerDay { get; set; }
+        public decimal PerDay { get; set; }
 
         public bool IsDeleted { get; set; }
 

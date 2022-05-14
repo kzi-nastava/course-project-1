@@ -89,7 +89,7 @@ namespace HealthCare.Domain.Services
             return prescription;
         }
 
-        private DateTime removeSeconds(DateTime dateTime)
+        private static DateTime removeSeconds(DateTime dateTime)
         {
             int year = dateTime.Year;
             int month = dateTime.Month;
@@ -108,7 +108,7 @@ namespace HealthCare.Domain.Services
                 DrugId = prescription.DrugId,
                 PatientId = prescription.PatientId,
                 DoctorId = prescription.DoctorId,
-                TakeAt = prescription.TakeAt,
+                TakeAt = removeSeconds(prescription.TakeAt),
                 PerDay = prescription.PerDay,
                 IsDeleted = prescription.IsDeleted,
                 MealCombination = (MealCombination)Enum.Parse(typeof(MealCombination), prescription.MealCombination)
@@ -130,8 +130,7 @@ namespace HealthCare.Domain.Services
                 TakeAt = prescriptionModel.TakeAt,
                 PerDay = prescriptionModel.PerDay,
                 IsDeleted = prescriptionModel.IsDeleted,
-                // TODO: Sta?
-                //MealCombination = (MealCombination)Enum.Parse(typeof(MealCombination), prescriptionModel.MealCombination)
+                MealCombination = prescriptionModel.MealCombination.ToString()
             };
 
             if (prescriptionModel.Drug != null)
