@@ -10,5 +10,6 @@ namespace HealthCare.Domain.DTOs
     {
         public decimal DoctorId { get; set; }
         public DateTime Date { get; set; }
+        public bool ThreeDays { get; set; }
     }
 }
