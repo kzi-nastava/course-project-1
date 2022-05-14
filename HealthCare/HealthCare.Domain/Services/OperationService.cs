@@ -69,13 +69,14 @@ public class OperationService : IOperationService
         return results;
     }
 
-    private async Task<bool> isRoomAvailable(decimal id, TimeSlot timeSlot)
+    private async Task<bool> isRoomAvailable(decimal id, DateTime startTime, decimal duration)
     {
         bool isRoomAvailable = true;
         IEnumerable<Operation> operations = await _operationRepository.GetAllByRoomId(id);
         foreach (Operation operation in operations)
         {
-            if (timeSlot.isOverlaping(new TimeSlot(operation.StartTime, operation.Duration)))
+            double difference = (startTime - operation.StartTime).TotalMinutes;
+            if (difference <= (double)operation.Duration && difference >= -(double)duration)
             {
                 isRoomAvailable = false;
                 break;
@@ -85,18 +86,20 @@ public class OperationService : IOperationService
         return isRoomAvailable;
     }
 
-    private async Task<decimal> GetAvailableRoomId(TimeSlot timeSlot)
+    private async Task<decimal> GetAvailableRoomId(DateTime startTime, decimal duration)
     {
         IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms("operation");
         foreach (Room room in rooms)
         {
-            if (await isRoomAvailable(room.Id, timeSlot))
+            bool roomAvailable = await isRoomAvailable(room.Id, startTime, duration);
+            if (roomAvailable)
             {
                 return room.Id;
             }
         }
         return -1;
     }
+
 
     private async Task<bool> isPatientOnExamination(CUOperationDTO dto)
     {
@@ -217,7 +220,7 @@ public class OperationService : IOperationService
     {
         await validateUserInput(dto);
 
-        decimal roomId = await GetAvailableRoomId(new TimeSlot(dto.StartTime, dto.Duration));
+        decimal roomId = await GetAvailableRoomId(dto.StartTime, dto.Duration);
         if (roomId == -1)
             throw new NoFreeRoomsException();
 
@@ -239,7 +242,7 @@ public class OperationService : IOperationService
         if (operation == null)
             throw new DataIsNullException();
 
-        decimal roomId = await GetAvailableRoomId(new TimeSlot(dto.StartTime, dto.Duration));
+        decimal roomId = await GetAvailableRoomId(dto.StartTime, dto.Duration);
         if (roomId == -1)
             throw new NoFreeRoomsException();
 
@@ -357,7 +360,7 @@ public class OperationService : IOperationService
 
     public async Task<Boolean> TryCreateOperation(OperationDomainModel operationModel)
     {
-        decimal roomId = await GetAvailableRoomId(new TimeSlot(operationModel.StartTime, operationModel.Duration));
+        decimal roomId = await GetAvailableRoomId(operationModel.StartTime, operationModel.Duration);
         if (roomId == -1) return false;
         operationModel.RoomId = roomId;
         Operation operation = ParseFromModel(operationModel);
@@ -710,7 +713,7 @@ public class OperationService : IOperationService
             IsEmergency = true,
             StartTime = dto.UrgentStartTime,
             PatientId = dto.PatientId,
-            RoomId = await GetAvailableRoomId(new TimeSlot(dto.UrgentStartTime, dto.Duration))
+            RoomId = await GetAvailableRoomId(dto.UrgentStartTime, dto.Duration)
         };
         _ = _operationRepository.Post(ParseFromModel(operationModel));
         _operationRepository.Save();

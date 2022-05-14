@@ -312,23 +312,30 @@ public class ExaminationService : IExaminationService
         return false;
     }
 
+    private async Task<bool> isRoomAvailable(decimal id, DateTime startTime)
+    {
+        bool isRoomAvailable = true;
+        IEnumerable<Examination> examinations = await _examinationRepository.GetAllByRoomId(id);
+        foreach (Examination examination in examinations)
+        {
+            double difference = (startTime - examination.StartTime).TotalMinutes;
+            if (difference <= 15 && difference >= -15)
+            {
+                isRoomAvailable = false;
+                break;
+            }
+        }
+
+        return isRoomAvailable;
+    }
+
     private async Task<decimal> getAvailableRoomId(DateTime startTime)
     {
         IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms("examination");
         foreach (Room room in rooms)
         {
-            bool isRoomAvailable = true;
-            IEnumerable<Examination> examinations = await _examinationRepository.GetAllByRoomId(room.Id);
-            foreach (Examination examination in examinations)
-            {
-                double difference = (startTime - examination.StartTime).TotalMinutes;
-                if (difference <= 15 && difference >= -15)
-                {
-                    isRoomAvailable = false;
-                    break;
-                }
-            }
-            if (isRoomAvailable)
+            bool roomAvailable = await isRoomAvailable(room.Id, startTime);
+            if (roomAvailable)
             {
                 return room.Id;
             }
