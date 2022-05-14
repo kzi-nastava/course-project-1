@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Domain.DTOs
 {
-    public class DoctorsScheduleDTO
+    public class AllergyDTO
     {
-        public decimal DoctorId { get; set; }
-        public DateTime Date { get; set; }
-        public bool ThreeDays { get; set; }
+        public decimal PatientId { get; set; }
+
+        public decimal IngredientId { get; set; }
     }
 }

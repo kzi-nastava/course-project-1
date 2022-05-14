@@ -48,8 +48,15 @@ namespace HealthCareAPI.Controllers
         [Route("create")]
         public async Task<ActionResult<ReferralLetterDomainModel>> Create([FromBody] ReferralLetterDTO referralDTO)
         {
-            ReferralLetterDomainModel createdReferralModel = await _referralLetterService.Create(referralDTO);
-            return Ok(createdReferralModel);
+            try
+            {
+                ReferralLetterDomainModel createdReferralModel = await _referralLetterService.Create(referralDTO);
+                return Ok(createdReferralModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
     }
 }

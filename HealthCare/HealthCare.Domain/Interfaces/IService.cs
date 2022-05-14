@@ -116,4 +116,10 @@ namespace HealthCare.Domain.Interfaces
         {
         }
     }
+    public class ReferredYourselfException : Exception
+    {
+        public ReferredYourselfException() : base("You can't reffer yourself")
+        {
+        }
+    }
 }

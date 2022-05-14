@@ -191,6 +191,7 @@ public class ExaminationService : IExaminationService
     {
         if (dto.IsPatient && await AntiTrollCheck(dto.PatientId, false))
             throw new DataIsNullException();
+
         Examination examination = await _examinationRepository.GetExamination(dto.ExaminationId);
         double daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
 
@@ -311,23 +312,30 @@ public class ExaminationService : IExaminationService
         return false;
     }
 
+    private async Task<bool> isRoomAvailable(decimal id, DateTime startTime)
+    {
+        bool isRoomAvailable = true;
+        IEnumerable<Examination> examinations = await _examinationRepository.GetAllByRoomId(id);
+        foreach (Examination examination in examinations)
+        {
+            double difference = (startTime - examination.StartTime).TotalMinutes;
+            if (difference <= 15 && difference >= -15)
+            {
+                isRoomAvailable = false;
+                break;
+            }
+        }
+
+        return isRoomAvailable;
+    }
+
     private async Task<decimal> getAvailableRoomId(DateTime startTime)
     {
         IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms("examination");
         foreach (Room room in rooms)
         {
-            bool isRoomAvailable = true;
-            IEnumerable<Examination> examinations = await _examinationRepository.GetAllByRoomId(room.Id);
-            foreach (Examination examination in examinations)
-            {
-                double difference = (startTime - examination.StartTime).TotalMinutes;
-                if (difference <= 15 && difference >= -15)
-                {
-                    isRoomAvailable = false;
-                    break;
-                }
-            }
-            if (isRoomAvailable)
+            bool roomAvailable = await isRoomAvailable(room.Id, startTime);
+            if (roomAvailable)
             {
                 return room.Id;
             }
@@ -403,10 +411,12 @@ public class ExaminationService : IExaminationService
             throw new DateInPastExeption();
         if (await isPatientBlocked(dto.PatientId))
             throw new PatientIsBlockedException();
+
         bool doctorAvailable = await isDoctorAvailable(dto);
-        bool patientAvailable = await isPatientAvailable(dto);
         if (!doctorAvailable)
             throw new DoctorNotAvailableException();
+
+        bool patientAvailable = await isPatientAvailable(dto);
         if (!patientAvailable)
             throw new PatientNotAvailableException();
     }
@@ -428,7 +438,6 @@ public class ExaminationService : IExaminationService
 
         if (daysUntilExamination > 1 || !dto.IsPatient)
             UpdateExamination(dto, roomId, examination);
-
         else 
         {
             Examination newExamination = CreateExamination(dto, roomId);

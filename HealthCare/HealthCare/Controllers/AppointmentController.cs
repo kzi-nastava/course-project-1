@@ -23,10 +23,6 @@ namespace HealthCareAPI.Controllers
         public async Task<ActionResult<IEnumerable<AppointmentDomainModel>>> GetDoctorsSchedule([FromQuery] DoctorsScheduleDTO dto)
         {
             IEnumerable<AppointmentDomainModel> appointments = await _appointmentService.GetAllForDoctor(dto);
-            if (appointments == null)
-            {
-                appointments = new List<AppointmentDomainModel>();
-            }
             return Ok(appointments);
         }
     }

@@ -30,7 +30,10 @@ namespace HealthCare.Domain.Services
 
         public async Task<IEnumerable<AppointmentDomainModel>> GetAllForDoctor(DoctorsScheduleDTO dto)
         {
-            IEnumerable<Examination> examinationData = await _examinationRepository.GetAllByDoctorId(dto.DoctorId, dto.Date);
+            if (dto.ThreeDays)
+                dto.Date =  DateTime.Now;
+            IEnumerable<Examination> examinationData = await _examinationRepository.GetAllByDoctorId(dto.DoctorId, dto.Date, dto.ThreeDays);
+
             List<AppointmentDomainModel> results = new List<AppointmentDomainModel>();
             foreach (Examination item in examinationData)
             {

@@ -18,25 +18,40 @@ namespace HealthCare.Domain.Services
         IMedicalRecordRepository _medicalRecordRepository;
         IDrugRepository _drugRepository;
         IIngredientRepository _ingredientRepository;
+        IPatientRepository _patientRepository;
 
         public PrescriptionService(IPrescriptionRepository prescriptionRepository, IExaminationRepository examinationRepository, 
-                                   IMedicalRecordRepository medicalRecordRepository, IDrugRepository drugRepository, IIngredientRepository ingredientRepository)
+                                   IMedicalRecordRepository medicalRecordRepository, IDrugRepository drugRepository,
+                                   IIngredientRepository ingredientRepository, IPatientRepository patientRepository)
         {
             _prescriptionRepository = prescriptionRepository;
             _examinationRepository = examinationRepository;
             _medicalRecordRepository = medicalRecordRepository;
             _drugRepository = drugRepository;
             _ingredientRepository = ingredientRepository;
+            _patientRepository = patientRepository;
         }    
 
         public async Task<PrescriptionDomainModel> Create(PrescriptionDTO prescriptionDTO)
         {
+            if (await isPatientBlocked(prescriptionDTO.PatientId))
+                throw new PatientIsBlockedException();
+
             await checkPatientsAllergies(prescriptionDTO.DrugId, prescriptionDTO.PatientId);
 
             Prescription newPrescription = _prescriptionRepository.Post(parseFromDTO(prescriptionDTO));
             _prescriptionRepository.Save();
 
             return ParseToModel(newPrescription);
+        }
+
+        private async Task<bool> isPatientBlocked(decimal patientId)
+        {
+            Patient patient = await _patientRepository.GetPatientById(patientId);
+            if (patient.BlockedBy != null && !patient.BlockedBy.Equals(""))
+                return true;
+
+            return false;
         }
 
         private async Task checkPatientsAllergies(decimal drugId, decimal patientId)
