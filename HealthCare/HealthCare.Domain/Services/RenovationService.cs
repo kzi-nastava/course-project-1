@@ -325,9 +325,6 @@ namespace HealthCare.Domain.Services
                 _roomRepository.Post(result);
                 _roomRepository.Save();
 
-                //divide equipment here
-
-
                 JoinRenovation newJoinRenovation = new JoinRenovation
                 {
                     EndDate = dto.EndDate,
@@ -347,7 +344,6 @@ namespace HealthCare.Domain.Services
         {
             if (validateSplitRenovation(dto).Result)
             {
-                //divide equipment here
 
                 Room result1 = new Room
                 {
@@ -456,17 +452,6 @@ namespace HealthCare.Domain.Services
             };
         }
 
-
-
-        public IEnumerable<RenovationDomainModel> parseToModel(List<Renovation> renovations)
-        {
-            List<RenovationDomainModel> renovationModels = new List<RenovationDomainModel>();
-            foreach (var renovation in renovations)
-            {
-                renovationModels.Add(parseToModel(renovation));
-            }
-            return renovationModels;
-        }
         private IEnumerable<RenovationDomainModel> parseToModel(IEnumerable<Renovation> renovations)
         {
             List<RenovationDomainModel> renovationModels = new List<RenovationDomainModel>();
