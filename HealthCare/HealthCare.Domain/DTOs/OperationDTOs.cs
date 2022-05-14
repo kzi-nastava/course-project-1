@@ -20,4 +20,11 @@ namespace HealthCare.Domain.DTOs
 
         public decimal PatientId { get; set; }
     }
+    
+    public class CreateUrgentOperationDTO
+    {
+        public decimal PatientId { get; set; }
+        public decimal SpecializationId { get; set; }
+        public decimal Duration { get; set; }
+    }
 }
