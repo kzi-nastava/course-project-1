@@ -14,8 +14,6 @@ namespace HealthCare.Domain.DTOs
 
         public decimal Duration { get; set; }
 
-        public decimal RoomId { get; set; }
-
         public decimal DoctorId { get; set; }
 
         public decimal PatientId { get; set; }

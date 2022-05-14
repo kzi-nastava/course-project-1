@@ -36,7 +36,7 @@ namespace HealthCareAPI.Controllers
         // https://localhost:7195/api/credentials/login/someuser/somepass
         [HttpGet]
         [Route("login/")]
-        public async Task<ActionResult<CredentialsDomainModel>> GetLoggedUser([FromBody] LoginDTO dto)
+        public async Task<ActionResult<CredentialsDomainModel>> GetLoggedUser([FromQuery] LoginDTO dto)
         {
             try
             {

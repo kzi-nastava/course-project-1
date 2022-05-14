@@ -50,7 +50,7 @@ namespace HealthCareAPI.Controllers
 
         [HttpGet]
         [Route("filter")]
-        public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> GetFilteredEquipment([FromBody]FilterEquipmentDTO dto)
+        public async Task<ActionResult<IEnumerable<EquipmentDomainModel>>> GetFilteredEquipment([FromQuery]FilterEquipmentDTO dto)
         {
             try
             {
