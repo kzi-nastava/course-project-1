@@ -31,6 +31,7 @@ public class OperationService : IOperationService
     public async Task<IEnumerable<OperationDomainModel>> ReadAll()
     {
         IEnumerable<OperationDomainModel> operations = await GetAll();
+
         List<OperationDomainModel> result = new List<OperationDomainModel>();
         foreach (OperationDomainModel item in operations)
         {
@@ -43,8 +44,8 @@ public class OperationService : IOperationService
         IEnumerable<Operation> data = await _operationRepository.GetAll();
         if (data == null)
             return new List<OperationDomainModel>();
+
         List<OperationDomainModel> results = new List<OperationDomainModel>();
-        OperationDomainModel operationModel;
         foreach (Operation item in data)
         {
             results.Add(ParseToModel(item));
@@ -68,24 +69,28 @@ public class OperationService : IOperationService
         return results;
     }
 
+    private async Task<bool> isRoomAvailable(decimal id, TimeSlot timeSlot)
+    {
+        bool isRoomAvailable = true;
+        IEnumerable<Operation> operations = await _operationRepository.GetAllByRoomId(id);
+        foreach (Operation operation in operations)
+        {
+            if (timeSlot.isOverlaping(new TimeSlot(operation.StartTime, operation.Duration)))
+            {
+                isRoomAvailable = false;
+                break;
+            }
+        }
 
-    private async Task<decimal> GetAvailableRoomId(DateTime startTime, decimal duration)
+        return isRoomAvailable;
+    }
+
+    private async Task<decimal> GetAvailableRoomId(TimeSlot timeSlot)
     {
         IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms("operation");
         foreach (Room room in rooms)
         {
-            bool isRoomAvailable = true;
-            IEnumerable<Operation> operations = await _operationRepository.GetAllByRoomId(room.Id);
-            foreach (Operation operation in operations)
-            {
-                double difference = (startTime - operation.StartTime).TotalMinutes;
-                if (difference <= (double)operation.Duration && difference >= -(double)duration)
-                {
-                    isRoomAvailable = false;
-                    break;
-                }
-            }
-            if (isRoomAvailable)
+            if (await isRoomAvailable(room.Id, timeSlot))
             {
                 return room.Id;
             }
@@ -171,7 +176,7 @@ public class OperationService : IOperationService
                  await isPatientOnExamination(dto));
     }
 
-    private DateTime removeSeconds(DateTime dateTime)
+    private static DateTime removeSeconds(DateTime dateTime)
     {
         int year = dateTime.Year;
         int month = dateTime.Month;
@@ -193,14 +198,17 @@ public class OperationService : IOperationService
 
     private async Task validateUserInput(CUOperationDTO dto)
     {
-        if (dto.StartTime <= DateTime.UtcNow)
+        if (dto.StartTime <= DateTime.Now)
             throw new DateInPastExeption();
+
         if (await isPatientBlocked(dto.PatientId))
             throw new PatientIsBlockedException();
+
         bool doctorAvailable = await isDoctorAvailable(dto);
-        bool patientAvailable = await isPatientAvailable(dto);
         if (!doctorAvailable)
             throw new DoctorNotAvailableException();
+
+        bool patientAvailable = await isPatientAvailable(dto);
         if (!patientAvailable)
             throw new PatientNotAvailableException();
     }
@@ -209,19 +217,12 @@ public class OperationService : IOperationService
     {
         await validateUserInput(dto);
 
-        decimal roomId = await GetAvailableRoomId(dto.StartTime, dto.Duration);
+        decimal roomId = await GetAvailableRoomId(new TimeSlot(dto.StartTime, dto.Duration));
         if (roomId == -1)
             throw new NoFreeRoomsException();
 
-        Operation newOperation = new Operation
-        {
-            PatientId = dto.PatientId,
-            RoomId = roomId,
-            DoctorId = dto.DoctorId,
-            StartTime = removeSeconds(dto.StartTime),
-            Duration = dto.Duration,
-            IsDeleted = false
-        };
+        Operation newOperation = ParseFromDTO(dto);
+        newOperation.RoomId = roomId;
 
         _ = _operationRepository.Post(newOperation);
         _operationRepository.Save();
@@ -238,7 +239,7 @@ public class OperationService : IOperationService
         if (operation == null)
             throw new DataIsNullException();
 
-        decimal roomId = await GetAvailableRoomId(dto.StartTime, dto.Duration);
+        decimal roomId = await GetAvailableRoomId(new TimeSlot(dto.StartTime, dto.Duration));
         if (roomId == -1)
             throw new NoFreeRoomsException();
 
@@ -299,6 +300,17 @@ public class OperationService : IOperationService
         return operation;
     }
     
+    public static Operation ParseFromDTO(CUOperationDTO dto)
+    {
+        return new Operation
+        {
+            PatientId = dto.PatientId,
+            DoctorId = dto.DoctorId,
+            StartTime = removeSeconds(dto.StartTime),
+            Duration = dto.Duration,
+            IsDeleted = false
+        };
+    }
     
     public async Task<DateTime?> FirstStartTime(List<KeyValuePair<DateTime, DateTime>> schedule, decimal duration)
     {
@@ -345,7 +357,7 @@ public class OperationService : IOperationService
 
     public async Task<Boolean> TryCreateOperation(OperationDomainModel operationModel)
     {
-        decimal roomId = await GetAvailableRoomId(operationModel.StartTime, operationModel.Duration);
+        decimal roomId = await GetAvailableRoomId(new TimeSlot(operationModel.StartTime, operationModel.Duration));
         if (roomId == -1) return false;
         operationModel.RoomId = roomId;
         Operation operation = ParseFromModel(operationModel);
@@ -698,7 +710,7 @@ public class OperationService : IOperationService
             IsEmergency = true,
             StartTime = dto.UrgentStartTime,
             PatientId = dto.PatientId,
-            RoomId = await GetAvailableRoomId(dto.UrgentStartTime, dto.Duration)
+            RoomId = await GetAvailableRoomId(new TimeSlot(dto.UrgentStartTime, dto.Duration))
         };
         _ = _operationRepository.Post(ParseFromModel(operationModel));
         _operationRepository.Save();
