@@ -17,12 +17,16 @@ namespace HealthCare.Domain.Services
         private IReferralLetterRepository _referralLetterRepository;
         private IDoctorRepository _doctorRepository;
         private ISpecializationRepository _specializationRepository;
+        IPatientRepository _patientRepository;
 
-        public ReferralLetterService(IReferralLetterRepository referralLetterRepository, IDoctorRepository doctorRepository, ISpecializationRepository specializationRepository)
+
+        public ReferralLetterService(IReferralLetterRepository referralLetterRepository, IDoctorRepository doctorRepository,
+                                    ISpecializationRepository specializationRepository, IPatientRepository patient_repository)
         {
             _referralLetterRepository = referralLetterRepository;
             _doctorRepository = doctorRepository;
             _specializationRepository = specializationRepository;
+            _patientRepository = patient_repository;
         }
 
         public static ReferralLetterDomainModel ParseToModel(ReferralLetter referralLetter)
@@ -164,9 +168,22 @@ namespace HealthCare.Domain.Services
             return returnModel;
         }
 
+        private async Task<bool> isPatientBlocked(decimal patientId)
+        {
+            Patient patient = await _patientRepository.GetPatientById(patientId);
+            if (patient.BlockedBy != null && !patient.BlockedBy.Equals(""))
+                return true;
+
+            return false;
+        }
+
         public async Task<ReferralLetterDomainModel> Create(ReferralLetterDTO referralDTO)
         {
-            // check if he chose himself as the doctor? front/back?
+            if (referralDTO.FromDoctorId == referralDTO.ToDoctorId)
+                throw new ReferredYourselfException();
+
+            if (await isPatientBlocked(referralDTO.PatientId))
+                throw new PatientIsBlockedException();
 
             ReferralLetter newReferral = new ReferralLetter 
             {
