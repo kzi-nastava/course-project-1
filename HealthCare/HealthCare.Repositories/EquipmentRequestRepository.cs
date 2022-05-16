@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 namespace HealthCare.Repositories {
     public interface IEquipmentRequestRepository : IRepository<EquipmentRequest>
     {
+        public EquipmentRequest Update(EquipmentRequest equipmentRequest);
+        public EquipmentRequest Post(EquipmentRequest equipmentRequest);
     }
 
     public class EquipmentRequestRepository : IEquipmentRequestRepository 

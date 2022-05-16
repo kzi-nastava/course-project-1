@@ -6,4 +6,7 @@ namespace HealthCare.Domain.Interfaces;
 
 public interface IEquipmentRequestService : IService<EquipmentRequestDomainModel>
 {
+    public Task<IEnumerable<EquipmentDomainModel>> GetMissingEquipment();
+    public Task<IEnumerable<EquipmentRequestDomainModel>> OrderEquipment(IEnumerable<EquipmentRequestDTO> dtos);
+    public Task<IEnumerable<EquipmentRequestDomainModel>> DoAllOrders();
 }
