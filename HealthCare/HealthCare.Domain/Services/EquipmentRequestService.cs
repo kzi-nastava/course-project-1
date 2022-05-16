@@ -3,6 +3,7 @@ using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace HealthCare.Domain.Services;
 
@@ -130,6 +131,7 @@ public class EquipmentRequestService : IEquipmentRequestService
         return result;
     }
 
+
     public void ParseRequest(EquipmentRequest equipmentRequest, Room storage)
     {
         foreach (Inventory item in storage.Inventories)
@@ -144,6 +146,51 @@ public class EquipmentRequestService : IEquipmentRequestService
         InventoryDomainModel inventoryModel = GetInventoryModel(equipmentRequest, storage.Id);
         storage.Inventories.Add(InventoryService.ParseFromModel(inventoryModel));
     }
+    
+    public async Task<IEnumerable<RoomAndEquipmentDTO>> ShowRoomAndEquipment()
+    {
+        List<RoomAndEquipmentDTO> result = new List<RoomAndEquipmentDTO>();
+        List<Room> rooms = (List<Room>) await _roomRepository.GetAll();
+        List<EquipmentDomainModel> allEquipment = await GetAllEquipment();
+        foreach (Room item in rooms)
+        {
+            RoomAndEquipmentDTO dto = new RoomAndEquipmentDTO { RoomName = item.RoomName };
+            FillDto(dto, item, allEquipment);
+            dto.Equipment.Sort((x, y) => x.Amount.CompareTo(y.Amount));
+            result.Add(dto);
+        }
+        return result;
+    }
+
+
+    public void FillDto(RoomAndEquipmentDTO dto, Room room, List<EquipmentDomainModel> allEquipment)
+    {
+        dto.Equipment = new List<EquipmentForRoomDTO>();
+        foreach (EquipmentDomainModel equipmentModel in allEquipment)
+        {
+            Boolean found = false;
+            foreach (Inventory item in room.Inventories)
+            {
+                if (item.EquipmentId == equipmentModel.Id)
+                {
+                    found = true;
+                    dto.Equipment.Add(new EquipmentForRoomDTO { EquipmentName = item.Equipment.Name, Amount = item.Amount });
+                    break;
+                }
+            }
+            if (!found)
+                dto.Equipment.Add(new EquipmentForRoomDTO { EquipmentName = equipmentModel.Name, Amount = 0});
+        }
+    }
+
+    public async Task<List<EquipmentDomainModel>> GetAllEquipment()
+    {
+        List<EquipmentDomainModel> result = new List<EquipmentDomainModel>();
+        List<Equipment> equipments = (List<Equipment>) await _equipmentRepository.GetAll();
+        foreach (Equipment item in equipments)
+            result.Add(EquipmentService.ParseToModel(item));
+        return result;
+    }
 
     public InventoryDomainModel GetInventoryModel(EquipmentRequest equipmentRequest, decimal roomId)
     {
@@ -157,7 +204,71 @@ public class EquipmentRequestService : IEquipmentRequestService
         
         return inventoryModel;
     }
+    
+    public async Task<EquipmentDomainModel> TransferEquipment(TransferEquipmentDTO dto)
+    {
+        EquipmentDomainModel equipmentModel;
+        Room roomFrom = await _roomRepository.GetRoomById(dto.FromRoomId);
+        Room roomTo = await _roomRepository.GetRoomById(dto.ToRoomId);
+        try
+        {
+            equipmentModel = await TryTransfer(roomFrom, roomTo, dto);
+            _roomRepository.Update(roomTo);
+            _roomRepository.Update(roomFrom);
+            _roomRepository.Save();
+        }
+        catch (Exception exception)
+        {
+            throw new NotEnoughResourcesForTransfer();
+        }
 
+        return equipmentModel;
+    }
+
+    public async Task<EquipmentDomainModel?> TryTransfer(Room roomFrom, Room roomTo, TransferEquipmentDTO dto)
+    {
+        Equipment equipment = await _equipmentRepository.GetById(dto.EquipmentId);
+        EquipmentDomainModel equipmentModel = EquipmentService.ParseToModel(equipment);
+        Boolean found = false;
+        foreach (Inventory item in roomFrom.Inventories)
+        {
+            if (item.EquipmentId == equipmentModel.Id)
+            {
+                if (item.Amount < dto.Amount) throw new NotEnoughResourcesForTransfer();
+                item.Amount -= dto.Amount;
+                found = true;
+                break;
+            }
+        }
+        if (!found) throw new NotEnoughResourcesForTransfer();
+        
+        found = false;
+        foreach (Inventory item in roomTo.Inventories)
+        {
+            if (item.EquipmentId == equipmentModel.Id)
+            {
+                item.Amount += dto.Amount;
+                found = true;
+                break;
+            }
+        }
+        if (found) return equipmentModel;
+
+        roomTo.Inventories.Add(CreateNewInventory(roomTo.Id, equipmentModel.Id, dto.Amount));
+        return equipmentModel;
+    }
+
+    public Inventory CreateNewInventory(decimal roomId, decimal equipmentId, decimal amount)
+    {
+        Inventory inventory = new Inventory
+        {
+            EquipmentId = equipmentId,
+            Amount = amount,
+            IsDeleted = false,
+            RoomId = roomId
+        };
+        return inventory;
+    }
     public static EquipmentRequestDomainModel ParseToModel(EquipmentRequest equipmentRequest)
     {
         EquipmentRequestDomainModel equipmentRequestModel = new EquipmentRequestDomainModel 
