@@ -10,6 +10,7 @@ namespace HealthCare.Data.Entities
     [Table("equipment_type")]
     public class EquipmentType
     {
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("id")]
         public decimal Id { get; set; }
 
