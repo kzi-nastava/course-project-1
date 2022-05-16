@@ -39,14 +39,11 @@ namespace HealthCare.Domain.Services
         {
             IEnumerable<Credentials> data = await _credentialsRepository.GetAll();
             if (data == null)
-                return new List<CredentialsDomainModel>();
+                throw new DataIsNullException();
 
             List<CredentialsDomainModel> results = new List<CredentialsDomainModel>();
-            CredentialsDomainModel credentialsModel;
-            foreach (Credentials item in data)
-            {
-                results.Add(ParseToModel(item));
-            }
+            foreach (Credentials credentials in data)
+                results.Add(ParseToModel(credentials));
             
             return results;
         }
@@ -54,8 +51,7 @@ namespace HealthCare.Domain.Services
         public async Task<Boolean> IsBlocked(CredentialsDomainModel credentialsModel)
         {
             Patient patient = await _patientRepository.GetPatientById(credentialsModel.PatientId.GetValueOrDefault());
-            if (patient.BlockedBy.Equals("")) return false;
-            return true;
+            return !patient.BlockedBy.Equals("");
         }
 
         public async Task<CredentialsDomainModel> GetCredentialsByUsernameAndPassword(LoginDTO dto)
@@ -89,10 +85,10 @@ namespace HealthCare.Domain.Services
                 UserRoleId = credentials.UserRoleId,
                 IsDeleted = credentials.IsDeleted
             };
+            
             if (credentials.UserRole != null)
-            {
                 credentialsModel.UserRole = UserRoleService.ParseToModel(credentials.UserRole);
-            }
+            
             return credentialsModel;
         }
         
@@ -110,10 +106,10 @@ namespace HealthCare.Domain.Services
                 UserRoleId = credentialsModel.UserRoleId,
                 IsDeleted = credentialsModel.IsDeleted
             };
+            
             if (credentialsModel.UserRole != null)
-            {
                 credentials.UserRole = UserRoleService.ParseFromModel(credentialsModel.UserRole);
-            }
+            
             return credentials;
         }
     }

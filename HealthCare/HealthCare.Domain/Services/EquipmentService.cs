@@ -128,7 +128,8 @@ public class EquipmentService : IEquipmentService
                     EquipmentId = group.Key,
                     TotalAmount = group.Sum(i => i.Amount),
                 });
-            //filter #2
+
+            //min filter
             if (dto.MinAmount != null)
             {
                 IEnumerable<decimal> minFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount > dto.MinAmount)
@@ -137,7 +138,7 @@ public class EquipmentService : IEquipmentService
                 filterResult = filterResult.Where(x => minFilteredEquipmentIds.Contains(x.Id));
             }
 
-            // filter #3
+            // max filter 
             if (dto.MaxAmount != null)
             {
                 IEnumerable<decimal> maxFilteredEquipmentIds = summedEquipment.Where(group => group.TotalAmount < dto.MaxAmount)
@@ -147,7 +148,7 @@ public class EquipmentService : IEquipmentService
             }
         }
 
-        // filter #4
+        // room type filter
         if(dto.RoomTypeId != null)
         {
             // get rooms ids of that room type

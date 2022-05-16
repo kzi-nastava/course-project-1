@@ -8,8 +8,11 @@ namespace HealthCare.Domain.Models
 {
     public class AllergyDomainModel
     {
-        public decimal PatientId { get; set; }
+        public decimal PatientId  { get; set; }
 
-        public decimal IngredientId { get; set; }
+        public IngredientDomainModel? Ingredient { get; set; }
+
+        public bool IsDeleted { get; set; }
+
     }
 }

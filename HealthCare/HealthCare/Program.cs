@@ -23,6 +23,7 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 //Repositories
 builder.Services.AddTransient<IAntiTrollRepository, AntiTrollRepository>();
 builder.Services.AddTransient<IAnamnesisRepository, AnamnesisRepository>();
+builder.Services.AddTransient<IAllergyRepository, AllergyRepository>();
 builder.Services.AddTransient<ICredentialsRepository, CredentialsRepository>();
 builder.Services.AddTransient<IDoctorRepository, DoctorRepository>();
 builder.Services.AddTransient<IDrugRepository, DrugRepository>();
@@ -47,10 +48,12 @@ builder.Services.AddTransient<IUserRoleRepository, UserRoleRepository>();
 builder.Services.AddTransient<IJoinRenovationRepository, JoinRenovationRepository>();
 builder.Services.AddTransient<ISimpleRenovationRepository, SimpleRenovationRepository>();
 builder.Services.AddTransient<ISplitRenovationRepository, SplitRenovationRepository>();
+builder.Services.AddTransient<INotificationRepository, NotificationRepository>();
 
 //Domain
 builder.Services.AddTransient<IAntiTrollService, AntiTrollService>();
 builder.Services.AddTransient<IAnamnesisService, AnamnesisService>();
+builder.Services.AddTransient<IAllergyService, AllergyService>();
 builder.Services.AddTransient<IAppointmentService, AppointmentService>();
 builder.Services.AddTransient<ICredentialsService, CredentialsService>();
 builder.Services.AddTransient<IDoctorService, DoctorService>();
@@ -74,7 +77,7 @@ builder.Services.AddTransient<ISpecializationService, SpecializationService>();
 builder.Services.AddTransient<ITransferService, TransferService>();
 builder.Services.AddTransient<IUserRoleService, UserRoleService>();
 builder.Services.AddTransient<IRenovationService, RenovationService>();
-
+builder.Services.AddTransient<INotificationService, NotificationService>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");

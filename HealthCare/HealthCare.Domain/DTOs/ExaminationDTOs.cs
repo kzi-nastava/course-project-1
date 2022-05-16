@@ -54,4 +54,15 @@ namespace HealthCare.Domain.DTOs
         
         public bool IsDoctorPriority { get; set; }
     }
+
+    public class RescheduleDTO
+    {
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public DateTime UrgentStartTime { get; set; }
+        public decimal DoctorId { get; set; }
+        public decimal PatientId { get; set; }
+        public DateTime RescheduleTime { get; set; }
+        public decimal Duration { get; set; }
+    }
 }

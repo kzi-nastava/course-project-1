@@ -2,6 +2,7 @@
 using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
+using HealthCare.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareAPI.Controllers 
@@ -13,12 +14,17 @@ namespace HealthCareAPI.Controllers
         private IExaminationService _examinationService;
         private IDoctorService _doctorService;
         private IPatientService _patientService;
+        private INotificationService _notificationService;
 
-        public ExaminationController(IExaminationService examinationService, IDoctorService doctorService, IPatientService patientService) 
+        public ExaminationController(IExaminationService examinationService, 
+            IDoctorService doctorService, 
+            IPatientService patientService,
+            INotificationService notificationService) 
         {
             _examinationService = examinationService;
             _doctorService = doctorService;
             _patientService = patientService;
+            _notificationService = notificationService;
         }
 
         // https://localhost:7195/api/examination
@@ -166,13 +172,21 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpPut]
-        [Route("urgent")]
-        public async Task<ActionResult<IEnumerable<ExaminationDomainModel>>> CreateUrgentExamination(CreateUrgentExaminationDTO dto)
+        [Route("urgentList")]
+        public async Task<ActionResult<IEnumerable<IEnumerable<RescheduleDTO>>>> CreateUrgentExamination(CreateUrgentExaminationDTO dto)
         {
-            List<ExaminationDomainModel> operationModels =
-                (List<ExaminationDomainModel>) await _examinationService.CreateUrgent(dto, _doctorService, _patientService);
-            if (operationModels.Count == 0) return Ok();
-            return operationModels;
+            ExaminationDomainModel examinationModel = await _examinationService.CreateUrgent(dto, _doctorService, _notificationService);
+            if (examinationModel != null) return Ok();
+            IEnumerable<IEnumerable<RescheduleDTO>> rescheduleItems = await _examinationService.FindFiveAppointments(dto, _doctorService, _patientService);
+            return Ok(rescheduleItems);
+        }
+        
+        [HttpPut]
+        [Route("urgent")]
+        public async Task<ActionResult<ExaminationDomainModel>> RescheduleForUrgentExamination(List<RescheduleDTO> dto)
+        {
+            ExaminationDomainModel urgentExamination = await _examinationService.AppointUrgent(dto, _notificationService);
+            return Ok(urgentExamination);
         }
 
     }

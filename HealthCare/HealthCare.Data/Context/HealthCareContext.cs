@@ -14,6 +14,7 @@ namespace HealthCare.Data.Context
     {
         public DbSet<AntiTroll> AntiTrolls { get; set; }
         public DbSet<Anamnesis> Anamneses { get; set; }
+        public DbSet<Allergy> Allergies { get; set; }
         public DbSet<Credentials> Credentials { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Drug> Drugs { get; set; }
@@ -40,6 +41,7 @@ namespace HealthCare.Data.Context
         public DbSet<SimpleRenovation> SimpleRenovations{ get; set; }
         public DbSet<JoinRenovation> JoinRenovations { get; set; }
         public DbSet<SplitRenovation> SplitRenovations { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         public HealthCareContext(DbContextOptions options) : base(options)
         {
@@ -83,6 +85,10 @@ namespace HealthCare.Data.Context
                 .WithMany(i => i.DrugIngredients)
                 .HasForeignKey(x => x.IngredientId);
 
+            modelBuilder.Entity<Allergy>()
+                .HasOne(x => x.Ingredient);
+
+
             modelBuilder.Entity<DrugIngredient>()
                 .HasOne(x => x.Drug)
                 .WithMany(d => d.DrugIngredients)
@@ -113,6 +119,7 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<SimpleRenovation>().HasKey(x => x.Id);
             modelBuilder.Entity<JoinRenovation>().HasKey(x => x.Id);
             modelBuilder.Entity<SplitRenovation>().HasKey(x => x.Id);
+            modelBuilder.Entity<Notification>().HasKey(x => x.Id);
         }
     }
 }

@@ -191,6 +191,7 @@ public class ExaminationService : IExaminationService
     {
         if (dto.IsPatient && await AntiTrollCheck(dto.PatientId, false))
             throw new DataIsNullException();
+
         Examination examination = await _examinationRepository.GetExamination(dto.ExaminationId);
         double daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
 
@@ -311,23 +312,30 @@ public class ExaminationService : IExaminationService
         return false;
     }
 
+    private async Task<bool> isRoomAvailable(decimal id, DateTime startTime)
+    {
+        bool isRoomAvailable = true;
+        IEnumerable<Examination> examinations = await _examinationRepository.GetAllByRoomId(id);
+        foreach (Examination examination in examinations)
+        {
+            double difference = (startTime - examination.StartTime).TotalMinutes;
+            if (difference <= 15 && difference >= -15)
+            {
+                isRoomAvailable = false;
+                break;
+            }
+        }
+
+        return isRoomAvailable;
+    }
+
     private async Task<decimal> getAvailableRoomId(DateTime startTime)
     {
         IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms("examination");
         foreach (Room room in rooms)
         {
-            bool isRoomAvailable = true;
-            IEnumerable<Examination> examinations = await _examinationRepository.GetAllByRoomId(room.Id);
-            foreach (Examination examination in examinations)
-            {
-                double difference = (startTime - examination.StartTime).TotalMinutes;
-                if (difference <= 15 && difference >= -15)
-                {
-                    isRoomAvailable = false;
-                    break;
-                }
-            }
-            if (isRoomAvailable)
+            bool roomAvailable = await isRoomAvailable(room.Id, startTime);
+            if (roomAvailable)
             {
                 return room.Id;
             }
@@ -403,10 +411,12 @@ public class ExaminationService : IExaminationService
             throw new DateInPastExeption();
         if (await isPatientBlocked(dto.PatientId))
             throw new PatientIsBlockedException();
+
         bool doctorAvailable = await isDoctorAvailable(dto);
-        bool patientAvailable = await isPatientAvailable(dto);
         if (!doctorAvailable)
             throw new DoctorNotAvailableException();
+
+        bool patientAvailable = await isPatientAvailable(dto);
         if (!patientAvailable)
             throw new PatientNotAvailableException();
     }
@@ -428,7 +438,6 @@ public class ExaminationService : IExaminationService
 
         if (daysUntilExamination > 1 || !dto.IsPatient)
             UpdateExamination(dto, roomId, examination);
-
         else 
         {
             Examination newExamination = CreateExamination(dto, roomId);
@@ -664,17 +673,18 @@ public class ExaminationService : IExaminationService
        
     }
 
-    public async Task<DateTime?> FirstStartTime(decimal doctorId, List<KeyValuePair<DateTime, DateTime>> schedule, DateTime now)
+    public async Task<DateTime?> FirstStartTime(List<KeyValuePair<DateTime, DateTime>> schedule, decimal duration)
     {
+        DateTime now = DateTime.Now;
         DateTime limit = removeSeconds(now.AddHours(2));
         foreach (KeyValuePair<DateTime, DateTime> pair in schedule)
         {
             // Now: 20:00, Limit: 22:00, Schedule: 14:00 - 16:00 -> continue
             if (now > pair.Value) continue;
             // Now: 20:00, Limit: 22:00, Schedule: 15:00 - 21:00 -> 20:00
-            if (now >= pair.Key && now <= pair.Value) return now;
+            if (now >= pair.Key && now <= pair.Value && (pair.Value - now).Minutes >= duration) return now;
             // Now: 20:00, Limit: 22:00, Schedule: 21:00 - 23:00 -> 21:00
-            if (limit >= pair.Key && pair.Key > now) return pair.Key;
+            if (limit >= pair.Key && pair.Key > now && (pair.Value - pair.Key).Minutes >= duration) return pair.Key;
             // Now: 20:00, Limit: 22:00, Schedule: 23:00 - 23:30 -> break completely (every other
             // pair will be greater than this one, so return null)
             return null;
@@ -682,139 +692,385 @@ public class ExaminationService : IExaminationService
         return null;
     }
 
-    public async Task<IEnumerable<ExaminationDomainModel>> CreateUrgent(CreateUrgentExaminationDTO dto, IDoctorService doctorService, IPatientService patientService)
+    // DoctorService is needed for doctor's schedule
+    public async Task<ExaminationDomainModel> CreateUrgent(CreateUrgentExaminationDTO dto, IDoctorService doctorService,
+        INotificationService notificationService)
     {
-        DateTime now = removeSeconds(DateTime.Now);
         ExaminationDomainModel examinationModel = new ExaminationDomainModel
         {
             IsDeleted = false,
             IsEmergency = true,
             PatientId = dto.PatientId
         };
-        // Find examination in the first 2 hours for any doctor that matches
-        // the specialization criteria
+        // Find examination in the first 2 hours for any doctor that matches the specialization criteria
         List<Doctor> doctors = (List<Doctor>) await _doctorRepository.GetBySpecialization(dto.SpecializationId);
         if (doctors == null || doctors.Count == 0) throw new NoAvailableSpecialistsException();
-        List<KeyValuePair<DateTime, decimal>> urgentStartTimes = new List<KeyValuePair<DateTime, decimal>>();
-        foreach (Doctor doctor in doctors)
-        {
-            var schedule = (List<KeyValuePair<DateTime, DateTime>>) await doctorService.GetAvailableSchedule(doctor.Id);
-            DateTime? startTime = await FirstStartTime(doctor.Id, schedule, now);
-            if (startTime.HasValue) 
-                urgentStartTimes.Add(new KeyValuePair<DateTime, decimal>(startTime.GetValueOrDefault(), doctor.Id));
-        }
+        // Find start times (to sort by earliest) 
+        List<KeyValuePair<DateTime, decimal>> urgentStartTimes = await GetUrgentStartTimes(doctors, doctorService);
+        
         urgentStartTimes.Sort((x, y) => x.Key.CompareTo(y.Key));
         // Try to create examination
+        ExaminationDomainModel? createdModel = await ParsePairs(examinationModel, urgentStartTimes);
+        _ = await SendNotifications(notificationService, examinationModel.DoctorId, examinationModel.PatientId);
+        return createdModel;
+    }
+
+    public async Task<Boolean> TryCreateExamination(ExaminationDomainModel examinationModel)
+    {
+        decimal roomId = await getAvailableRoomId(examinationModel.StartTime);
+        if (roomId == -1) return false;
+        examinationModel.RoomId = roomId;
+        Examination examination = ParseFromModel(examinationModel);
+        _ = _examinationRepository.Post(examination);
+        _examinationRepository.Save();
+        return true;
+    }
+
+    public async Task<ExaminationDomainModel?> ParsePairs(ExaminationDomainModel examinationModel, List<KeyValuePair<DateTime, decimal>> urgentStartTimes)
+    {
+        Boolean flag = false;
         foreach (KeyValuePair<DateTime, decimal> pair in urgentStartTimes)
         {
-            examinationModel.StartTime = pair.Key;
+            examinationModel.StartTime = removeSeconds(pair.Key);
             examinationModel.DoctorId = pair.Value;
-            decimal roomId = await getAvailableRoomId(examinationModel.StartTime);
-            if (roomId == -1) continue;
-            examinationModel.RoomId = roomId;
-            Examination examination = ParseFromModel(examinationModel);
-            _ = _examinationRepository.Post(examination);
-            _examinationRepository.Save();
-            // Return empty list to signify success
-            return new List<ExaminationDomainModel>();
+            flag  = await TryCreateExamination(examinationModel);
+            if (flag) return examinationModel;
         }
+        return null;
+    }
 
-        // Above failed, return examinations that can be postponed
-        // sorted by the date on which they can be postponed 
-        // This list must contain 5 examinations
-        // TODO: Dto candidate
-        Dictionary<decimal, KeyValuePair<ExaminationDomainModel, DateTime>> canBeRescheduled =
-            new Dictionary<decimal, KeyValuePair<ExaminationDomainModel, DateTime>>();
+    public async Task<List<KeyValuePair<DateTime, decimal>>> GetUrgentStartTimes(List<Doctor> doctors, IDoctorService doctorService)
+    {
+        List<KeyValuePair<DateTime, decimal>> result = new List<KeyValuePair<DateTime, decimal>>();
         foreach (Doctor doctor in doctors)
         {
-            // Available doctor schedule
-            var availableSchedule =
-                (List<KeyValuePair<DateTime, DateTime>>)await doctorService.GetAvailableSchedule(doctor.Id);
-            // Busy doctor schedule
-            var busySchedule =
-                (List<KeyValuePair<DateTime, DateTime>>)await doctorService.GetBusySchedule(doctor.Id);
-            // Patient schedule
-            var patientSchedule = 
-                (List<KeyValuePair<DateTime, DateTime>>)await patientService.GetSchedule(dto.PatientId);
-            var first = await GetFirstForReschedule(busySchedule, availableSchedule, patientSchedule, doctor.Id,
-                dto.PatientId);
-            if (first.Key == null) continue;
-            canBeRescheduled.Add(doctor.Id, first); 
+            var schedule = (List<KeyValuePair<DateTime, DateTime>>)await doctorService.GetAvailableSchedule(doctor.Id);
+            DateTime? startTime = await FirstStartTime(schedule, 15);
+            if (startTime.HasValue)
+                result.Add(new KeyValuePair<DateTime, decimal>(startTime.GetValueOrDefault(), doctor.Id));
         }
-        var sortedDict = 
-            from entry in canBeRescheduled orderby entry.Value.Value select entry;
-        List<ExaminationDomainModel> result = new List<ExaminationDomainModel>();
-        int counter = 0;
-        foreach (var entry in sortedDict)
+        return result;
+    }
+
+    public async Task<IEnumerable<IEnumerable<RescheduleDTO>>> FindFiveAppointments(CreateUrgentExaminationDTO dto, 
+        IDoctorService doctorService, IPatientService patientService)
+    {
+        // For every doctor try to find a single reschedule 
+        List<Doctor> doctors = (List<Doctor>) await _doctorRepository.GetAll();
+        List<List<List<RescheduleDTO>>> reschedule = new List<List<List<RescheduleDTO>>>();
+        foreach (Doctor doctor in doctors)
+            reschedule.Add(await GetRescheduleForDoctor(dto, doctor.Id, doctorService, patientService));
+        List<KeyValuePair<DateTime, List<RescheduleDTO>>> rescheduleSorted = new List<KeyValuePair<DateTime, List<RescheduleDTO>>>();
+        foreach (List<List<RescheduleDTO>> item in reschedule)
+            rescheduleSorted.AddRange(await FindRescheduleTime(item, doctorService, patientService, dto.PatientId));
+        rescheduleSorted.Sort((x, y) => x.Key.CompareTo(y.Key));
+        List<List<RescheduleDTO>> result = new List<List<RescheduleDTO>>();
+        foreach (var item in rescheduleSorted)
         {
-            result.Add(entry.Value.Key);
-            counter++;
-            if (counter == 5) break;
+            result.Add(item.Value);
+            if (result.Count > 5) break;
+        }
+        return result;
+    }
+
+    public async Task<List<KeyValuePair<DateTime, List<RescheduleDTO>>>> FindRescheduleTime(List<List<RescheduleDTO>> schedule, 
+        IDoctorService doctorService, IPatientService patientService, decimal patientId)
+    {
+        List<KeyValuePair<DateTime, DateTime>> freePatientSchedule = 
+            (List<KeyValuePair<DateTime, DateTime>>) await patientService.GetSchedule(patientId);
+        decimal doctorId = schedule[0][0].DoctorId;
+        List<KeyValuePair<DateTime, DateTime>> freeDoctorSchedule =
+            (List<KeyValuePair<DateTime, DateTime>>) await doctorService.GetAvailableSchedule(doctorId);
+        List<KeyValuePair<DateTime, List<RescheduleDTO>>> result = new List<KeyValuePair<DateTime, List<RescheduleDTO>>>();
+        foreach (List<RescheduleDTO> sequence in schedule)
+        {
+            _ = await SetRescheduleForSequence(sequence, freePatientSchedule, freeDoctorSchedule);
+            DateTime max = await FindMaxDateInSequence(sequence);
+            result.Add(new KeyValuePair<DateTime, List<RescheduleDTO>>(max, sequence));
+        }
+        return result;
+    }
+
+    public async Task<DateTime> FindMaxDateInSequence(List<RescheduleDTO> sequence)
+    {
+        DateTime max = DateTime.Now;
+        foreach (RescheduleDTO item in sequence)
+            if (item.RescheduleTime > max) max = item.RescheduleTime;
+        return max;
+    }
+
+    public async Task<Boolean> SetRescheduleForSequence(List<RescheduleDTO> sequence, 
+        List<KeyValuePair<DateTime, DateTime>> patientSchedule,
+        List<KeyValuePair<DateTime, DateTime>> doctorSchedule)
+    {
+        foreach (RescheduleDTO item in sequence)
+            _ = await SetRescheduleForDTO(item, patientSchedule, doctorSchedule);
+        return true;
+    }
+
+    public int GetIndex(List<KeyValuePair<DateTime, DateTime>> schedule, DateTime reference)
+    {
+        for (int i = 0; i < schedule.Count; i++)
+            if (schedule[i].Key > reference)
+                return i;
+        return 0;
+    }
+
+    public async Task<Boolean> SetRescheduleForDTO(RescheduleDTO dto,
+        List<KeyValuePair<DateTime, DateTime>> patientSchedule,
+        List<KeyValuePair<DateTime, DateTime>> doctorSchedule)
+    {
+        int patientIndex = GetIndex(patientSchedule, dto.StartTime);
+        int doctorIndex = GetIndex(patientSchedule, dto.StartTime);
+
+        Boolean found = false;
+        while (!found)
+        {
+            KeyValuePair<DateTime, DateTime> doctorPair = doctorSchedule[doctorIndex];
+            KeyValuePair<DateTime, DateTime> patientPair = patientSchedule[patientIndex];
+            if (!IsDateTimeOverlap(doctorPair, patientPair))
+            {
+                // Update smaller
+                if (doctorPair.Key < patientPair.Key && doctorPair.Value < patientPair.Value)
+                    doctorIndex++;
+                else
+                    patientIndex++;
+                continue;
+            }
+
+            DateTime rescheduleTime = CalculateRescheduleTime(doctorPair, patientPair, dto.Duration);
+            if (rescheduleTime == DateTime.MaxValue) continue;
+            dto.RescheduleTime = rescheduleTime;
+            found = true;
+        }
+        return true;
+    }
+
+    public DateTime CalculateRescheduleTime(KeyValuePair<DateTime, DateTime> first, KeyValuePair<DateTime, DateTime> second, decimal duration)
+    {
+        decimal window = 0;
+        if (first.Key < second.Key)
+        {
+            if (first.Value < second.Value)
+                window = (first.Value - second.Key).Minutes;
+            else
+                window = (second.Value - second.Key).Minutes;
+            
+            if (window >= duration)
+                return second.Key;
+        }
+        if (first.Value > second.Value)
+            window = (second.Value - first.Key).Minutes;
+        else
+            window = (first.Value - first.Key).Minutes;
+        
+        if (window >= duration)
+            return first.Key;
+        
+        return DateTime.MaxValue;
+    }
+    
+    public async Task<List<List<RescheduleDTO>>> GetRescheduleForDoctor(CreateUrgentExaminationDTO dto, decimal doctorId,
+        IDoctorService doctorService, IPatientService patientService, decimal duration=15)
+    {
+        List<KeyValuePair<DateTime, DateTime>> freeSchedule = 
+            (List<KeyValuePair<DateTime, DateTime>>) await doctorService.GetAvailableSchedule(doctorId);
+        List<KeyValuePair<DateTime, DateTime>> busySchedule = 
+            (List<KeyValuePair<DateTime, DateTime>>) await doctorService.GetBusySchedule(doctorId);
+        // Loop variables
+        DateTime now = removeSeconds(DateTime.Now);
+        DateTime new_now = now;
+        DateTime limit = removeSeconds(DateTime.Now.AddHours(2));
+        DateTime first, second;
+        int index = GetFirstIndex(freeSchedule, false);
+        int size = 0;
+
+        List<List<RescheduleDTO>> result = new List<List<RescheduleDTO>>();
+        List<RescheduleDTO> tempList = new List<RescheduleDTO>();
+        if (index == -1)
+            // If doctor has no free room in his schedule
+            return CalculateWithNoFreeTime(busySchedule, dto.PatientId, doctorId, duration);
+        
+        // If doctor has free time in his schedule
+        int busyIndex = GetFirstIndex(busySchedule, true);
+        while (index != -1 && busyIndex != -1)
+        {
+            bool flagFree = false; 
+            KeyValuePair<DateTime, DateTime> freePair = freeSchedule[index];
+            KeyValuePair<DateTime, DateTime> busyPair = busySchedule[busyIndex];
+            if (freePair.Value == busyPair.Key)
+            {
+                flagFree = true;
+                new_now = busyPair.Value;
+            }
+            else if (freePair.Key == busyPair.Value)
+            {
+                flagFree = true;
+                new_now = freePair.Value;
+            }
+            else
+                new_now = busyPair.Key;
+            
+            int old_free = index;
+            int old_busy = busyIndex;
+            result.Add(FindSequence(freeSchedule, busySchedule, index, busyIndex, duration, now, dto.PatientId, doctorId));
+            
+            if (flagFree)
+                if(UpdateIndex(freeSchedule, old_free) != -1) index = UpdateIndex(freeSchedule, old_free);
+            if(UpdateIndex(busySchedule, old_busy) != -1) busyIndex = UpdateIndex(busySchedule, old_busy);
+            if (new_now > limit) break;
+            now = new_now;
+        }
+        return result;
+    }
+
+    public List<RescheduleDTO> FindSequence(List<KeyValuePair<DateTime, DateTime>> freeSchedule, List<KeyValuePair<DateTime, DateTime>> busySchedule,
+        int index, int busyIndex, decimal duration, DateTime now, decimal patientId, decimal doctorId)
+    {
+        int size = 0;
+        DateTime rescheduleTime = now;
+        List<RescheduleDTO> sequence = new List<RescheduleDTO>();
+        while (size < duration || (index == -1 && busyIndex == -1))
+        {
+            Boolean flagFree = false;
+            KeyValuePair<DateTime, DateTime> freePair = freeSchedule[index];
+            KeyValuePair<DateTime, DateTime> busyPair = busySchedule[busyIndex];
+            DateTime first, second;
+            // Max possible range (if rescheduled)
+            if (freePair.Value == busyPair.Key)
+            {
+                first = freePair.Key;
+                second = busyPair.Value;
+                flagFree = true;
+            }
+            else if (freePair.Key == busyPair.Value)
+            {
+                first = busyPair.Key;
+                second = freePair.Value;
+                flagFree = true;
+            }
+            else
+            {
+                first = busyPair.Key;
+                second = busyPair.Value;
+            }
+            size += (second - now).Minutes;
+            sequence.Add(new RescheduleDTO{PatientId = patientId, DoctorId = doctorId, StartTime = second, EndTime = first, UrgentStartTime = rescheduleTime});
+            now = first;
+            // Update
+            if (flagFree)
+                if(UpdateIndex(freeSchedule, index) != -1) index = UpdateIndex(freeSchedule, index);
+            if(UpdateIndex(busySchedule, busyIndex) != -1) busyIndex = UpdateIndex(busySchedule, busyIndex);
+        }
+
+        return sequence;
+    }
+
+    public List<List<RescheduleDTO>> CalculateWithNoFreeTime(List<KeyValuePair<DateTime, DateTime>> busySchedule, 
+        decimal patientId, decimal doctorId, decimal duration)
+    {
+        List<RescheduleDTO> tempList = new List<RescheduleDTO>();
+        List<List<RescheduleDTO>> result = new List<List<RescheduleDTO>>();
+        DateTime first, second, now = DateTime.Now;
+        decimal size = 0;
+        for (var i = GetFirstIndex(busySchedule, true); i < busySchedule.Count-1; i++)
+        {
+            first = busySchedule[i].Value;
+            second = busySchedule[i+1].Key;
+            size = 0;
+            DateTime rescheduleTime = now;
+            while (size < duration)
+            {
+                size += (second - now).Minutes;
+                tempList.Add(new RescheduleDTO{PatientId = patientId, DoctorId = doctorId, StartTime = second, EndTime = first, UrgentStartTime = rescheduleTime});
+            }
+            now = first;
+            result.Add(tempList);
         }
 
         return result;
     }
 
-    public async Task<Boolean> IsUrgent(Examination examination)
+    public int UpdateIndex(List<KeyValuePair<DateTime, DateTime>> schedule, int lastIndex)
     {
-        return examination.IsEmergency;
+        if (lastIndex + 1 == schedule.Count) return -1;
+        KeyValuePair<DateTime, DateTime> pair = schedule[lastIndex + 1];
+        if (pair.Key > removeSeconds(DateTime.Now).AddHours(2)) return -1;
+        return lastIndex + 1;
     }
-
-    public async Task<KeyValuePair<ExaminationDomainModel, DateTime>> GetFirstForReschedule(List<KeyValuePair<DateTime, DateTime>> busySchedule, 
-        List<KeyValuePair<DateTime, DateTime>> availableSchedule, List<KeyValuePair<DateTime, DateTime>> patientSchedule, decimal doctorId, decimal patientId)
+    
+    public int GetFirstIndex(List<KeyValuePair<DateTime, DateTime>> schedule, bool isBusy)
     {
-        decimal duration = 15;
         DateTime now = removeSeconds(DateTime.Now);
-        DateTime limit = removeSeconds(now.AddHours(2));
-        CUExaminationDTO mockupModel = new CUExaminationDTO
+        DateTime limit = now.AddHours(2);
+        for (var i = 0; i < schedule.Count; i++)
         {
-            StartTime = now
-        };
-        ExaminationDomainModel? examinationModel = null;
-        foreach (KeyValuePair<DateTime, DateTime> pair in busySchedule)
-        {
-            // If limit is larger than pair key then we cannot reschedule
-            if (now > pair.Value) continue;
-            if (limit > pair.Key) break;
-            // Rescheduling ahead
-            if (mockupModel.StartTime < pair.Key && mockupModel.StartTime.AddMinutes((double)duration) >= pair.Key &&
-                mockupModel.StartTime.AddMinutes((double)duration) <= pair.Value && await isDoctorAvailable(mockupModel))
-            {
-                // If it's urgent, then skip it
-                if (await IsUrgent(await _examinationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key)))
-                    continue;
-                // Find this examination
-                Examination examination = await _examinationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key);
-                examinationModel = ParseToModel(examination);
-            }
-
-            mockupModel.StartTime.AddMinutes((double)duration);
-            if (mockupModel.StartTime > limit) break;
-            // Rescheduling behind
-            if (mockupModel.StartTime > pair.Value && mockupModel.StartTime.AddMinutes((double)-duration) > pair.Key
-               && mockupModel.StartTime.AddMinutes((double)-duration) < pair.Value && await isDoctorAvailable(mockupModel))
-            {
-                // If it's urgent, then skip it
-                if (await IsUrgent(await _examinationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key)))
-                    continue;
-               // Find this examination
-                Examination examination = await _examinationRepository.GetByDoctorPatientDate(doctorId, patientId, pair.Key);
-                examinationModel = ParseToModel(examination);
-            }
+            KeyValuePair<DateTime, DateTime> pair = schedule[i];
+            if (pair.Key > limit) break;
+            if (isBusy && pair.Value > now) return i;
+            if (!isBusy && pair.Key >= now) return i;
         }
-        if (examinationModel == null) return new KeyValuePair<ExaminationDomainModel, DateTime>(null, now);
-        // Else check when to reschedule
-        DateTime rescheduleTime = FindRescheduleTime(busySchedule, patientSchedule, duration);
-        return new KeyValuePair<ExaminationDomainModel, DateTime>(examinationModel, rescheduleTime);
+        
+        return -1;
+    }
+    private bool IsDateTimeOverlap(KeyValuePair<DateTime, DateTime> first, KeyValuePair<DateTime, DateTime> second)
+    {
+        return MaxDate(first.Key, second.Key) < MinDate(first.Value, second.Value);
+
     }
 
-    public DateTime FindRescheduleTime(List<KeyValuePair<DateTime, DateTime>> busySchedule,
-        List<KeyValuePair<DateTime, DateTime>> patientSchedule, decimal duration)
+    private DateTime MaxDate(DateTime time1, DateTime time2)
     {
-        // Can't do logic, will reschedule after larger schedule[-1]
-        var doctor = busySchedule.Last();
-        var patient = patientSchedule.Last();
-        if (doctor.Value > patient.Value) return doctor.Value;
-        return patient.Value;
+        return (time1 > time2 ? time1 : time2);
+    }
+
+    private DateTime MinDate(DateTime time1, DateTime time2)
+    {
+        return (time1 < time2 ? time1 : time2);
+    }
+
+    public async Task<ExaminationDomainModel> AppointUrgent(List<RescheduleDTO> dto, INotificationService notificationService)
+    {
+        foreach (RescheduleDTO item in dto)
+            _ = await RescheduleOne(item, notificationService);
+        // Any dto will do
+        return await MakeUrgent(dto[0]);
+    }
+
+    public async Task<ExaminationDomainModel> RescheduleOne(RescheduleDTO dto, INotificationService notificationService)
+    {
+        Examination examination = await _examinationRepository.GetByParams(dto.DoctorId, dto.PatientId, dto.StartTime);
+        examination.StartTime = dto.RescheduleTime;
+        _ = _examinationRepository.Update(examination);
+        _examinationRepository.Save();
+        _ = await SendNotifications(notificationService, dto.DoctorId, dto.PatientId);
+        return ParseToModel(examination);
+    }
+
+    public async Task<Boolean> SendNotifications(INotificationService notificationService, decimal doctorId=0, decimal patientId=0)
+    {
+        KeyValuePair<string, string> content = new KeyValuePair<string, string>("Rescheduling",
+            "Your appointment has been rescheduled. Please check your schedule");
+       if (doctorId != 0) 
+           _ = await notificationService.Send(new SendNotificationDTO{IsPatient = false, Content = content, PersonId = doctorId});
+       if (patientId != 0) 
+           _ = await notificationService.Send(new SendNotificationDTO{IsPatient = true, Content = content, PersonId = patientId});
+       return true;
+    }
+
+    public async Task<ExaminationDomainModel> MakeUrgent(RescheduleDTO dto)
+    {
+        ExaminationDomainModel examinationModel = new ExaminationDomainModel
+        {
+            DoctorId = dto.DoctorId,
+            IsDeleted = false,
+            IsEmergency = true,
+            StartTime = dto.UrgentStartTime,
+            PatientId = dto.PatientId,
+            RoomId = await getAvailableRoomId(dto.UrgentStartTime)
+        };
+        _ = _examinationRepository.Post(ParseFromModel(examinationModel));
+        _examinationRepository.Save();
+        return examinationModel;
     }
 }

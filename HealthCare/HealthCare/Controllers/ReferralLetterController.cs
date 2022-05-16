@@ -28,20 +28,35 @@ namespace HealthCareAPI.Controllers
             return Ok(referralLetters);
         }
 
-        [HttpGet]
-        [Route("createAppointment/{referralId}/{time}")]
-        public async Task<ActionResult<IEnumerable<ReferralLetterDomainModel>>> CreateAppointment(CreateAppointmentDTO dto)
+        [HttpPut]
+        [Route("createAppointment")]
+        public async Task<ActionResult<IEnumerable<ReferralLetterDomainModel>>> CreateAppointment([FromBody] CreateAppointmentDTO dto)
         {
-            ReferralLetterDomainModel referralLetter = await _referralLetterService.CreateAppointment(dto, _examinationService);
-            return Ok(referralLetter);
+            try
+            {
+                ReferralLetterDomainModel referralLetter =
+                    await _referralLetterService.CreateAppointment(dto, _examinationService);
+                return Ok(referralLetter);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
         [HttpPost]
         [Route("create")]
         public async Task<ActionResult<ReferralLetterDomainModel>> Create([FromBody] ReferralLetterDTO referralDTO)
         {
-            ReferralLetterDomainModel createdReferralModel = await _referralLetterService.Create(referralDTO);
-            return Ok(createdReferralModel);
+            try
+            {
+                ReferralLetterDomainModel createdReferralModel = await _referralLetterService.Create(referralDTO);
+                return Ok(createdReferralModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
     }
 }

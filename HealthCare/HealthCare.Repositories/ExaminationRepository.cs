@@ -17,9 +17,10 @@ namespace HealthCare.Repositories
         public Task<IEnumerable<Examination>> GetAllByPatientId(decimal id);
         public Task<IEnumerable<Examination>> GetByPatientId(decimal id);
         public Task<IEnumerable<Examination>> GetAllByDoctorId(decimal id);
-        public Task<IEnumerable<Examination>> GetAllByDoctorId(decimal id, DateTime date);
+        public Task<IEnumerable<Examination>> GetAllByDoctorId(decimal id, DateTime date, bool threeDays);
         public Task<IEnumerable<Examination>> GetAllByRoomId(decimal id);
         public Task<Examination> GetByParams(decimal doctorId, decimal roomId, decimal patientId, DateTime startTime);
+        public Task<Examination> GetByParams(decimal doctorId, decimal patientId, DateTime startTime);
         public Examination Update(Examination examination);
         public Task<Examination> GetExamination(decimal id);
         public Task<Examination> GetExaminationWithoutAnamnesis(decimal id);
@@ -64,14 +65,20 @@ namespace HealthCare.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Examination>> GetAllByDoctorId(decimal id, DateTime date)
+        public async Task<IEnumerable<Examination>> GetAllByDoctorId(decimal id, DateTime date, bool threeDays)
         {
-            return await _healthCareContext.Examinations
-                .Where(x => x.DoctorId == id)
-                .Where(x => x.IsDeleted == false)
-                .Where(x => DateTime.Compare(x.StartTime.Date, date.Date) >= 0 && DateTime.Compare(x.StartTime.Date, date.Date.AddDays(3)) <= 0)
-                .ToListAsync();
+            if (threeDays)
+                return await _healthCareContext.Examinations
+                    .Where(x => x.DoctorId == id)
+                    .Where(x => x.IsDeleted == false)
+                    .Where(x => DateTime.Compare(x.StartTime.Date, date.Date) >= 0 && DateTime.Compare(x.StartTime.Date, date.Date.AddDays(3)) <= 0)
+                    .ToListAsync();
 
+            return await _healthCareContext.Examinations
+                    .Where(x => x.DoctorId == id)
+                    .Where(x => x.IsDeleted == false)
+                    .Where(x => DateTime.Compare(x.StartTime.Date, date.Date) == 0)
+                    .ToListAsync();
         }
 
         public async Task<IEnumerable<Examination>> GetAllByRoomId(decimal id)
@@ -126,6 +133,15 @@ namespace HealthCare.Repositories
             return await _healthCareContext.Examinations
                 .Include(x => x.Anamnesis)
                 .Where(x => x.DoctorId == doctorId && x.PatientId == patientId && x.StartTime == date)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task<Examination> GetByParams(decimal doctorId, decimal patientId, DateTime startTime)
+        {
+            return await _healthCareContext.Examinations
+                .Where(x => x.DoctorId == doctorId)
+                .Where(x => x.PatientId == patientId)
+                .Where(x => x.StartTime == startTime)
                 .FirstOrDefaultAsync();
         }
     }

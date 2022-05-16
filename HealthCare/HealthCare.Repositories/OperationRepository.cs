@@ -21,6 +21,7 @@ namespace HealthCare.Repositories
         public Operation Post(Operation operation);
         public Operation Update(Operation operation);
         public Task<Operation> GetByDoctorPatientDate(decimal doctorId, decimal patientId, DateTime date);
+        public Task<Operation> GetByParams(decimal doctorId, decimal patientId, DateTime startTime);
     }
     public class OperationRepository : IOperationRepository 
     {
@@ -109,6 +110,15 @@ namespace HealthCare.Repositories
         {
             return await _healthCareContext.Operations
                 .Where(x => x.DoctorId == doctorId && x.PatientId == patientId && x.StartTime == date)
+                .FirstOrDefaultAsync();
+        }
+        
+        public async Task<Operation> GetByParams(decimal doctorId, decimal patientId, DateTime startTime)
+        {
+            return await _healthCareContext.Operations
+                .Where(x => x.DoctorId == doctorId)
+                .Where(x => x.PatientId == patientId)
+                .Where(x => x.StartTime == startTime)
                 .FirstOrDefaultAsync();
         }
     }
