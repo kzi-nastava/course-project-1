@@ -11,6 +11,7 @@ namespace HealthCare.Repositories {
     public interface IEquipmentRepository : IRepository<Equipment>
     {
         public Task<Equipment> GetById(decimal equipmentId);
+        public Task<Equipment> GetByName(string name);
     }
 
     public class EquipmentRepository : IEquipmentRepository 
@@ -29,6 +30,14 @@ namespace HealthCare.Repositories {
         public async Task<Equipment> GetById(decimal equipmentId)
         {
             return await _healthCareContext.Equipments.FindAsync(equipmentId);
+        }
+        
+        public async Task<Equipment> GetByName(string name)
+        {
+            return await _healthCareContext.Equipments
+                .Include(x=>x.EquipmentType)
+                .Where(x=>x.Name == name)
+                .FirstOrDefaultAsync();
         }
 
         public void Save()

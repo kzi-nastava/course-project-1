@@ -49,5 +49,21 @@ namespace HealthCareAPI.Controllers
             IEnumerable<EquipmentRequestDomainModel> equipmentRequests = await _equipmentRequestService.DoAllOrders();
             return Ok(equipmentRequests);
         }
+        
+        [HttpGet]
+        [Route("roomAndEquipment")]
+        public async Task<ActionResult<IEnumerable<RoomAndEquipmentDTO>>> ShowRoomAndEquipment()
+        {
+            IEnumerable<RoomAndEquipmentDTO> equipmentRequests = await _equipmentRequestService.ShowRoomAndEquipment();
+            return Ok(equipmentRequests);
+        }
+        
+        [HttpPut]
+        [Route("transferEquipment")]
+        public async Task<ActionResult<IEnumerable<RoomAndEquipmentDTO>>> TransferEquipment([FromBody] TransferEquipmentDTO dto)
+        {
+            EquipmentDomainModel transferedEquipment = await _equipmentRequestService.TransferEquipment(dto);
+            return Ok(transferedEquipment);
+        }
     }
 }
