@@ -22,7 +22,7 @@ namespace HealthCare.Data.Entities
         public string State { get; set; }
 
         [Column("comment")]
-        public string Comment{ get; set; }
+        public string? Comment{ get; set; }
 
         public Drug Drug { get; set; }
     }
