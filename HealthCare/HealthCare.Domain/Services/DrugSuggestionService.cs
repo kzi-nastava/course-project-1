@@ -51,9 +51,20 @@ namespace HealthCare.Domain.Services
                 Id = suggestion.Id,
                 Comment = suggestion.Comment,
                 DrugId = suggestion.DrugId,
-                State = suggestion.State
+                State = TranslateState(suggestion.State)
             };
 
+        }
+
+        private DrugSuggestionState TranslateState(string state)
+        {
+            switch (state)
+            {
+                case "created": return DrugSuggestionState.CREATED; break;
+                case "approved": return DrugSuggestionState.APPROVED; break;
+                case "for revision": return DrugSuggestionState.FOR_REVISION; break;
+                default: throw new Exception("Undefined drug suggestion state");
+            }
         }
 
     }
