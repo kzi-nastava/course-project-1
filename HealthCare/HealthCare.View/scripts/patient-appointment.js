@@ -1,6 +1,8 @@
 let doctorsUri = "https://localhost:7195/api/Doctor"
 let roomsUri = "https://localhost:7195/api/Room"
 let examinationUri = "https://localhost:7195/api/Examination/create"
+let examinationDeleteUri = "https://localhost:7195/api/Examination/delete"
+let getPatientUri = "https://localhost:7195/api/Patient/patientId=";
 
 
 currentTime();
@@ -14,6 +16,7 @@ const daySelect = document.getElementById("daySelect");
 const hourSelect = document.getElementById("hourSelect");
 const minuteSelect = document.getElementById("minuteSelect");
 
+let appointmentBox = document.getElementById('examination-select');
 let doctorSelect = document.getElementById("doctor-select");
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -36,14 +39,14 @@ function populateDays(month) {
         daySelect.removeChild(daySelect.firstChild);
     }
     let dayNum;
-    if(month === 'January' || month === 'March' || month === 'May' || 
-    month === 'July' || month === 'August' || month === 'October' ||
-     month === 'December')
+    if(month === '1' || month === '3' || month === '5' || 
+    month === '7' || month === '8' || month === '10' ||
+     month === '12')
     {
         dayNum = 31;
     }   
-    else if(month === 'April' || month === 'June' || month === 'September' || 
-    month === 'November')
+    else if(month === '4' || month === '6' || month === '9' || 
+    month === '11')
     {
         dayNum = 30;
     }   
@@ -141,7 +144,8 @@ getDoctorsRequest.onreadystatechange = function () {
             });
             for(let i = 0; i < user.examinations.length; i++)
             {
-                populateAppointments(user.examinations[i]);
+                if(user.examinations[i].isDeleted == false)
+                    populateAppointments(user.examinations[i]);
             }
         } else {
             alert("Greska prilikom ucitavanja doktora.")
@@ -149,7 +153,33 @@ getDoctorsRequest.onreadystatechange = function () {
     }
 }
 
+function reloadUser()
+{
+    let getPatientRequest = new XMLHttpRequest();
+    getPatientRequest.open('GET', getPatientUri + user.id);
+    getPatientRequest.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                let reloadedUser = JSON.parse(getPatientRequest.responseText);
+                console.log(reloadedUser);
+                sessionStorage.setItem("user", JSON.stringify(reloadedUser));
+                user = reloadedUser;
+                appointmentBox.innerHTML = "";
+                for(let i = 0; i < user.examinations.length; i++)
+                {
+                    if(user.examinations[i].isDeleted == false)
+                        populateAppointments(user.examinations[i]);
+                }
+            } else {
+                alert("Greska prilikom ucitavanja korisnika.");
+            }
+        }
+    }
+    getPatientRequest.send();
+}
+
 let selectedDoctorId;
+let examinationIdForDelete;
 
 function makeDoctorCard(doctor)
 {
@@ -191,7 +221,6 @@ function makeDoctorCard(doctor)
 }
 
 
-let appointmentBox = document.getElementById('examination-select');
 
 function populateAppointments(appointment)
 {
@@ -285,12 +314,12 @@ function populateAppointments(appointment)
 
     let editBtn = document.createElement("button");
     editBtn.classList.add("editBtn");
+    editBtn.innerText += "        Edit";
 
     let editIcon = document.createElement("i");
     editIcon.classList.add("fa-solid");
     editIcon.classList.add("fa-pencil");
     //editBtn.innerHTML = editIcon;
-    editBtn.innerText += "        Edit";
     
     examinationButtons.appendChild(editBtn);
     
@@ -298,7 +327,9 @@ function populateAppointments(appointment)
     deleteBtn.classList.add("deleteBtn");
     //deleteBtn.innerHTML = <i class="fa-solid fa-trash"></i>;
     deleteBtn.innerText += "        Delete";
-    
+
+    deleteBtn.onclick = function() {deleteAppointment(appointment.id)};
+
     examinationButtons.appendChild(deleteBtn);
     
     examinationBox.appendChild(examinationButtons);
@@ -308,6 +339,34 @@ function populateAppointments(appointment)
     
     
 }
+
+function deleteAppointment(id)
+{
+    console.log(id);
+    let deleteExaminationDTO = {
+        examinationId : id,
+        patientId : user.id,
+        isPatient : true
+    }
+    let deleteExaminationRequest = new XMLHttpRequest();
+    deleteExaminationRequest.open('PUT', examinationDeleteUri); 
+    deleteExaminationRequest.setRequestHeader('Content-Type', 'application/json');
+    deleteExaminationRequest.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                let examination = JSON.parse(deleteExaminationRequest.responseText);
+                console.log(examination)
+                user.examinations.push(examination);
+                populateAppointments(examination);
+                reloadUser();
+            } else {
+                alert("Greska prilikom brisanja pregleda.")
+            }
+        }
+    }
+    deleteExaminationRequest.send(JSON.stringify(deleteExaminationDTO));
+}
+
 
 let submitBtn = document.getElementById("submitBtn");
 
@@ -326,7 +385,6 @@ submitBtn.addEventListener("click", function(e) {
         "startTime": date,
         "isPatient": true
     }
-
     console.log(JSON.stringify(examination));
 
     
@@ -337,7 +395,7 @@ submitBtn.addEventListener("click", function(e) {
         if (this.readyState === 4) {
             if (this.status === 200) {
                 let examination = JSON.parse(makeExaminationRequest.responseText);
-                console.log(examination)
+                reloadUser()
             } else {
                 alert("Greska prilikom rezervisanja pregleda.")
             }

@@ -433,6 +433,7 @@ select option {
   left: 26%;
   top: 65%;
   font-size: 2rem;
+
 }
 
 .appointment-header {
@@ -460,6 +461,12 @@ select option {
   display: none;
 }
 
+.examination-box {
+  vertical-align: middle;
+  margin-top: 20px;
+  margin-left: 10px;
+}
+
 .examination {
   width: 70rem;
   height: 7rem;
@@ -470,8 +477,8 @@ select option {
   position: absolute;
   box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
   transition: 0.3s;
-  margin-top: 20px;
-  margin-left: 10px;
+  /* margin-top: 20px;
+  margin-left: 10px; */
   margin-bottom: 0;
   display: inline-block;
 }
