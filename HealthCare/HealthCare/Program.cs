@@ -88,13 +88,26 @@ builder.Services.AddDbContext<HealthCareContext>(x => x.UseSqlServer(connectionS
 builder.Services.AddDbContext<HealthCareContext>(x => x.EnableSensitiveDataLogging());
 
 
-builder.Services.AddCors(options => 
-{
-    options.AddPolicy("CorsPolicy", 
-        corsBuilder => corsBuilder.WithOrigins("http://127.0.0.1:5500").AllowAnyMethod()
-           .AllowAnyHeader()
-            .AllowCredentials());
-});
+//builder.Services.AddCors(options => 
+//{
+//    options.AddPolicy("CorsPolicy", 
+//        corsBuilder => corsBuilder.WithOrigins("http://localhost:7195").AllowAnyMethod()
+//           .AllowAnyHeader()
+//            .AllowCredentials());
+//});
+
+builder.Services.AddCors(feature =>
+                feature.AddPolicy(
+                    "CorsPolicy",
+                    apiPolicy => apiPolicy
+                                    //.AllowAnyOrigin()
+                                    //.WithOrigins("http://localhost:4200")
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod()
+                                    .SetIsOriginAllowed(host => true)
+                                    .AllowCredentials()
+                                ));
+
 
 
 var app = builder.Build();
@@ -122,6 +135,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+app.UseCors("CorsPolicy");
 
 app.UseAuthorization();
 

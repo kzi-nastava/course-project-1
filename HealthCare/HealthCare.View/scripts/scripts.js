@@ -1,3 +1,4 @@
+
 function currentTime() {
     let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
     let date = new Date(); 
@@ -31,3 +32,4 @@ function currentTime() {
     let smallName = document.getElementById("smallName");
     smallName.innerText = user.name + ' ' + user.surname;
   }
+
