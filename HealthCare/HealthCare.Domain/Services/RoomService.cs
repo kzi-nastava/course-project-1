@@ -35,77 +35,9 @@ public class RoomService : IRoomService
             return new List<RoomDomainModel>();
             
         List<RoomDomainModel> results = new List<RoomDomainModel>();
-        RoomDomainModel roomModel;
         foreach (Room item in rooms)
-        {
-            roomModel = new RoomDomainModel
-            {
-                IsDeleted = item.IsDeleted,
-                Id = item.Id,
-                RoomName = item.RoomName,
-                RoomTypeId = item.RoomTypeId,
-                IsFormed = item.IsFormed
-            };
-            if(item.RoomType != null) 
-            {
-                roomModel.RoomType = new RoomTypeDomainModel 
-                {
-                    IsDeleted = item.RoomType.IsDeleted,
-                    Id = item.RoomType.Id,
-                    RoleName = item.RoomType.RoleName,
-                    Purpose = item.RoomType.Purpose,
-                };
-            }
-            roomModel.Inventories = new List<InventoryDomainModel>();
-            roomModel.Operations = new List<OperationDomainModel>();
-            if (item.Inventories != null) 
-            {
-                foreach (Inventory inventory in item.Inventories) 
-                {
-                    InventoryDomainModel inventoryModel = new InventoryDomainModel 
-                    {
-                        IsDeleted = inventory.IsDeleted,
-                        RoomId = inventory.RoomId,
-                        Amount = inventory.Amount,
-                        EquipmentId = inventory.EquipmentId,
-                    };
-                    inventoryModel.Equipment = new EquipmentDomainModel 
-                    {
-                        Id = inventory.Equipment.Id,
-                        EquipmentTypeId = inventory.Equipment.EquipmentTypeId,
-                        IsDeleted = inventory.Equipment.IsDeleted,
-                        Name = inventory.Equipment.Name,
-                    };
-                    if (inventory.Equipment.EquipmentType != null)
-                    {
-                        inventoryModel.Equipment.EquipmentType = new EquipmentTypeDomainModel
-                        {
-                            Id = inventory.Equipment.EquipmentType.Id,
-                            Name = inventory.Equipment.EquipmentType.Name,
-                            IsDeleted = inventory.Equipment.EquipmentType.IsDeleted
-                        };
-                    }
-
-                    roomModel.Inventories.Add(inventoryModel);
-                }
-            }
-            if (item.Operations != null) 
-            {
-                foreach (Operation operation in item.Operations) 
-                {
-                    OperationDomainModel operationModel = new OperationDomainModel 
-                    {
-                        DoctorId = operation.DoctorId,
-                        RoomId = operation.DoctorId,
-                        PatientId = operation.DoctorId,
-                        Duration = operation.Duration,
-                        IsDeleted = operation.IsDeleted
-                    };
-                    roomModel.Operations.Add(operationModel);
-                }
-            }
-            results.Add(roomModel);
-        }
+            results.Add(ParseToModel(item));
+        
         return results;
     }
 
@@ -152,28 +84,54 @@ public class RoomService : IRoomService
 
     public static RoomDomainModel ParseToModel(Room room)
     {
-        RoomDomainModel roomModel = new RoomDomainModel 
+        RoomDomainModel roomModel = new RoomDomainModel
         {
+            IsDeleted = room.IsDeleted,
             Id = room.Id,
             RoomName = room.RoomName,
             RoomTypeId = room.RoomTypeId,
-            IsDeleted = room.IsDeleted,
-            IsFormed = room.IsFormed,
+            IsFormed = room.IsFormed
         };
+        
+        if(room.RoomType != null)
+            roomModel.RoomType = RoomTypeService.ParseToModel(room.RoomType);
+        
+        roomModel.Inventories = new List<InventoryDomainModel>();
+        roomModel.Operations = new List<OperationDomainModel>();
+        if (room.Inventories != null) 
+            foreach (Inventory inventory in room.Inventories) 
+                roomModel.Inventories.Add(InventoryService.ParseToModel(inventory));
+        
+        if (room.Operations != null) 
+            foreach (Operation operation in room.Operations) 
+                roomModel.Operations.Add(OperationService.ParseToModel(operation));
         
         return roomModel;
     }
     
     public static Room ParseFromModel(RoomDomainModel roomModel)
     {
-        Room room = new Room 
+        Room room = new Room
         {
+            IsDeleted = roomModel.IsDeleted,
             Id = roomModel.Id,
             RoomName = roomModel.RoomName,
             RoomTypeId = roomModel.RoomTypeId,
-            IsDeleted = roomModel.IsDeleted,
-            IsFormed = roomModel.IsFormed,
+            IsFormed = roomModel.IsFormed
         };
+        
+        if(roomModel.RoomType != null)
+            room.RoomType = RoomTypeService.ParseFromModel(roomModel.RoomType);
+        
+        room.Inventories = new List<Inventory>();
+        room.Operations = new List<Operation>();
+        if (roomModel.Inventories != null) 
+            foreach (InventoryDomainModel inventoryModel in roomModel.Inventories) 
+                room.Inventories.Add(InventoryService.ParseFromModel(inventoryModel));
+        
+        if (roomModel.Operations != null) 
+            foreach (OperationDomainModel operationModel in roomModel.Operations) 
+                room.Operations.Add(OperationService.ParseFromModel(operationModel));
         
         return room;
     }

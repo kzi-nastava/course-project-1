@@ -40,8 +40,11 @@ namespace HealthCare.Repositories
         }
         public async Task<Room> GetRoomByName(string name)
         {
-            return await _healthCareContext.Rooms.
-                FirstOrDefaultAsync(r => r.RoomName == name);
+            return await _healthCareContext.Rooms
+                .Include(x => x.RoomType)
+                .Include(x => x.Inventories).ThenInclude(x => x.Equipment).ThenInclude(x => x.EquipmentType)
+                .Include(x => x.Operations)
+                .FirstOrDefaultAsync(r => r.RoomName == name);
         }
 
         // Argument roomPurpose differantiates if the fetched rooms should be rooms for operation/examination
@@ -74,7 +77,11 @@ namespace HealthCare.Repositories
 
         public async Task<Room> GetRoomById(decimal id)
         {
-            return await _healthCareContext.Rooms.FirstOrDefaultAsync(x => x.Id == id);
+            return await _healthCareContext.Rooms
+                .Include(x => x.RoomType)
+                .Include(x => x.Inventories).ThenInclude(x => x.Equipment).ThenInclude(x => x.EquipmentType)
+                .Include(x => x.Operations)
+                .FirstOrDefaultAsync(x => x.Id == id);
         }
 
         public Room Update(Room updatedRoom)
