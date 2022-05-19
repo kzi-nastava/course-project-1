@@ -4,12 +4,12 @@ let loggedCreds;
 
 let loginForm = document.getElementById("login-form");
 
-window.onload = function() {
-    if (sessionStorage.getItem("loggedCreds") != null) {
-        loggedCreds = sessionStorage.getItem("loggedCreds");
-        redirectUser();
-    } 
-  };
+// window.onload = function() {
+//     if (sessionStorage.getItem("loggedCreds") != null) {
+//         loggedCreds = sessionStorage.getItem("loggedCreds");
+//         redirectUser();
+//     } 
+//   };
 
 
 loginForm.addEventListener("submit", function(e) {
@@ -53,6 +53,7 @@ function processLogin(username, password) {
                 // erroBanner.innerText = "Nepostojeci korisnik. Proverite da li ste uneli tacne podatke.";
                 // erroBanner.style.display = "block";
                 alert(this.responseText);
+                
             }
         }
     }

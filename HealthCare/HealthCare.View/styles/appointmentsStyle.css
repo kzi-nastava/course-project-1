@@ -54,6 +54,16 @@ body {
   height: 200vh;
   border-radius: 50px;
   position: relative;
+
+}
+
+.image {
+  width: 50rem;
+  float: right;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  margin-top: 20rem;
 }
 
 .header {
@@ -226,6 +236,7 @@ body {
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: 1;
   gap: 5rem;
+  
 }
 
 .day {
@@ -237,6 +248,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border: none;
 }
 
 .day-text {
@@ -244,6 +258,7 @@ body {
   color: var(--text-color);
   font-weight: 600;
   vertical-align: middle;
+  
 }
 
 .month {
@@ -255,6 +270,9 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border: none;
 }
 
 .year {
@@ -266,4 +284,259 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100%;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  border: none;
+}
+
+select {
+  font-size: 1.5rem;
+  background-color: white;
+  cursor: pointer;
+}
+
+select:hover {
+  background-color: var(--color-primary)
+}
+
+select option {
+  background-color: var(--color-grey-light);
+}
+
+.time-picker {
+  left: 44%;
+  top: 20%;
+  position: absolute;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 20px;
+  background-color: var(--color-primary-medium);
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.time-picker__select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  outline: none;
+  text-align: center;
+  border: 1px solid var(--color-primary-medium);
+  padding: 6px 10px;
+  border-radius: 10px;
+  background:white;
+  cursor: pointer;
+
+}
+
+.doctor-card {
+  width: 20rem;
+  height: 20rem;
+  background-color: white;
+  border-radius: 50px;
+  position: relative;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.doctor-card:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+}
+.doctor-card:focus {
+  background-color: var(--color-primary-medium-light);
+}
+
+.doctor-select {
+  display: grid;
+  position: absolute;
+  left: 25%;
+  top: 28%;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5rem;
+  overflow: scroll;
+  height: 30%;
+  padding: 0.5rem;
+}
+
+.doctor-select::-webkit-scrollbar {
+  display: none;
+}
+
+.image-doctor {
+  text-align: center;
+  padding-top: 3rem;
+}
+
+.doctor-name {
+  padding-top: 1rem;
+  text-align: center;
+}
+
+.name-surname {
+  color: #111f4a;
+  font-size: 2rem;
+}
+
+.specialization {
+  color: var(--color-primary);
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.buttons {
+  display: grid;
+  position: absolute;
+  left: 30%;
+  top: 60%;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 5rem;
+  height: 3%;
+  padding: 0.5rem;
+  width: 30%;
+}
+
+.submitBtn {
+  color: white;
+  background-color: var(--color-primary);
+  outline: none;
+  border: none;
+  border-radius: 50px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.submitBtn:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+    cursor: pointer;
+
+}
+
+.cancelBtn {
+  color: var(--color-primary);
+  background-color: white;
+  border-color: var(--color-primary);
+  outline: none;
+  border: none;
+  border-radius: 50px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+}
+
+.cancelBtn:hover {
+  box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2);
+  cursor: pointer;
+
+}
+
+.appointment-box {
+  display: grid;
+  position: relative;
+  left: 26%;
+  top: 65%;
+  font-size: 2rem;
+}
+
+.appointment-header {
+  height: 5rem !important;
+}
+
+.examination-select {
+  display: grid;
+  position: relative;
+  left: 0%;
+  top: 5%;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 3rem;
+  overflow: scroll;
+  height: 85%;
+  width: 120%;
+  padding: 0.5rem;
+  background-color:white;
+  border-radius: 40px;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  height: 38rem;
+}
+
+.examination-select::-webkit-scrollbar {
+  display: none;
+}
+
+.examination {
+  width: 70rem;
+  height: 7rem;
+  background-color: var(--color-primary-medium-light);
+  border-radius: 50px;
+  display: flex;
+  flex-direction: row;
+  position: absolute;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+  transition: 0.3s;
+  margin-top: 20px;
+  margin-left: 10px;
+  margin-bottom: 0;
+  display: inline-block;
+}
+
+.examination-buttons {
+  display: grid;
+  position: relative;
+  left: 88%;
+  top: 5%;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 0.5rem;
+  height: 20%;
+  width: 10%;
+  padding: 0.5rem;
+}
+
+.editBtn, .deleteBtn {
+  color: var(--color-primary);
+  background-color: white;
+  border-color: var(--color-primary);
+  outline: none;
+  border: none;
+  border-radius: 50px;
+  transition: 0.3s;
+  margin: 5px;
+}
+
+.examination-datetime-box{
+  grid-template-columns: repeat(2, 1fr);
+  width: 40rem;
+  height: 5rem;
+  border-radius: 50px;
+  display: flex;
+  position: relative;
+  margin: 0;
+  float: left;
+}
+
+.examination-datetime {
+  font-size: 1.5rem;
+  padding: 10px;
+  padding-left: 0;
+}
+
+.examination-datetime-icon {
+  padding: 10px;
+  margin: 10px;
+  vertical-align: bottom;
+  color: var(--color-primary-light);
+}
+
+.examination-doctor-box {
+  grid-template-columns: repeat(2, 1fr);
+  width: 25rem;
+  height: 5rem;
+  border-radius: 50px;
+  display: flex;
+  position: relative;
+  float: right;
+  margin: 0; 
+}
+
+
+.examination-doctor-info {
+  font-size: 1.5rem;
+  padding: 10px;
+  padding-left: 0;
 }

@@ -154,7 +154,8 @@ public class PatientService : IPatientService
             Email = dto.Email,
             Name = dto.Name,
             Surname = dto.Surname,
-            Phone = dto.Phone
+            Phone = dto.Phone,
+            BlockedBy = ""
         };
         return patient;
     }

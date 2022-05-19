@@ -89,7 +89,7 @@ builder.Services.AddDbContext<HealthCareContext>(x => x.EnableSensitiveDataLoggi
 builder.Services.AddCors(options => 
 {
     options.AddPolicy("CorsPolicy", 
-        corsBuilder => corsBuilder.WithOrigins("http://localhost:7195").AllowAnyMethod()
+        corsBuilder => corsBuilder.WithOrigins("http://127.0.0.1:5500").AllowAnyMethod()
            .AllowAnyHeader()
             .AllowCredentials());
 });
