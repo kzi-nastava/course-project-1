@@ -6,6 +6,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles/styles.css" />
     <link rel="stylesheet" href="../styles/patient-style.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -57,7 +58,7 @@
                 </a>
               </li>
               <li class="sidebar__nav--item">
-                <a href="#" class="sidebar__nav--item-link">
+                <a href="doctor-appointments.html" class="sidebar__nav--item-link">
                   <i class="fa-solid fa-calendar-plus"></i>
                   <span>Appoitments</span>
                 </a>
@@ -66,7 +67,7 @@
         </aside>
         <div class="welcome-message-box">
           <img src="../img/wave_emoji.svg" alt="emoji" class="wave_emoji" />
-          <h1 class="welcome-message">Welcome back, <span id="welcome-name">John !</span></h1>
+          <h1 class="welcome-message">Welcome back, <span id="welcome-name">John!</span></h1>
         </div>
         <div class="user-card">
           <div class="user-card__bio">
@@ -104,23 +105,22 @@
               <h1 class="heading">Specialization</h1>
             </div>
             <div class="potential-risk">
-              <i class="fa-solid fa-circle-exclamation"></i>
-              <p class="risk">Depression</p>
+              <p class="risk" id="specialization">Depression</p>
             </div>
           </div>
         </div>
         <div class="mini-cards">
-          <div class="height-card">
-            <h1 class="examination-text">Total</h1>
-            <h1 class="examination-text">Examinations</h1>
+          <div class="mini-card">
+            <h1 class="mini-card-title black">Total</h1>
+            <h1 class="mini-card-title black">Examinations</h1>
             <p class="examination-number" id="examination-number">67</p>
             <i class="fa-solid fa-stethoscope"></i>
           </div>
-          <div class="weight-card">
-            <h1 class="surgeries-text">Total</h1>
-            <h1 class="surgeries-text">Surgeries</h1>
-            <p class="examination-number" id="examination-number">67</p>
-            <i class="fa-solid fa-scalpel"></i>
+          <div class="mini-card light-green-bcg">
+            <h1 class="mini-card-title black">Total</h1>
+            <h1 class="mini-card-title black">Surgeries</h1>
+            <p class="examination-number" id="operation-number">67</p>
+            <i class="fa-solid fa-medkit"></i>
           </div>
           <!-- <div class="examinations-card">
             

@@ -110,7 +110,7 @@ public class DoctorService : IDoctorService
 
     public async Task<DoctorDomainModel> GetById(decimal id)
     {
-        Doctor data = await _doctorRepository.GetDoctorById(id);
+        Doctor data = await _doctorRepository.GetById(id);
         if (data == null)
             return null;
         return ParseToModel(data);
@@ -140,7 +140,7 @@ public class DoctorService : IDoctorService
 
     public async Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetAvailableSchedule(decimal doctorId, decimal duration=15)
     {
-        Doctor doctor = await _doctorRepository.GetDoctorById(doctorId);
+        Doctor doctor = await _doctorRepository.GetById(doctorId);
         DoctorDomainModel doctorModel = ParseToModel(doctor);
         List<KeyValuePair<DateTime, DateTime>> schedule = new List<KeyValuePair<DateTime, DateTime>>();
         DateTime timeStart, timeEnd;
@@ -180,7 +180,7 @@ public class DoctorService : IDoctorService
     public async Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetBusySchedule(decimal doctorId)
     {
         // TODO: This and the above function can work together
-        Doctor doctor = await _doctorRepository.GetDoctorById(doctorId);
+        Doctor doctor = await _doctorRepository.GetById(doctorId);
         DoctorDomainModel doctorModel = ParseToModel(doctor);
         List<KeyValuePair<DateTime, DateTime>> schedule = new List<KeyValuePair<DateTime, DateTime>>();
         DateTime timeStart, timeEnd;

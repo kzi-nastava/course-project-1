@@ -1,77 +1,50 @@
-* {
-  margin: 0;
-  padding: 0;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
-  font-family: "Sen", sans-serif;
-  color: black;
-  font-size: 13px;
+.mini-card {
+  background-color: var(--color-white);
+  padding: 1.4rem 2.8rem;
+  border-radius: 30px;
+  height: 20rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
 }
 
-body {
-  background-color: #d0ebe4;
+.mini-card i {
+  color: var(--text-color);
+  font-size: 28px;
+  margin-top: 13px;
 }
 
-h2 {
-  font-size: 26px;
-  font-family: "Sen", sans-serif;
+.light-green-bcg {
+  background-color: var(--color-primary-medium-light);
 }
 
-input {
-  display: block;
-  padding: 3px 5px;
-  width: 70%;
-  margin-bottom: 10px;
-  border: 1px gray solid;
-  border-radius: 2px;
+.mini-card-title {
+  color: var(--text-color);
+  font-size: 2rem;
+  font-weight: 600;
 }
 
-.subtitle {
-  margin-bottom: 20px;
-  margin-top: 2px;
-  color: #808080;
-  font-family: "Mulish", sans-serif;
-  font-size: 15px;
-  font-weight: bold;
+.sidebar__nav--item {
+  background-color: var(--color-primary);
 }
 
-.login-container {
-  width: 50%;
-  height: 48%;
-  position: absolute;
-  background-color: white;
-  margin: 0 auto;
-  top: 20%;
-  left: 25%;
-  border-radius: 10px;
+.sidebar__nav--item span, .sidebar__nav--item i {
+  color: var(--color-white);
 }
 
-.login-form-container {
-  position: absolute;
-  top: 30%;
-  left: 11%;
-  width: 50%;
-  margin: 0 auto;
+.selected {
+  color: var(--text-color);
+  z-index: 1;
 }
 
-.confirm-btn {
-  padding: 5px 15px;
-  border: none;
-  border-radius: 4px;
-  background-color: #6BCBB8;
-  color: white;
-  font-weight: bold;
-  margin-top: 15px;
-}
-
-.confirm-btn:hover {
-  cursor: pointer;
-  background-color: #54b5a1;
-}
-
-#login-illustration {
-  height: 380px;
-  position: absolute;
-  right: 10%;
+.selected-bcg {
+  color: var(--color-grey-light);
 }
 /*# sourceMappingURL=styles.css.map */

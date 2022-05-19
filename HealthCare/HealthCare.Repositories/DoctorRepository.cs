@@ -15,7 +15,7 @@ namespace HealthCare.Repositories
         public Doctor Post(Doctor doctor);
         public Doctor Update(Doctor doctor);
         public Doctor Delete(Doctor doctor);
-        public Task<Doctor> GetDoctorById(decimal id);
+        public Task<Doctor> GetById(decimal id);
         public Task<IEnumerable<Doctor>> GetBySpecialization(decimal id);
     }
     public class DoctorRepository : IDoctorRepository 
@@ -47,7 +47,7 @@ namespace HealthCare.Repositories
             return deletedDoctor;
         }
 
-        public async Task<Doctor> GetDoctorById(decimal id)
+        public async Task<Doctor> GetById(decimal id)
         {
             return await _healthCareContext.Doctors
                 .Include(x => x.Credentials).ThenInclude(x => x.UserRole)

@@ -57,7 +57,7 @@ function processLogin(username, password) {
         }
     }
 
-    getRequest.open("GET", loginUri.concat("/" + username + "/" + password), true);
+    getRequest.open("GET", loginUri.concat("?Username=" + username + "&Password=" + password), true);
     getRequest.send();
 
 }

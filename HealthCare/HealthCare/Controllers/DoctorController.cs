@@ -40,5 +40,20 @@ namespace HealthCareAPI.Controllers
             IEnumerable<KeyValuePair<DateTime, DateTime>> schedule = await _doctorService.GetAvailableSchedule(doctorId, duration);
             return Ok(schedule);
         }
+
+        [HttpGet]
+        [Route("doctorId={id}")]
+        public async Task<ActionResult<DoctorDomainModel>> GetById(decimal id)
+        {
+            try
+            {
+                DoctorDomainModel doctorModel = await _doctorService.GetById(id);
+                return Ok(doctorModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+        }
     }
 }
