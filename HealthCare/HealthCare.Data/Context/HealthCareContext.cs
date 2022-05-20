@@ -43,6 +43,7 @@ namespace HealthCare.Data.Context
         public DbSet<SplitRenovation> SplitRenovations { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<EquipmentRequest> EquipmentRequests { get; set; }
+        public DbSet<DrugSuggestion> DrugSuggestions{ get; set; }
 
         public HealthCareContext(DbContextOptions options) : base(options)
         {
@@ -100,6 +101,7 @@ namespace HealthCare.Data.Context
             
             modelBuilder.Entity<EquipmentRequest>()
                 .HasOne(x => x.Equipment);
+            //add drug suggestion
 
 
             modelBuilder.Entity<Anamnesis>().HasKey(x => x.Id);
@@ -125,6 +127,7 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<SplitRenovation>().HasKey(x => x.Id);
             modelBuilder.Entity<Notification>().HasKey(x => x.Id);
             modelBuilder.Entity<EquipmentRequest>().HasKey(x => x.Id);
+            modelBuilder.Entity<DrugSuggestion>().HasKey(x => x.Id);
         }
     }
 }
