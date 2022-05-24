@@ -1,4 +1,5 @@
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -204,5 +205,36 @@ public class DoctorService : IDoctorService
         schedule.Sort((x, y) => x.Key.CompareTo(y.Key));
         // Generate busy time
         return schedule;
+    }
+
+    private bool IsInName(Doctor doctor, string subString)
+    {
+        if (string.IsNullOrEmpty(subString)) return true;
+        return doctor.Name.ToLower().Contains(subString.ToLower());
+    }
+
+    private bool IsInSurname(Doctor doctor, string subString)
+    {
+        if (string.IsNullOrEmpty(subString)) return true;
+        return doctor.Surname.ToLower().Contains(subString.ToLower());
+    }
+
+    private bool IsInSpecialization(Doctor doctor, string subString)
+    {
+        if (string.IsNullOrEmpty(subString)) return true;
+        return doctor.Specialization.Name.ToLower().Contains(subString.ToLower());
+    }
+    public async Task<IEnumerable<DoctorDomainModel>> Search(SearchDoctorsDTO dto)
+    {
+        IEnumerable<Doctor> doctors = await _doctorRepository.GetAll();
+        List<DoctorDomainModel> results = new List<DoctorDomainModel>();
+        foreach(Doctor doctor in doctors)
+        {
+            if (IsInName(doctor, dto.Name) && IsInSurname(doctor, dto.Surname) && IsInSpecialization(doctor, dto.Specialization))
+                results.Add(ParseToModel(doctor));
+        }
+
+        return results;
+
     }
 }
