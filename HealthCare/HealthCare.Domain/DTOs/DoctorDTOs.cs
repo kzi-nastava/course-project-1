@@ -11,6 +11,7 @@ namespace HealthCare.Domain.DTOs
         public string? Name { get; set; }
         public string? Surname { get; set; }
         public string? Specialization { get; set; }
+        public string? SortParam{ get; set; }
     }
 
 }

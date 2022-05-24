@@ -233,8 +233,15 @@ public class DoctorService : IDoctorService
             if (IsInName(doctor, dto.Name) && IsInSurname(doctor, dto.Surname) && IsInSpecialization(doctor, dto.Specialization))
                 results.Add(ParseToModel(doctor));
         }
-
-        return results;
+        if (dto.SortParam.ToLower().Equals("name"))
+            return results.OrderBy(x => x.Name);
+        else if (dto.SortParam.ToLower().Equals("surname"))
+            return results.OrderBy(x => x.Surname);
+        else if (dto.SortParam.ToLower().Equals("specialization"))
+            return results.OrderBy(x => x.Specialization.Name);
+        else
+            return results;
+        
 
     }
 }
