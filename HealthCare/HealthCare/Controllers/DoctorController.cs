@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -39,6 +40,14 @@ namespace HealthCareAPI.Controllers
         {
             IEnumerable<KeyValuePair<DateTime, DateTime>> schedule = await _doctorService.GetAvailableSchedule(doctorId, duration);
             return Ok(schedule);
+        }
+
+        [HttpGet]
+        [Route("search")]
+        public async Task<ActionResult<IEnumerable<DoctorDomainModel>>> SearchDoctors([FromQuery] SearchDoctorsDTO dto)
+        {
+            IEnumerable<DoctorDomainModel> doctors = await _doctorService.Search(dto);
+            return Ok(doctors);
         }
     }
 }
