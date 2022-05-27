@@ -73,6 +73,21 @@ namespace HealthCareAPI.Controllers
                 return NotFound(exception.Message);
             }
         }
+
+        [HttpPut]
+        [Route("offset")]
+        public async Task<ActionResult<PatientDomainModel>> SetNotificationOffset([FromBody] NotificationOffsetDTO dto)
+        {
+            try
+            {
+                PatientDomainModel updatedPatientModel = await _patientService.UpdateNotificationOffset(dto);
+                return Ok(updatedPatientModel);
+            }
+            catch(Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+        }
         
         // https://localhost:7195/api/patient/delete
         [HttpPut]

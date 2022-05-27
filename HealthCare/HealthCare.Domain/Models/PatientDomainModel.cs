@@ -19,7 +19,9 @@ public class PatientDomainModel
     public string BlockedBy { get; set; }
 
     public decimal BlockingCounter { get; set; }
-        
+
+    public decimal NotificationOffset { get; set; }
+
     public bool IsDeleted { get; set; }
 
     public List<OperationDomainModel> Operations { get; set; }

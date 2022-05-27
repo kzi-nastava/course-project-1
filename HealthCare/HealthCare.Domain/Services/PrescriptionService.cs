@@ -153,6 +153,25 @@ namespace HealthCare.Domain.Services
 
             return prescription;
         }
+
+        private bool IsDue(PrescriptionDomainModel prescriptionModel)
+        {
+            //TODO
+            decimal timeSpan = 30;
+            return false;
+        }
+
+        public async Task<List<PrescriptionDomainModel>> GetAllReminders()
+        {
+            //TODO
+            List<PrescriptionDomainModel> prescriptions = (List<PrescriptionDomainModel>) await GetAll();
+            List<PrescriptionDomainModel> result = new List<PrescriptionDomainModel>();
+            foreach (PrescriptionDomainModel item in prescriptions)    
+            {
+                //result.AddRange();
+            }
+            return result;
+        }
     }
     
 }
