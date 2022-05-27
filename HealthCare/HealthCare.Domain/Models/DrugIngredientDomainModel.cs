@@ -15,6 +15,8 @@ namespace HealthCare.Domain.Models
 
         public decimal Amount { get; set; }
 
+        public bool IsDeleted { get; set; }
+
         public IngredientDTO? Ingredient { get; set; }
     }
 }

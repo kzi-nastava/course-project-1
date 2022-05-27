@@ -14,10 +14,14 @@ namespace HealthCare.Domain.Services
     public class DrugSuggestionService : IDrugSuggestionService
     {
         IDrugSuggestionRepository _drugSuggestionRepository;
+        IDrugIngredientRepository _drugIngredientRepository;
+        IDrugRepository _drugRepository;
 
-        public DrugSuggestionService(IDrugSuggestionRepository drugSuggestionRepository)
+        public DrugSuggestionService(IDrugSuggestionRepository drugSuggestionRepository, IDrugIngredientRepository drugIngredientRepository, IDrugRepository drugRepository)
         {
             _drugSuggestionRepository = drugSuggestionRepository;
+            _drugIngredientRepository = drugIngredientRepository;
+            _drugRepository = drugRepository;
         }
 
         public Task<DrugSuggestionDomainModel> Create(DrugSuggestionDTO drugSuggestionDTO)
@@ -28,6 +32,31 @@ namespace HealthCare.Domain.Services
         public Task<DrugSuggestionDomainModel> Delete(decimal drugSuggestionId)
         {
             throw new NotImplementedException();
+        }
+
+        public void ApproveDrugIngredients(DrugSuggestion suggestion)
+        {
+            foreach (DrugIngredient drugIngredient in suggestion.Drug.DrugIngredients)
+            {
+                drugIngredient.IsDeleted = false;
+            }
+
+            _drugIngredientRepository.Save();
+        }
+
+        public async Task<DrugSuggestionDomainModel> Approve(decimal drugSuggestionId)
+        {
+            DrugSuggestion suggestion = await _drugSuggestionRepository.GetById(drugSuggestionId);
+
+            suggestion.State = "approved";
+
+            suggestion.Drug.IsDeleted = false;
+            _drugRepository.Save();
+
+            ApproveDrugIngredients(suggestion);
+
+            return parseToModel(suggestion);
+
         }
 
         public async Task<IEnumerable<DrugSuggestionDomainModel>> GetAll(){

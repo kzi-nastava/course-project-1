@@ -45,5 +45,13 @@ namespace HealthCareAPI.Controllers
             DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Delete(drugSuggestionId);
             return Ok(DrugSuggestion);
         }
+
+        [HttpPut]
+        [Route("approve")]
+        public async Task<ActionResult<DrugSuggestionDomainModel>> Approve([FromQuery] decimal drugSuggestionId)
+        {
+            DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Approve(drugSuggestionId);
+            return Ok(DrugSuggestion);
+        }
     }
 }
