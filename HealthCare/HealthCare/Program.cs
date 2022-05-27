@@ -53,6 +53,8 @@ builder.Services.AddTransient<ISplitRenovationRepository, SplitRenovationReposit
 builder.Services.AddTransient<INotificationRepository, NotificationRepository>();
 builder.Services.AddTransient<IEquipmentRequestRepository, EquipmentRequestRepository>();
 builder.Services.AddTransient<IDrugSuggestionRepository, DrugSuggestionRepository>();
+builder.Services.AddTransient<IAnswerRepository, AnswerRepository>();
+builder.Services.AddTransient<IQuestionRepository, QuestionRepository>();
 
 //Domain
 builder.Services.AddTransient<IAntiTrollService, AntiTrollService>();
@@ -84,6 +86,8 @@ builder.Services.AddTransient<IRenovationService, RenovationService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IEquipmentRequestService, EquipmentRequestService>();
 builder.Services.AddTransient<IDrugSuggestionService, DrugSuggestionService>();
+builder.Services.AddTransient<IAnswerService, AnswerService>();
+builder.Services.AddTransient<IQuestionService, QuestionService>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");
