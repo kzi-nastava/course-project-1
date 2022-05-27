@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Data.Entities
 {
+    [Table("question")]
     public class Question
     {
         [Column("id")]
@@ -15,5 +16,8 @@ namespace HealthCare.Data.Entities
 
         [Column("question_text")]
         public string QuestionText { get; set; }
+
+        [Column("for_doctor")]
+        public bool IsForDoctor { get; set; }
     }
 }

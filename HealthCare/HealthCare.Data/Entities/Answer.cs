@@ -26,8 +26,11 @@ namespace HealthCare.Data.Entities
         [Column("patient_id")]
         public decimal PatientId { get; set; }
 
-        public Question? Question{ get; set; }
+        [Column("doctor_id")]
+        public Doctor? DoctorId { get; set; }
 
-        public Patient? Patient { get; set; }
+        public Question Question{ get; set; }
+
+        public Patient Patient { get; set; }
     }
 }
