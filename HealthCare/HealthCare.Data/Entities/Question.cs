@@ -15,7 +15,7 @@ namespace HealthCare.Data.Entities
         public decimal Id { get; set; }
 
         [Column("question_text")]
-        public string QuestionText { get; set; }
+        public string Text { get; set; }
 
         [Column("for_doctor")]
         public bool IsForDoctor { get; set; }

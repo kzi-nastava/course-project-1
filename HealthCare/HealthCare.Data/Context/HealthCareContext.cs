@@ -105,6 +105,7 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<EquipmentRequest>()
                 .HasOne(x => x.Equipment);
             //add drug suggestion
+            // add questions and answers
 
 
             modelBuilder.Entity<Anamnesis>().HasKey(x => x.Id);
