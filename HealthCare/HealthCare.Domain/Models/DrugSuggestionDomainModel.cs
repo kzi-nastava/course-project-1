@@ -21,5 +21,7 @@ namespace HealthCare.Domain.Models
         public DrugSuggestionState State { get; set; }
 
         public string? Comment { get; set; }
+
+        public DrugDomainModel Drug { get; set; }
     }
 }

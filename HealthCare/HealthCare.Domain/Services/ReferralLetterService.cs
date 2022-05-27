@@ -179,6 +179,7 @@ namespace HealthCare.Domain.Services
 
         public async Task<ReferralLetterDomainModel> Create(ReferralLetterDTO referralDTO)
         {
+    
             if (referralDTO.FromDoctorId == referralDTO.ToDoctorId)
                 throw new ReferredYourselfException();
 

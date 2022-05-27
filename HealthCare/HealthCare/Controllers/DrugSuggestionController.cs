@@ -22,6 +22,14 @@ namespace HealthCareAPI.Controllers
             return Ok(anamnesis);
         }
 
+        [HttpGet]
+        [Route("pending")]
+        public async Task<ActionResult<IEnumerable<DrugSuggestionDomainModel>>> GetPending()
+        {
+            IEnumerable<DrugSuggestionDomainModel> suggestions = await _drugSuggestionService.GetPending();
+            return Ok(suggestions);
+        }
+
         [HttpPost]
         [Route("create")]
         public async Task<ActionResult<DrugSuggestionDomainModel>> Create([FromQuery] DrugSuggestionDTO drugSuggestionDTO)

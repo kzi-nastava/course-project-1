@@ -1,4 +1,5 @@
 ﻿using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -34,6 +35,18 @@ namespace HealthCare.Domain.Services
                     ingredientModel.DrugIngredients.Add(DrugIngredientService.ParseToModel(drugIngredient));
 
             return ingredientModel;
+        }
+
+        public static IngredientDTO ParseToDTO(Ingredient ingredient)
+        {
+            IngredientDTO ingredientDTO = new IngredientDTO
+            {
+                Id = ingredient.Id,
+                IsAllergen = ingredient.IsAllergen,
+                Name = ingredient.Name
+            };
+
+            return ingredientDTO;
         }
 
         public static Ingredient ParseFromModel(IngredientDomainModel ingredientModel)

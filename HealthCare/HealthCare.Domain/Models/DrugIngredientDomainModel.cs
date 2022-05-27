@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HealthCare.Domain.DTOs;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,7 @@ namespace HealthCare.Domain.Models
         public decimal DrugId { get; set; }
 
         public decimal Amount { get; set; }
+
+        public IngredientDTO? Ingredient { get; set; }
     }
 }

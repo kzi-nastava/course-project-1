@@ -16,6 +16,7 @@ namespace HealthCare.Repositories
         public DrugSuggestion Update(DrugSuggestion allergy);
 
         public Task<DrugSuggestion> GetById(decimal id);
+        public Task<IEnumerable<DrugSuggestion>> GetPending();
     }
     public class DrugSuggestionRepository : IDrugSuggestionRepository
     {
@@ -28,6 +29,16 @@ namespace HealthCare.Repositories
         public async Task<IEnumerable<DrugSuggestion>> GetAll()
         {
             return await _healthCareContext.DrugSuggestions.ToListAsync();
+        }
+
+        public async Task<IEnumerable<DrugSuggestion>> GetPending()
+        {
+            return await _healthCareContext.DrugSuggestions
+                         .Include(x => x.Drug)
+                         .ThenInclude(d => d.DrugIngredients)
+                         .ThenInclude(di => di.Ingredient)
+                         .Where(x => x.State == "created")
+                         .ToListAsync();
         }
 
         public async Task<DrugSuggestion> GetById(decimal id)

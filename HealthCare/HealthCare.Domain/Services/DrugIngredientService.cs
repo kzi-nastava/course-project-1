@@ -6,7 +6,6 @@ namespace HealthCare.Domain.Services;
 
 public class DrugIngredientService : IDrugIngredientService
 {
-    //TODO: Add repositories when implemented
     public DrugIngredientService()
     {
     }
@@ -19,6 +18,10 @@ public class DrugIngredientService : IDrugIngredientService
             Amount = drugIngredient.Amount,
             IngredientId = drugIngredient.IngredientId
         };
+
+        if (drugIngredient.Ingredient != null)
+            drugIngredientModel.Ingredient = IngredientService.ParseToDTO(drugIngredient.Ingredient);
+
         
         return drugIngredientModel;
     }

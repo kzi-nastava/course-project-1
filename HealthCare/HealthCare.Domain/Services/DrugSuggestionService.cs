@@ -44,16 +44,32 @@ namespace HealthCare.Domain.Services
             return result;
         }
 
+        public async Task<IEnumerable<DrugSuggestionDomainModel>> GetPending()
+        {
+            IEnumerable<DrugSuggestion> suggestions = await _drugSuggestionRepository.GetPending();
+            List<DrugSuggestionDomainModel> result = new List<DrugSuggestionDomainModel>();
+            foreach (DrugSuggestion item in suggestions)
+            {
+                result.Add(parseToModel(item));
+            }
+            return result;
+        }
+
         private DrugSuggestionDomainModel parseToModel(DrugSuggestion suggestion)
         {
-            return new DrugSuggestionDomainModel
+            DrugSuggestionDomainModel model =  new DrugSuggestionDomainModel
             {
                 Id = suggestion.Id,
                 Comment = suggestion.Comment,
                 DrugId = suggestion.DrugId,
-                State = TranslateState(suggestion.State)
+                State = TranslateState(suggestion.State),
+   
             };
 
+            if (suggestion.Drug != null)
+                model.Drug = DrugService.ParseToModel(suggestion.Drug);
+
+            return model;
         }
 
         private DrugSuggestionState TranslateState(string state)

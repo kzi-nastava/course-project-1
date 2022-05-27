@@ -47,7 +47,8 @@ namespace HealthCare.Data.Context
 
         public HealthCareContext(DbContextOptions options) : base(options)
         {
-            
+            this.ChangeTracker.LazyLoadingEnabled = false;
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -95,6 +96,9 @@ namespace HealthCare.Data.Context
                 .HasOne(x => x.Drug)
                 .WithMany(d => d.DrugIngredients)
                 .HasForeignKey(x => x.DrugId);
+
+            modelBuilder.Entity<DrugSuggestion>()
+                .HasOne(x => x.Drug);
 
             modelBuilder.Entity<Prescription>()
                 .HasOne(x => x.Drug);
