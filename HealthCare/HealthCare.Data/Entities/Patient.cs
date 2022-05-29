@@ -34,7 +34,10 @@ namespace HealthCare.Data.Entities
 
         [Column("blocking_counter")]
         public decimal BlockingCounter { get; set; }
-        
+
+        [Column("notification_minute_offset")]
+        public decimal NotificationOffset { get; set; }
+
         [Column("deleted")]
         public bool IsDeleted { get; set; }
 

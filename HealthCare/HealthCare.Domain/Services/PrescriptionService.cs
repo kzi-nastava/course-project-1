@@ -98,7 +98,8 @@ namespace HealthCare.Domain.Services
                 DrugId = prescriptionDTO.DrugId,
                 TakeAt = prescriptionDTO.TakeAt,
                 PerDay = prescriptionDTO.PerDay,    
-                MealCombination = prescriptionDTO.MealCombination
+                MealCombination = prescriptionDTO.MealCombination,
+                TreatmentDays = prescriptionDTO.TreatmentDays
             };
 
             return prescription;
@@ -126,7 +127,8 @@ namespace HealthCare.Domain.Services
                 TakeAt = removeSeconds(prescription.TakeAt),
                 PerDay = prescription.PerDay,
                 IsDeleted = prescription.IsDeleted,
-                MealCombination = (MealCombination)Enum.Parse(typeof(MealCombination), prescription.MealCombination)
+                MealCombination = (MealCombination)Enum.Parse(typeof(MealCombination), prescription.MealCombination),
+                TreatmentDays = prescription.TreatmentDays
             };
 
             if (prescription.Drug != null)
@@ -145,13 +147,39 @@ namespace HealthCare.Domain.Services
                 TakeAt = prescriptionModel.TakeAt,
                 PerDay = prescriptionModel.PerDay,
                 IsDeleted = prescriptionModel.IsDeleted,
-                MealCombination = prescriptionModel.MealCombination.ToString()
+                MealCombination = prescriptionModel.MealCombination.ToString(),
+                TreatmentDays = prescriptionModel.TreatmentDays
             };
 
             if (prescriptionModel.Drug != null)
                 prescription.Drug = DrugService.ParseFromModel(prescriptionModel.Drug);
 
             return prescription;
+        }
+
+        private async Task<bool> IsDue(PrescriptionDomainModel prescriptionModel)
+        {
+            //TODO
+            Patient patient = await _patientRepository.GetPatientById(prescriptionModel.PatientId);
+            double timeSpan = (double) patient.NotificationOffset;
+            double hoursSpan = (double) (24 / prescriptionModel.PerDay);
+            for (int i = 0; i < prescriptionModel.PerDay; i++)
+                if(prescriptionModel.TakeAt.AddHours(i * hoursSpan).AddMinutes(-timeSpan).TimeOfDay < DateTime.Now.TimeOfDay)
+                    return true;
+            return false;
+        }
+
+        public async Task<List<PrescriptionDomainModel>> GetAllReminders()
+        {
+            //TODO
+            List<PrescriptionDomainModel> prescriptions = (List<PrescriptionDomainModel>) await GetAll();
+            List<PrescriptionDomainModel> result = new List<PrescriptionDomainModel>();
+            foreach (PrescriptionDomainModel item in prescriptions)    
+            {
+                if(await IsDue(item))
+                    result.Add(item);
+            }
+            return result;
         }
     }
     

@@ -1,4 +1,6 @@
 using HealthCare.Data.Context;
+using HealthCare.Domain.BuildingBlocks.CronJobs;
+using HealthCare.Domain.BuildingBlocks.Mail;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Services;
 using HealthCare.Repositories;
@@ -115,8 +117,17 @@ builder.Services.AddCors(feature =>
                                 ));
 
 
-
+//builder.Services.AddCronJob<CronJobNotifications>(c =>
+//{
+//    c.TimeZoneInfo = TimeZoneInfo.Local;
+//    c.CronExpression = @"*/5 * * * *";
+//});
+//MailSender sender = new MailSender("usi2022hospital@gmailcom", "lazzarmilanovic@gmail.com");
+//sender.SetBody("test");
+//sender.SetSubject("test");
+//sender.Send();
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.`
 if (!app.Environment.IsDevelopment())
@@ -139,14 +150,13 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 app.UseCors("CorsPolicy");
-
 app.UseAuthorization();
-
 app.UseEndpoints(endpoints => endpoints.MapControllers());
-
 //app.MapRazorPages();
+
+
+
 
 app.Run();
