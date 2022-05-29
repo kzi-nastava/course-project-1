@@ -27,6 +27,8 @@ namespace HealthCare.Domain.Models
 
         public decimal PerDay { get; set; }
 
+        public decimal TreatmentDays { get; set; }
+
         public bool IsDeleted { get; set; }
 
         public MealCombination MealCombination { get; set; }
@@ -34,7 +36,5 @@ namespace HealthCare.Domain.Models
         public DrugDomainModel Drug { get; set; }
 
         public MedicalRecordDomainModel MedicalRecord { get; set; }
-
-
     }
 }
