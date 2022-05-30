@@ -28,7 +28,7 @@ namespace HealthCare.Repositories
         }
         public async Task<IEnumerable<DrugSuggestion>> GetAll()
         {
-            return await _healthCareContext.DrugSuggestions.ToListAsync();
+            return await _healthCareContext.DrugSuggestions.Include(x => x.Drug).ToListAsync();
         }
 
         public async Task<IEnumerable<DrugSuggestion>> GetPending()

@@ -71,11 +71,11 @@ namespace HealthCareAPI.Controllers
 
         [HttpPut]
         [Route("reject")]
-        public async Task<ActionResult<DrugSuggestionDomainModel>> Reject([FromQuery] decimal drugSuggestionId)
+        public async Task<ActionResult<DrugSuggestionDomainModel>> Reject([FromQuery] decimal drugSuggestionId, string comment)
         {
             try
             {
-                DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Reject(drugSuggestionId);
+                DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Reject(drugSuggestionId, comment);
                 return Ok(DrugSuggestion);
             }
             catch (Exception exception)

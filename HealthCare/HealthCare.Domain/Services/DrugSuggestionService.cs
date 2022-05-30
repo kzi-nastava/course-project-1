@@ -73,7 +73,7 @@ namespace HealthCare.Domain.Services
 
             return parseToModel(suggestion);
         }
-        public async Task<DrugSuggestionDomainModel> Reject(decimal drugSuggestionId)
+        public async Task<DrugSuggestionDomainModel> Reject(decimal drugSuggestionId, string comment)
         {
             DrugSuggestion suggestion = await _drugSuggestionRepository.GetById(drugSuggestionId);
 
@@ -81,6 +81,8 @@ namespace HealthCare.Domain.Services
                 throw new DrugSuggestionAlreadyRejectedException();
 
             suggestion.State = "rejected";
+            suggestion.Comment = comment;
+
             _drugIngredientRepository.Save();
 
             return parseToModel(suggestion);
