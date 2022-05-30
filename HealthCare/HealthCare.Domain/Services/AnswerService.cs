@@ -24,6 +24,17 @@ namespace HealthCare.Domain.Services
             return parseToModel(answers);
         }
 
+        public async Task<IEnumerable<AnswerDomainModel>> GetForDoctor(decimal id)
+        {
+            var answers = await _answerRepository.GetForDoctor(id);
+            return parseToModel(answers);
+        }
+
+        public async Task<IEnumerable<AnswerDomainModel>> GetForHospital()
+        {
+            var answers = await _answerRepository.GetForHospital();
+            return parseToModel(answers);
+        }
         private IEnumerable<AnswerDomainModel> parseToModel(IEnumerable<Answer> answers)
         {
             List<AnswerDomainModel> answerModels = new List<AnswerDomainModel>();
@@ -45,6 +56,12 @@ namespace HealthCare.Domain.Services
                 PatientId  = answer.PatientId,
                 QuestionId = answer.QuestionId
             };
+        }
+        public async Task<decimal> GetAverageRating(decimal id)
+        {
+            List<AnswerDomainModel> answers = (List<AnswerDomainModel>) await GetForDoctor(id);
+            if (answers.Count == 0) return -1;
+            return answers.Select(x => x.Evaluation).Average();
         }
     }
 }

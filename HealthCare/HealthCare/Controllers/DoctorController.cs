@@ -2,6 +2,7 @@
 using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
+using HealthCare.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareAPI.Controllers 
@@ -11,10 +12,12 @@ namespace HealthCareAPI.Controllers
     public class DoctorController : ControllerBase 
     {
         private IDoctorService _doctorService;
+        private IAnswerService _answerService;
 
-        public DoctorController(IDoctorService doctorService) 
+        public DoctorController(IDoctorService doctorService, IAnswerService answerService) 
         {
             _doctorService = doctorService;
+            _answerService = answerService;
         }
 
         // https://localhost:7195/api/doctor
@@ -46,7 +49,7 @@ namespace HealthCareAPI.Controllers
         [Route("search")]
         public async Task<ActionResult<IEnumerable<DoctorDomainModel>>> SearchDoctors([FromQuery] SearchDoctorsDTO dto)
         {
-            IEnumerable<DoctorDomainModel> doctors = await _doctorService.Search(dto);
+            IEnumerable<DoctorDomainModel> doctors = await _doctorService.Search(dto, _answerService);
             return Ok(doctors);
         }
     }

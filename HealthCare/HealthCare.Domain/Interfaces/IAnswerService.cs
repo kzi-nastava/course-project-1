@@ -10,5 +10,8 @@ namespace HealthCare.Domain.Interfaces
     public interface IAnswerService
     {
         Task<IEnumerable<AnswerDomainModel>> GetAll();
+        public Task<IEnumerable<AnswerDomainModel>> GetForDoctor(decimal id);
+        public Task<IEnumerable<AnswerDomainModel>> GetForHospital();
+        public Task<decimal> GetAverageRating(decimal id);
     }
 }

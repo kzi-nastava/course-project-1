@@ -11,6 +11,8 @@ namespace HealthCare.Repositories
 {
     public interface IAnswerRepository : IRepository<Answer>
     {
+        public Task<IEnumerable<Answer>> GetForHospital();
+        public Task<IEnumerable<Answer>> GetForDoctor(decimal id);
 
     }
     public class AnswerRepository : IAnswerRepository
@@ -25,11 +27,15 @@ namespace HealthCare.Repositories
         {
             return await _healthCareContext.Answers.ToListAsync();
         }
-
-        public async Task<IEnumerable<Answer>> Get(Doctor doctor)
+        public async Task<IEnumerable<Answer>> GetForDoctor(decimal id)
         {
-            return await _healthCareContext.Answers.Where(a => a.DoctorId == doctor.Id).ToListAsync();
+            return await _healthCareContext.Answers.Where(a => a.DoctorId == id).ToListAsync();
         }
+        public async Task<IEnumerable<Answer>> GetForHospital()
+        {
+            return await _healthCareContext.Answers.Where(a => a.DoctorId == null).ToListAsync();
+        }
+
 
         public void Save()
         {
