@@ -9,7 +9,7 @@ namespace HealthCare.Domain.Models
     public enum DrugSuggestionState
     {
         CREATED,
-        FOR_REVISION,
+        REVISION,
         APPROVED
     }
     public class DrugSuggestionDomainModel

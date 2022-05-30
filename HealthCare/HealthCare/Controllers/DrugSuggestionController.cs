@@ -53,5 +53,13 @@ namespace HealthCareAPI.Controllers
             DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Approve(drugSuggestionId);
             return Ok(DrugSuggestion);
         }
+
+        [HttpPut]
+        [Route("revision")]
+        public async Task<ActionResult<DrugSuggestionDomainModel>> Revision([FromQuery] decimal drugSuggestionId, string comment)
+        {
+            DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Revision(drugSuggestionId, comment);
+            return Ok(DrugSuggestion);
+        }
     }
 }

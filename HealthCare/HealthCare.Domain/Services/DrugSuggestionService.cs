@@ -59,6 +59,18 @@ namespace HealthCare.Domain.Services
 
         }
 
+        public async Task<DrugSuggestionDomainModel> Revision(decimal drugSuggestionId, string comment)
+        {
+            DrugSuggestion suggestion = await _drugSuggestionRepository.GetById(drugSuggestionId);
+
+            suggestion.State = "revision";
+            suggestion.Comment = comment;
+
+            _drugIngredientRepository.Save();
+
+            return parseToModel(suggestion);
+        }
+
         public async Task<IEnumerable<DrugSuggestionDomainModel>> GetAll(){
             IEnumerable<DrugSuggestion> suggestions =  await _drugSuggestionRepository.GetAll();
             if(suggestions == null)
@@ -107,10 +119,11 @@ namespace HealthCare.Domain.Services
             {
                 case "created": return DrugSuggestionState.CREATED; break;
                 case "approved": return DrugSuggestionState.APPROVED; break;
-                case "for revision": return DrugSuggestionState.FOR_REVISION; break;
+                case "revision": return DrugSuggestionState.REVISION; break;
                 default: throw new Exception("Undefined drug suggestion state");
             }
         }
 
+        
     }
 }
