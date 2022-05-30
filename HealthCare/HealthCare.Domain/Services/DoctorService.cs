@@ -224,7 +224,7 @@ public class DoctorService : IDoctorService
         if (string.IsNullOrEmpty(subString)) return true;
         return doctor.Specialization.Name.ToLower().Contains(subString.ToLower());
     }
-    public async Task<IEnumerable<DoctorDomainModel>> Search(SearchDoctorsDTO dto)
+    public async Task<IEnumerable<DoctorDomainModel>> Search(SearchDoctorsDTO dto, IAnswerService _answerService)
     {
         IEnumerable<Doctor> doctors = await _doctorRepository.GetAll();
         List<DoctorDomainModel> results = new List<DoctorDomainModel>();
@@ -239,6 +239,14 @@ public class DoctorService : IDoctorService
             return results.OrderBy(x => x.Surname);
         else if (dto.SortParam.ToLower().Equals("specialization"))
             return results.OrderBy(x => x.Specialization.Name);
+        else if (dto.SortParam.ToLower().Equals("rating"))
+        {
+            foreach (DoctorDomainModel doctor in results)
+            {
+                doctor.Rating = await _answerService.GetAverageRating(doctor.Id);
+            }
+            return results.OrderByDescending(x => x.Rating);
+        }
         else
             return results;
         

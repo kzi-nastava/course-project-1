@@ -24,5 +24,21 @@ namespace HealthCareAPI.Controllers
             IEnumerable<AnswerDomainModel> answers = await _answerService.GetAll();
             return Ok(answers);
         }
+
+        [HttpGet]
+        [Route("/forDoctor/{id}")]
+        public async Task<ActionResult<IEnumerable<AnswerDomainModel>>> GetForDoctor(decimal id)
+        {
+            IEnumerable<AnswerDomainModel> answers = await _answerService.GetForDoctor(id);
+            return Ok(answers);
+        }
+
+        [HttpGet]
+        [Route("/forHospital")]
+        public async Task<ActionResult<IEnumerable<AnswerDomainModel>>> GetForHospital()
+        {
+            IEnumerable<AnswerDomainModel> answers = await _answerService.GetForHospital();
+            return Ok(answers);
+        }
     }
 }
