@@ -50,8 +50,15 @@ namespace HealthCareAPI.Controllers
         [Route("approve")]
         public async Task<ActionResult<DrugSuggestionDomainModel>> Approve([FromQuery] decimal drugSuggestionId)
         {
-            DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Approve(drugSuggestionId);
-            return Ok(DrugSuggestion);
+            try 
+            {
+                DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Approve(drugSuggestionId);
+                return Ok(DrugSuggestion);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
 
         [HttpPut]
@@ -60,6 +67,22 @@ namespace HealthCareAPI.Controllers
         {
             DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Revision(drugSuggestionId, comment);
             return Ok(DrugSuggestion);
+        }
+
+        [HttpPut]
+        [Route("reject")]
+        public async Task<ActionResult<DrugSuggestionDomainModel>> Reject([FromQuery] decimal drugSuggestionId)
+        {
+            try
+            {
+                DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Reject(drugSuggestionId);
+                return Ok(DrugSuggestion);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+
         }
     }
 }

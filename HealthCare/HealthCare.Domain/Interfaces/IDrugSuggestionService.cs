@@ -15,5 +15,6 @@ namespace HealthCare.Domain.Interfaces
         public Task<IEnumerable<DrugSuggestionDomainModel>> GetPending();
         public Task<DrugSuggestionDomainModel> Approve(decimal drugSuggestionId);
         public Task<DrugSuggestionDomainModel> Revision(decimal drugSuggestionId, string comment);
+        public Task<DrugSuggestionDomainModel> Reject(decimal drugSuggestionId);
     }
 }

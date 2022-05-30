@@ -48,6 +48,9 @@ namespace HealthCare.Domain.Services
         {
             DrugSuggestion suggestion = await _drugSuggestionRepository.GetById(drugSuggestionId);
 
+            if (suggestion.State == "approved")
+                throw new DrugSuggestionAlreadyApprovedException();
+
             suggestion.State = "approved";
 
             suggestion.Drug.IsDeleted = false;
@@ -66,6 +69,18 @@ namespace HealthCare.Domain.Services
             suggestion.State = "revision";
             suggestion.Comment = comment;
 
+            _drugIngredientRepository.Save();
+
+            return parseToModel(suggestion);
+        }
+        public async Task<DrugSuggestionDomainModel> Reject(decimal drugSuggestionId)
+        {
+            DrugSuggestion suggestion = await _drugSuggestionRepository.GetById(drugSuggestionId);
+
+            if (suggestion.State == "rejected")
+                throw new DrugSuggestionAlreadyRejectedException();
+
+            suggestion.State = "rejected";
             _drugIngredientRepository.Save();
 
             return parseToModel(suggestion);
@@ -120,10 +135,10 @@ namespace HealthCare.Domain.Services
                 case "created": return DrugSuggestionState.CREATED; break;
                 case "approved": return DrugSuggestionState.APPROVED; break;
                 case "revision": return DrugSuggestionState.REVISION; break;
+                case "rejected": return DrugSuggestionState.REJECTED; break;
                 default: throw new Exception("Undefined drug suggestion state");
             }
         }
 
-        
     }
 }
