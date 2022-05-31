@@ -1,4 +1,5 @@
-﻿using HealthCare.Domain.Models;
+﻿using HealthCare.Domain.DTOs;
+using HealthCare.Domain.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,5 +14,8 @@ namespace HealthCare.Domain.Interfaces
         public Task<IEnumerable<AnswerDomainModel>> GetForDoctor(decimal id);
         public Task<IEnumerable<AnswerDomainModel>> GetForHospital();
         public Task<decimal> GetAverageRating(decimal id);
+        public HospitalQuestionDTO RateHospital(HospitalQuestionDTO dto);
+        public DoctorQuestionDTO RateDoctor(DoctorQuestionDTO dto);
+
     }
 }

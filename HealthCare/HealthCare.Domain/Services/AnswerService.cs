@@ -1,4 +1,5 @@
 ﻿using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -57,11 +58,46 @@ namespace HealthCare.Domain.Services
                 QuestionId = answer.QuestionId
             };
         }
+
+        private Answer parseFromModel(AnswerDomainModel answerModel)
+        {
+            return new Answer
+            {
+                Id = answerModel.Id,
+                AnswerText = answerModel.AnswerText,
+                Evaluation = answerModel.Evaluation,
+                DoctorId = answerModel.DoctorId,
+                PatientId = answerModel.PatientId,
+                QuestionId = answerModel.QuestionId
+            };
+        }
         public async Task<decimal> GetAverageRating(decimal id)
         {
             List<AnswerDomainModel> answers = (List<AnswerDomainModel>) await GetForDoctor(id);
             if (answers.Count == 0) return -1;
             return answers.Select(x => x.Evaluation).Average();
+        }
+
+        public HospitalQuestionDTO RateHospital(HospitalQuestionDTO dto)
+        {
+            _ = _answerRepository.Post(parseFromModel(dto.answer1));
+            _answerRepository.Save();
+            _ = _answerRepository.Post(parseFromModel(dto.answer2));
+            _answerRepository.Save();
+            _ = _answerRepository.Post(parseFromModel(dto.answer3));
+            _answerRepository.Save();
+            _ = _answerRepository.Post(parseFromModel(dto.answer4));
+            _answerRepository.Save();
+            return dto;
+        }
+
+        public DoctorQuestionDTO RateDoctor(DoctorQuestionDTO dto)
+        {
+            _ = _answerRepository.Post(parseFromModel(dto.answer1));
+            _answerRepository.Save();
+            _ = _answerRepository.Post(parseFromModel(dto.answer2));
+            _answerRepository.Save();
+            return dto;
         }
     }
 }
