@@ -65,7 +65,7 @@ namespace HealthCare.Domain.Services
                 {
                     if (allergy.IngredientId == drugIngredient.IngredientId)
                     {
-                        Ingredient allergen = await _ingredientRepository.GetById(allergy.IngredientId);
+                        Ingredient allergen = await _ingredientRepository.Get(allergy.IngredientId);
                         throw new PatientIsAllergicException(allergen.Name);
                     }
                         

@@ -23,7 +23,7 @@ namespace HealthCare.Data.Context
         public DbSet<EquipmentType> EquipmentTypes { get; set; }
         public DbSet<Examination> Examinations { get; set; }
         public DbSet<ExaminationApproval> ExaminationApprovals { get; set; }
-        public DbSet<Ingredient> Ingridients { get; set; }
+        public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<Manager> Managers { get; set; }
         public DbSet<MedicalRecord> MedicalRecords { get; set; }
