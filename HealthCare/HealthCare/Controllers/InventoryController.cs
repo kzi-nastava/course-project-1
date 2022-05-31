@@ -31,5 +31,13 @@ namespace HealthCareAPI.Controllers
             IEnumerable<InventoryDomainModel> inventories = await _inventoryService.ReadAll();
             return Ok(inventories);
         }
+
+        [HttpGet]
+        [Route("dynamicForRoom")]
+        public async Task<ActionResult<IEnumerable<InventoryDomainModel>>> GetDynamicForRoom([FromQuery] decimal roomId)
+        {
+            IEnumerable<InventoryDomainModel> inventories = await _inventoryService.GetDynamicForRoom(roomId);
+            return Ok(inventories);
+        }
     }
 }

@@ -10,6 +10,8 @@ public class EquipmentDomainModel
 
     public decimal EquipmentTypeId { get; set; }
 
+    public bool IsDynamic { get; set; }
+
     public bool IsDeleted { get; set; }
 
     public EquipmentTypeDomainModel EquipmentType { get; set; }

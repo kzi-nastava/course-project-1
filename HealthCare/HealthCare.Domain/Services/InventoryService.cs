@@ -30,6 +30,22 @@ public class InventoryService : IInventoryService
 
     }
 
+    public async Task<IEnumerable<InventoryDomainModel>> GetDynamicForRoom(decimal roomId)
+    {
+        IEnumerable<Inventory> inventories = await _inventoryRepository.GetDynamicByRoomId(roomId);
+        if (inventories == null)
+            return new List<InventoryDomainModel>();
+
+        List<InventoryDomainModel> results = new List<InventoryDomainModel>();
+        foreach (Inventory item in inventories)
+        {
+            results.Add(ParseToModel(item));
+        }
+
+        return results;
+
+    }
+
     public static Inventory ParseFromModel(InventoryDomainModel inventoryModel)
     {
         Inventory inventory = new Inventory

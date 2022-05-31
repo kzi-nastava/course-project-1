@@ -17,6 +17,7 @@ namespace HealthCare.Repositories
         public Inventory Post(Inventory newInventory);
         public Task<IEnumerable<Inventory>> Get(Room splitRoom);
         public Task<Inventory> Get(Room storageRoom, Equipment equipment);
+        public Task<IEnumerable<Inventory>> GetDynamicByRoomId(decimal roomId);
     }
     public class InventioryRepository : IInventoryRepository 
     {
@@ -66,6 +67,15 @@ namespace HealthCare.Repositories
         {
             EntityEntry<Inventory> result = _healthCareContext.Inventories.Add(newInventory);
             return result.Entity;
+        }
+
+        public async Task<IEnumerable<Inventory>> GetDynamicByRoomId(decimal roomId)
+        {
+            return await _healthCareContext.Inventories
+                .Where(x => x.RoomId == roomId)
+                .Where(x => x.Equipment.IsDynamic == true)
+                .Include(x => x.Equipment)
+                .ToListAsync();
         }
     }
 }
