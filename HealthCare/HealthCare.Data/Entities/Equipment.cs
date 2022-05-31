@@ -20,6 +20,9 @@ namespace HealthCare.Data.Entities
         [Column("Equipment_type_id")]
         public decimal EquipmentTypeId { get; set; }
 
+        [Column("dynamic")]
+        public bool IsDynamic { get; set; }
+
         [Column("deleted")]
         public bool IsDeleted { get; set; }
 

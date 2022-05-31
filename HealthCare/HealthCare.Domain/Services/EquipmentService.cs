@@ -45,6 +45,7 @@ public class EquipmentService : IEquipmentService
 
         return results;
     }
+
     public async Task<IEnumerable<EquipmentDomainModel>> SearchByName(string substring)
     {
         substring = substring.ToLower();
@@ -70,6 +71,7 @@ public class EquipmentService : IEquipmentService
             Id = equipment.Id,
             EquipmentTypeId = equipment.EquipmentTypeId,
             Name = equipment.Name,
+            IsDynamic = equipment.IsDynamic,
             IsDeleted = equipment.IsDeleted
         };
         
@@ -86,6 +88,7 @@ public class EquipmentService : IEquipmentService
             Id = equipmentModel.Id,
             EquipmentTypeId = equipmentModel.EquipmentTypeId,
             Name = equipmentModel.Name,
+            IsDynamic = equipmentModel.IsDynamic,
             IsDeleted = equipmentModel.IsDeleted
         };
         

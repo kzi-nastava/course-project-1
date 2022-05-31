@@ -17,6 +17,7 @@ namespace HealthCare.Domain.DTOs
         public DateTime TakeAt { get; set; }
 
         public decimal PerDay { get; set; }
+
         public decimal TreatmentDays { get; set; }
 
         public string MealCombination { get; set; }
