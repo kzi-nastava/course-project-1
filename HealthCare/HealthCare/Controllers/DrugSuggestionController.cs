@@ -47,6 +47,14 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpPut]
+        [Route("update")]
+        public async Task<ActionResult<DrugSuggestionDomainModel>> Update([FromBody] DrugSuggestionDTO dto)
+        {
+            DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Update(dto);
+            return Ok(DrugSuggestion);
+        }
+
+        [HttpPut]
         [Route("approve")]
         public async Task<ActionResult<DrugSuggestionDomainModel>> Approve([FromQuery] decimal drugSuggestionId)
         {
