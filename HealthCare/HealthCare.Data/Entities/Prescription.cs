@@ -32,6 +32,9 @@ namespace HealthCare.Data.Entities
         [Column("meal_combination")]
         public string MealCombination { get; set; }
 
+        [Column("treatment_days")]
+        public decimal TreatmentDays { get; set; }
+
         [Column("deleted")]
         public bool IsDeleted { get; set; }
 

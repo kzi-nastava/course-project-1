@@ -45,6 +45,9 @@ namespace HealthCare.Data.Context
         public DbSet<EquipmentRequest> EquipmentRequests { get; set; }
         public DbSet<DrugSuggestion> DrugSuggestions{ get; set; }
 
+        public DbSet<Answer> Answers { get; set; }
+        public DbSet<Question> Questions{ get; set; }
+
         public HealthCareContext(DbContextOptions options) : base(options)
         {
             this.ChangeTracker.LazyLoadingEnabled = false;
@@ -106,6 +109,7 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<EquipmentRequest>()
                 .HasOne(x => x.Equipment);
             //add drug suggestion
+            // add questions and answers
 
 
             modelBuilder.Entity<Anamnesis>().HasKey(x => x.Id);
@@ -132,6 +136,9 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<Notification>().HasKey(x => x.Id);
             modelBuilder.Entity<EquipmentRequest>().HasKey(x => x.Id);
             modelBuilder.Entity<DrugSuggestion>().HasKey(x => x.Id);
+            modelBuilder.Entity<Answer>().HasKey(x => x.Id);
+            modelBuilder.Entity<Question>().HasKey(x => x.Id);
+
         }
     }
 }

@@ -8,17 +8,17 @@ using Microsoft.AspNetCore.JsonPatch;
 
 namespace HealthCare.Domain.Services;
 
-public class PatientService : IPatientService 
+public class PatientService : IPatientService
 {
     private IPatientRepository _patientRepository;
     private ICredentialsRepository _credentialsRepository;
     private IMedicalRecordRepository _medicalRecordRepository;
     private IUserRoleRepository _userRoleRepository;
 
-    public PatientService(IPatientRepository patientRepository, 
-                          ICredentialsRepository credentialsRepository, 
+    public PatientService(IPatientRepository patientRepository,
+                          ICredentialsRepository credentialsRepository,
                           IMedicalRecordRepository medicalRecordRepository,
-                          IUserRoleRepository userRoleRepository) 
+                          IUserRoleRepository userRoleRepository)
     {
         _patientRepository = patientRepository;
         _credentialsRepository = credentialsRepository;
@@ -26,9 +26,9 @@ public class PatientService : IPatientService
         _userRoleRepository = userRoleRepository;
     }
 
-    public static PatientDomainModel ParseToModel(Patient patient) 
+    public static PatientDomainModel ParseToModel(Patient patient)
     {
-        PatientDomainModel patientModel = new PatientDomainModel 
+        PatientDomainModel patientModel = new PatientDomainModel
         {
             IsDeleted = patient.IsDeleted,
             BirthDate = patient.BirthDate,
@@ -38,31 +38,32 @@ public class PatientService : IPatientService
             Id = patient.Id,
             Name = patient.Name,
             Surname = patient.Surname,
-            Phone = patient.Phone
+            Phone = patient.Phone,
+            NotificationOffset = patient.NotificationOffset
         };
-        
+
         if (patient.Credentials != null)
             patientModel.Credentials = CredentialsService.ParseToModel(patient.Credentials);
-            
-        if (patient.MedicalRecord != null) 
+
+        if (patient.MedicalRecord != null)
             patientModel.MedicalRecord = MedicalRecordService.ParseToModel(patient.MedicalRecord);
-        
+
         patientModel.Examinations = new List<ExaminationDomainModel>();
         patientModel.Operations = new List<OperationDomainModel>();
-        if (patient.Examinations != null) 
-            foreach (Examination examination in patient.Examinations) 
+        if (patient.Examinations != null)
+            foreach (Examination examination in patient.Examinations)
                 patientModel.Examinations.Add(ExaminationService.ParseToModel(examination));
-        
-        if (patient.Operations != null) 
-            foreach (Operation operation in patient.Operations) 
+
+        if (patient.Operations != null)
+            foreach (Operation operation in patient.Operations)
                 patientModel.Operations.Add(OperationService.ParseToModel(operation));
-        
+
         return patientModel;
     }
 
-    public static Patient ParseFromModel(PatientDomainModel patientModel) 
+    public static Patient ParseFromModel(PatientDomainModel patientModel)
     {
-        Patient patient = new Patient 
+        Patient patient = new Patient
         {
             IsDeleted = patientModel.IsDeleted,
             BirthDate = patientModel.BirthDate,
@@ -72,7 +73,8 @@ public class PatientService : IPatientService
             Id = patientModel.Id,
             Name = patientModel.Name,
             Surname = patientModel.Surname,
-            Phone = patientModel.Phone
+            Phone = patientModel.Phone,
+            NotificationOffset = patientModel.NotificationOffset
         };
         if (patientModel.Credentials != null)
             patient.Credentials = CredentialsService.ParseFromModel(patientModel.Credentials);
@@ -82,14 +84,14 @@ public class PatientService : IPatientService
 
         patient.Examinations = new List<Examination>();
         patient.Operations = new List<Operation>();
-        if (patientModel.Examinations != null) 
-            foreach (ExaminationDomainModel examinationModel in patientModel.Examinations) 
+        if (patientModel.Examinations != null)
+            foreach (ExaminationDomainModel examinationModel in patientModel.Examinations)
                 patient.Examinations.Add(ExaminationService.ParseFromModel(examinationModel));
-            
-        if (patientModel.Operations != null) 
-            foreach (OperationDomainModel operationModel in patientModel.Operations) 
+
+        if (patientModel.Operations != null)
+            foreach (OperationDomainModel operationModel in patientModel.Operations)
                 patient.Operations.Add(OperationService.ParseFromModel(operationModel));
-        
+
         return patient;
     }
 
@@ -155,7 +157,8 @@ public class PatientService : IPatientService
             Name = dto.Name,
             Surname = dto.Surname,
             Phone = dto.Phone,
-            BlockedBy = ""
+            BlockedBy = "",
+            NotificationOffset = 30
         };
         return patient;
     }
@@ -202,7 +205,7 @@ public class PatientService : IPatientService
         _ = _credentialsRepository.Post(credentials);
         _medicalRecordRepository.Save();
         _credentialsRepository.Save();
-        
+
         return ParseToModel(insertedPatient);
     }
 
@@ -245,6 +248,15 @@ public class PatientService : IPatientService
         Patient patient = await UpdatePatientInfo(dto);
         _ = await UpdateMedicalRecordInfo(dto, patient.Id);
         _ = await UpdateCredentialsInfo(dto, patient.Id);
+        return ParseToModel(patient);
+    }
+
+    public async Task<PatientDomainModel> UpdateNotificationOffset(NotificationOffsetDTO dto)
+    {
+        Patient patient = await _patientRepository.GetPatientById(dto.PatientId);
+        patient.NotificationOffset = dto.NotificationOffset;
+        _ = _patientRepository.Update(patient);
+        _patientRepository.Save();
         return ParseToModel(patient);
     }
 

@@ -1,4 +1,6 @@
 using HealthCare.Data.Context;
+using HealthCare.Domain.BuildingBlocks.CronJobs;
+using HealthCare.Domain.BuildingBlocks.Mail;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Services;
 using HealthCare.Repositories;
@@ -52,6 +54,8 @@ builder.Services.AddTransient<INotificationRepository, NotificationRepository>()
 builder.Services.AddTransient<IEquipmentRequestRepository, EquipmentRequestRepository>();
 builder.Services.AddTransient<IDrugSuggestionRepository, DrugSuggestionRepository>();
 builder.Services.AddTransient<IDrugIngredientRepository, DrugIngredientRepository>();
+builder.Services.AddTransient<IAnswerRepository, AnswerRepository>();
+builder.Services.AddTransient<IQuestionRepository, QuestionRepository>();
 
 //Domain
 builder.Services.AddTransient<IAntiTrollService, AntiTrollService>();
@@ -84,6 +88,8 @@ builder.Services.AddTransient<IRenovationService, RenovationService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IEquipmentRequestService, EquipmentRequestService>();
 builder.Services.AddTransient<IDrugSuggestionService, DrugSuggestionService>();
+builder.Services.AddTransient<IAnswerService, AnswerService>();
+builder.Services.AddTransient<IQuestionService, QuestionService>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");
@@ -112,7 +118,18 @@ builder.Services.AddCors(feature =>
                                     .AllowCredentials()
                                 ));
 
+
+//builder.Services.AddCronJob<CronJobNotifications>(c =>
+//{
+//    c.TimeZoneInfo = TimeZoneInfo.Local;
+//    c.CronExpression = @"*/5 * * * *";
+//});
+//MailSender sender = new MailSender("usi2022hospital@gmailcom", "lazzarmilanovic@gmail.com");
+//sender.SetBody("test");
+//sender.SetSubject("test");
+//sender.Send();
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.`
 if (!app.Environment.IsDevelopment())
@@ -135,14 +152,13 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 app.UseCors("CorsPolicy");
-
 app.UseAuthorization();
-
 app.UseEndpoints(endpoints => endpoints.MapControllers());
-
 //app.MapRazorPages();
+
+
+
 
 app.Run();

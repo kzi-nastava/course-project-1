@@ -16,4 +16,6 @@ public interface IPatientService : IService<PatientDomainModel>
     public Task<PatientDomainModel> GetWithMedicalRecord(decimal id);
     public Task<IEnumerable<PatientDomainModel>> ReadAll();
     public Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetSchedule(decimal id);
+    public Task<PatientDomainModel> UpdateNotificationOffset(NotificationOffsetDTO dto);
+
 }
