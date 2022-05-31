@@ -45,6 +45,20 @@ public class InventoryService : IInventoryService
         return results;
 
     }
+    public async Task<IEnumerable<InventoryDomainModel>> UpdateRoomInventory(IEnumerable<InventoryDomainModel> inventory)
+    {
+        foreach (InventoryDomainModel item in inventory)
+        {
+            Inventory oldInventory = ParseFromModel(item);
+
+            oldInventory.Amount = item.Amount;
+            _inventoryRepository.Update(oldInventory);
+        }
+
+        _inventoryRepository.Save();
+
+        return inventory;
+    }
 
     public static Inventory ParseFromModel(InventoryDomainModel inventoryModel)
     {
@@ -85,5 +99,6 @@ public class InventoryService : IInventoryService
             if (!item.IsDeleted) result.Add(item);
         }
         return result;
-    }    
+    }
+
 }
