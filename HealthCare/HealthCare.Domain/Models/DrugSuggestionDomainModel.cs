@@ -9,8 +9,9 @@ namespace HealthCare.Domain.Models
     public enum DrugSuggestionState
     {
         CREATED,
-        FOR_REVISION,
-        APPROVED
+        REVISION,
+        APPROVED,
+        REJECTED
     }
     public class DrugSuggestionDomainModel
     {
@@ -21,5 +22,7 @@ namespace HealthCare.Domain.Models
         public DrugSuggestionState State { get; set; }
 
         public string? Comment { get; set; }
+
+        public DrugDomainModel Drug { get; set; }
     }
 }

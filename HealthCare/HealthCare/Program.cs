@@ -53,6 +53,7 @@ builder.Services.AddTransient<ISplitRenovationRepository, SplitRenovationReposit
 builder.Services.AddTransient<INotificationRepository, NotificationRepository>();
 builder.Services.AddTransient<IEquipmentRequestRepository, EquipmentRequestRepository>();
 builder.Services.AddTransient<IDrugSuggestionRepository, DrugSuggestionRepository>();
+builder.Services.AddTransient<IDrugIngredientRepository, DrugIngredientRepository>();
 builder.Services.AddTransient<IAnswerRepository, AnswerRepository>();
 builder.Services.AddTransient<IQuestionRepository, QuestionRepository>();
 
@@ -64,6 +65,7 @@ builder.Services.AddTransient<IAppointmentService, AppointmentService>();
 builder.Services.AddTransient<ICredentialsService, CredentialsService>();
 builder.Services.AddTransient<IDoctorService, DoctorService>();
 builder.Services.AddTransient<IDrugService, DrugService>();
+builder.Services.AddTransient<IDrugIngredientService, DrugIngredientService>();
 builder.Services.AddTransient<IEquipmentService, EquipmentService>();
 builder.Services.AddTransient<IEquipmentTypeService, EquipmentTypeService>();
 builder.Services.AddTransient<IExaminationApprovalService, ExaminationApprovalService>();

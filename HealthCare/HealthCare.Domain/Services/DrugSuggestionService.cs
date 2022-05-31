@@ -14,10 +14,14 @@ namespace HealthCare.Domain.Services
     public class DrugSuggestionService : IDrugSuggestionService
     {
         IDrugSuggestionRepository _drugSuggestionRepository;
+        IDrugIngredientRepository _drugIngredientRepository;
+        IDrugRepository _drugRepository;
 
-        public DrugSuggestionService(IDrugSuggestionRepository drugSuggestionRepository)
+        public DrugSuggestionService(IDrugSuggestionRepository drugSuggestionRepository, IDrugIngredientRepository drugIngredientRepository, IDrugRepository drugRepository)
         {
             _drugSuggestionRepository = drugSuggestionRepository;
+            _drugIngredientRepository = drugIngredientRepository;
+            _drugRepository = drugRepository;
         }
 
         public Task<DrugSuggestionDomainModel> Create(DrugSuggestionDTO drugSuggestionDTO)
@@ -28,6 +32,60 @@ namespace HealthCare.Domain.Services
         public Task<DrugSuggestionDomainModel> Delete(decimal drugSuggestionId)
         {
             throw new NotImplementedException();
+        }
+
+        public void ApproveDrugIngredients(DrugSuggestion suggestion)
+        {
+            foreach (DrugIngredient drugIngredient in suggestion.Drug.DrugIngredients)
+            {
+                drugIngredient.IsDeleted = false;
+            }
+
+            _drugIngredientRepository.Save();
+        }
+
+        public async Task<DrugSuggestionDomainModel> Approve(decimal drugSuggestionId)
+        {
+            DrugSuggestion suggestion = await _drugSuggestionRepository.GetById(drugSuggestionId);
+
+            if (suggestion.State == "approved")
+                throw new DrugSuggestionAlreadyApprovedException();
+
+            suggestion.State = "approved";
+
+            suggestion.Drug.IsDeleted = false;
+            _drugRepository.Save();
+
+            ApproveDrugIngredients(suggestion);
+
+            return parseToModel(suggestion);
+
+        }
+
+        public async Task<DrugSuggestionDomainModel> Revision(decimal drugSuggestionId, string comment)
+        {
+            DrugSuggestion suggestion = await _drugSuggestionRepository.GetById(drugSuggestionId);
+
+            suggestion.State = "revision";
+            suggestion.Comment = comment;
+
+            _drugIngredientRepository.Save();
+
+            return parseToModel(suggestion);
+        }
+        public async Task<DrugSuggestionDomainModel> Reject(decimal drugSuggestionId, string comment)
+        {
+            DrugSuggestion suggestion = await _drugSuggestionRepository.GetById(drugSuggestionId);
+
+            if (suggestion.State == "rejected")
+                throw new DrugSuggestionAlreadyRejectedException();
+
+            suggestion.State = "rejected";
+            suggestion.Comment = comment;
+
+            _drugIngredientRepository.Save();
+
+            return parseToModel(suggestion);
         }
 
         public async Task<IEnumerable<DrugSuggestionDomainModel>> GetAll(){
@@ -44,16 +102,32 @@ namespace HealthCare.Domain.Services
             return result;
         }
 
+        public async Task<IEnumerable<DrugSuggestionDomainModel>> GetPending()
+        {
+            IEnumerable<DrugSuggestion> suggestions = await _drugSuggestionRepository.GetPending();
+            List<DrugSuggestionDomainModel> result = new List<DrugSuggestionDomainModel>();
+            foreach (DrugSuggestion item in suggestions)
+            {
+                result.Add(parseToModel(item));
+            }
+            return result;
+        }
+
         private DrugSuggestionDomainModel parseToModel(DrugSuggestion suggestion)
         {
-            return new DrugSuggestionDomainModel
+            DrugSuggestionDomainModel model =  new DrugSuggestionDomainModel
             {
                 Id = suggestion.Id,
                 Comment = suggestion.Comment,
                 DrugId = suggestion.DrugId,
-                State = TranslateState(suggestion.State)
+                State = TranslateState(suggestion.State),
+   
             };
 
+            if (suggestion.Drug != null)
+                model.Drug = DrugService.ParseToModel(suggestion.Drug);
+
+            return model;
         }
 
         private DrugSuggestionState TranslateState(string state)
@@ -62,7 +136,8 @@ namespace HealthCare.Domain.Services
             {
                 case "created": return DrugSuggestionState.CREATED; break;
                 case "approved": return DrugSuggestionState.APPROVED; break;
-                case "for revision": return DrugSuggestionState.FOR_REVISION; break;
+                case "revision": return DrugSuggestionState.REVISION; break;
+                case "rejected": return DrugSuggestionState.REJECTED; break;
                 default: throw new Exception("Undefined drug suggestion state");
             }
         }

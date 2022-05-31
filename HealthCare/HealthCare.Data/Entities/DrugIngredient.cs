@@ -20,6 +20,9 @@ namespace HealthCare.Data.Entities
         [Column("ammount")]
         public decimal Amount { get; set; }
 
+        [Column("deleted")]
+        public bool IsDeleted { get; set; }
+
         public Ingredient Ingredient { get; set; }
         
         public Drug Drug { get; set; }

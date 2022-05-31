@@ -22,6 +22,14 @@ namespace HealthCareAPI.Controllers
             return Ok(anamnesis);
         }
 
+        [HttpGet]
+        [Route("pending")]
+        public async Task<ActionResult<IEnumerable<DrugSuggestionDomainModel>>> GetPending()
+        {
+            IEnumerable<DrugSuggestionDomainModel> suggestions = await _drugSuggestionService.GetPending();
+            return Ok(suggestions);
+        }
+
         [HttpPost]
         [Route("create")]
         public async Task<ActionResult<DrugSuggestionDomainModel>> Create([FromQuery] DrugSuggestionDTO drugSuggestionDTO)
@@ -36,6 +44,45 @@ namespace HealthCareAPI.Controllers
         {
             DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Delete(drugSuggestionId);
             return Ok(DrugSuggestion);
+        }
+
+        [HttpPut]
+        [Route("approve")]
+        public async Task<ActionResult<DrugSuggestionDomainModel>> Approve([FromQuery] decimal drugSuggestionId)
+        {
+            try 
+            {
+                DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Approve(drugSuggestionId);
+                return Ok(DrugSuggestion);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+        }
+
+        [HttpPut]
+        [Route("revision")]
+        public async Task<ActionResult<DrugSuggestionDomainModel>> Revision([FromQuery] decimal drugSuggestionId, string comment)
+        {
+            DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Revision(drugSuggestionId, comment);
+            return Ok(DrugSuggestion);
+        }
+
+        [HttpPut]
+        [Route("reject")]
+        public async Task<ActionResult<DrugSuggestionDomainModel>> Reject([FromQuery] decimal drugSuggestionId, string comment)
+        {
+            try
+            {
+                DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Reject(drugSuggestionId, comment);
+                return Ok(DrugSuggestion);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+
         }
     }
 }
