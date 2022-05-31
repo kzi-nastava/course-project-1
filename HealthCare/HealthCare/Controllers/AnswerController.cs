@@ -40,5 +40,21 @@ namespace HealthCareAPI.Controllers
             IEnumerable<AnswerDomainModel> answers = await _answerService.GetForHospital();
             return Ok(answers);
         }
+
+        [HttpPost]
+        [Route("/rateHospital")]
+        public async Task<ActionResult<HospitalQuestionDTO>> RateHospital([FromBody] HospitalQuestionDTO dto)
+        {
+            HospitalQuestionDTO questions = _answerService.RateHospital(dto);
+            return Ok(questions);
+        }
+
+        [HttpPost]
+        [Route("/rateDoctor")]
+        public async Task<ActionResult<DoctorQuestionDTO>> RateDoctor([FromBody] DoctorQuestionDTO dto)
+        {
+            DoctorQuestionDTO questions = _answerService.RateDoctor(dto);
+            return Ok(questions);
+        }
     }
 }
