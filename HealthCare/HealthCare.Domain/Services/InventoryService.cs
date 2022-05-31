@@ -50,8 +50,6 @@ public class InventoryService : IInventoryService
         foreach (InventoryDomainModel item in inventory)
         {
             Inventory oldInventory = ParseFromModel(item);
-
-            oldInventory.Amount = item.Amount;
             _inventoryRepository.Update(oldInventory);
         }
 

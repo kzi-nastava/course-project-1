@@ -42,7 +42,7 @@ namespace HealthCareAPI.Controllers
 
         [HttpPut]
         [Route("updateRoomInventory")]
-        public async Task<ActionResult<IEnumerable<InventoryDomainModel>>> UpdateRoomInventory([FromQuery] IEnumerable<InventoryDomainModel> inventory)
+        public async Task<ActionResult<IEnumerable<InventoryDomainModel>>> UpdateRoomInventory([FromBody] IEnumerable<InventoryDomainModel> inventory)
         {
             IEnumerable<InventoryDomainModel> inventories = await _inventoryService.UpdateRoomInventory(inventory);
             return Ok(inventories);

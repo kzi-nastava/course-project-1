@@ -75,6 +75,7 @@ namespace HealthCare.Repositories
                 .Where(x => x.RoomId == roomId)
                 .Where(x => x.Equipment.IsDynamic == true)
                 .Include(x => x.Equipment)
+                .ThenInclude(x => x.EquipmentType)
                 .ToListAsync();
         }
     }
