@@ -94,17 +94,23 @@ namespace HealthCare.Domain.Services
             {
                 return new List<DrugSuggestionDomainModel>();
             }
-            List<DrugSuggestionDomainModel> result = new List<DrugSuggestionDomainModel>();
-            foreach (var suggestion in suggestions)
-            {
-                result.Add(parseToModel(suggestion));
-            }
-            return result;
+            return parseToModel(suggestions);
         }
 
         public async Task<IEnumerable<DrugSuggestionDomainModel>> GetPending()
         {
             IEnumerable<DrugSuggestion> suggestions = await _drugSuggestionRepository.GetPending();
+            return parseToModel(suggestions);
+        }
+
+        public async Task<IEnumerable<DrugSuggestionDomainModel>> GetRejected()
+        {
+            IEnumerable<DrugSuggestion> suggestions = await _drugSuggestionRepository.GetRejected();
+            return parseToModel(suggestions);
+        }
+
+        private IEnumerable<DrugSuggestionDomainModel> parseToModel(IEnumerable<DrugSuggestion> suggestions)
+        {
             List<DrugSuggestionDomainModel> result = new List<DrugSuggestionDomainModel>();
             foreach (DrugSuggestion item in suggestions)
             {
