@@ -17,6 +17,7 @@ namespace HealthCare.Repositories
 
         public Task<DrugSuggestion> GetById(decimal id);
         public Task<IEnumerable<DrugSuggestion>> GetPending();
+        public Task<IEnumerable<DrugSuggestion>> GetRejected();
     }
     public class DrugSuggestionRepository : IDrugSuggestionRepository
     {
@@ -63,6 +64,16 @@ namespace HealthCare.Repositories
             result.State = EntityState.Modified;
             return result.Entity;
 
+        }
+
+        public async Task<IEnumerable<DrugSuggestion>> GetRejected()
+        {
+            return await _healthCareContext.DrugSuggestions
+                         .Include(x => x.Drug)
+                         .ThenInclude(d => d.DrugIngredients)
+                         .ThenInclude(di => di.Ingredient)
+                         .Where(x => x.State == "rejected")
+                         .ToListAsync();
         }
     }
 }
