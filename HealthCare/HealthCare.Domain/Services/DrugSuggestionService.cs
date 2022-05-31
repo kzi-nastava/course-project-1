@@ -135,12 +135,25 @@ namespace HealthCare.Domain.Services
             switch (state)
             {
                 case "created": return DrugSuggestionState.CREATED; break;
-                case "approved": return DrugSuggestionState.APPROVED; break;
                 case "revision": return DrugSuggestionState.REVISION; break;
+                case "approved": return DrugSuggestionState.APPROVED; break;              
                 case "rejected": return DrugSuggestionState.REJECTED; break;
                 default: throw new Exception("Undefined drug suggestion state");
             }
         }
 
+        public async Task<DrugSuggestionDomainModel> Update(DrugSuggestionDTO dto)
+        {
+            DrugSuggestion drugSuggestion = new DrugSuggestion
+            {
+                Id = dto.Id,
+                DrugId = dto.DrugId,
+                Comment = dto.Comment,
+                State = dto.State,
+            };
+            _drugSuggestionRepository.Update(drugSuggestion);
+            _drugSuggestionRepository.Save();
+            return parseToModel(drugSuggestion);
+        }
     }
 }
