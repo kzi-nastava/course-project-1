@@ -8,6 +8,8 @@ namespace HealthCare.Domain.DTOs
 {
     public class DrugDTO
     {
+        public decimal Id { get; set; }
         public string Name { get; set; }
+        public Dictionary<decimal, decimal> IngredientAmounts { get; set; }
     }
 }

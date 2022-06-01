@@ -6,6 +6,6 @@ namespace HealthCare.Domain.Interfaces;
 public interface IDrugIngredientService : IService<DrugIngredientDomainModel>
 {
     public DrugIngredientDomainModel Create(DrugIngredientDTO dto);
-    DrugIngredientDomainModel Delete(decimal id);
+    Task<DrugIngredientDomainModel> Delete(decimal drugId, decimal ingredientId);
     DrugIngredientDomainModel Update(DrugIngredientDTO drugIngredientDTO);
 }

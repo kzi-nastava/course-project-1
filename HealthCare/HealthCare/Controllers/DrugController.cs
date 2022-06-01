@@ -23,11 +23,5 @@ namespace HealthCareAPI.Controllers
             return Ok(drugs);
         }
 
-        [HttpPut]
-        public async Task<ActionResult<DrugDomainModel>> Update([FromQuery] decimal id, [FromQuery] string name)
-        {
-            DrugDomainModel drug = await _drugService.Update(id, name);
-            return Ok(drug);
-        }
     }
 }

@@ -13,7 +13,7 @@ namespace HealthCare.Repositories
     public interface IDrugIngredientRepository : IRepository<DrugIngredient>
     {
         public DrugIngredient Post(DrugIngredient drugIngredient);
-        DrugIngredient Get(decimal id);
+        Task<DrugIngredient> GetById(decimal drugId, decimal ingredientId);
         DrugIngredient Update(DrugIngredient drugIngredient);
     }
 
@@ -26,9 +26,11 @@ namespace HealthCare.Repositories
             _healthCareContext = healthCareContext;
         }
 
-        public DrugIngredient Get(decimal id)
+        public async Task<DrugIngredient> GetById(decimal drugId, decimal ingredientId)
         {
-            throw new NotImplementedException();
+            DrugIngredient drugIngredient = await _healthCareContext.DrugIngredients
+                .FindAsync(drugId, ingredientId);
+            return drugIngredient;
         }
 
         public async Task<IEnumerable<DrugIngredient>> GetAll()

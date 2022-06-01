@@ -32,9 +32,9 @@ namespace HealthCareAPI.Controllers
 
         [HttpPut]
         [Route("delete")]
-        public async Task<ActionResult<DrugIngredientDomainModel>> Delete(decimal id)
+        public async Task<ActionResult<DrugIngredientDomainModel>> Delete(decimal drugId, decimal ingredientId)
         {
-            DrugIngredientDomainModel drugIngredient = _drugIngredientService.Delete(id);
+            DrugIngredientDomainModel drugIngredient = await _drugIngredientService.Delete(drugId, ingredientId);
             return Ok(drugIngredient);
         }
 
