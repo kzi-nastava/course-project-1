@@ -16,17 +16,14 @@ namespace HealthCare.Domain.Services
         IDrugSuggestionRepository _drugSuggestionRepository;
         IDrugIngredientRepository _drugIngredientRepository;
         IDrugRepository _drugRepository;
+        IDrugService _drugService;
 
-        public DrugSuggestionService(IDrugSuggestionRepository drugSuggestionRepository, IDrugIngredientRepository drugIngredientRepository, IDrugRepository drugRepository)
+        public DrugSuggestionService(IDrugSuggestionRepository drugSuggestionRepository, IDrugIngredientRepository drugIngredientRepository, IDrugRepository drugRepository, IDrugService drugService)
         {
             _drugSuggestionRepository = drugSuggestionRepository;
             _drugIngredientRepository = drugIngredientRepository;
             _drugRepository = drugRepository;
-        }
-
-        public Task<DrugSuggestionDomainModel> Create(DrugSuggestionDTO drugSuggestionDTO)
-        {
-            throw new NotImplementedException();
+            _drugService = drugService;
         }
 
         public Task<DrugSuggestionDomainModel> Delete(decimal drugSuggestionId)
@@ -58,7 +55,7 @@ namespace HealthCare.Domain.Services
 
             ApproveDrugIngredients(suggestion);
 
-            return parseToModel(suggestion);
+            return ParseToModel(suggestion);
 
         }
 
@@ -71,7 +68,7 @@ namespace HealthCare.Domain.Services
 
             _drugIngredientRepository.Save();
 
-            return parseToModel(suggestion);
+            return ParseToModel(suggestion);
         }
         public async Task<DrugSuggestionDomainModel> Reject(decimal drugSuggestionId, string comment)
         {
@@ -85,7 +82,7 @@ namespace HealthCare.Domain.Services
 
             _drugIngredientRepository.Save();
 
-            return parseToModel(suggestion);
+            return ParseToModel(suggestion);
         }
 
         public async Task<IEnumerable<DrugSuggestionDomainModel>> GetAll(){
@@ -94,32 +91,32 @@ namespace HealthCare.Domain.Services
             {
                 return new List<DrugSuggestionDomainModel>();
             }
-            return parseToModel(suggestions);
+            return ParseToModel(suggestions);
         }
 
         public async Task<IEnumerable<DrugSuggestionDomainModel>> GetPending()
         {
             IEnumerable<DrugSuggestion> suggestions = await _drugSuggestionRepository.GetPending();
-            return parseToModel(suggestions);
+            return ParseToModel(suggestions);
         }
 
         public async Task<IEnumerable<DrugSuggestionDomainModel>> GetRejected()
         {
             IEnumerable<DrugSuggestion> suggestions = await _drugSuggestionRepository.GetRejected();
-            return parseToModel(suggestions);
+            return ParseToModel(suggestions);
         }
 
-        private IEnumerable<DrugSuggestionDomainModel> parseToModel(IEnumerable<DrugSuggestion> suggestions)
+        private IEnumerable<DrugSuggestionDomainModel> ParseToModel(IEnumerable<DrugSuggestion> suggestions)
         {
             List<DrugSuggestionDomainModel> result = new List<DrugSuggestionDomainModel>();
             foreach (DrugSuggestion item in suggestions)
             {
-                result.Add(parseToModel(item));
+                result.Add(ParseToModel(item));
             }
             return result;
         }
 
-        private DrugSuggestionDomainModel parseToModel(DrugSuggestion suggestion)
+        private DrugSuggestionDomainModel ParseToModel(DrugSuggestion suggestion)
         {
             DrugSuggestionDomainModel model =  new DrugSuggestionDomainModel
             {
@@ -148,18 +145,47 @@ namespace HealthCare.Domain.Services
             }
         }
 
-        public async Task<DrugSuggestionDomainModel> Update(DrugSuggestionDTO dto)
+        public async Task<DrugSuggestionDomainModel> Update(DrugSuggestionUpdateDTO dto)
         {
             DrugSuggestion drugSuggestion = new DrugSuggestion
             {
-                Id = dto.Id,
                 DrugId = dto.DrugId,
                 Comment = dto.Comment,
                 State = dto.State,
             };
             _drugSuggestionRepository.Update(drugSuggestion);
             _drugSuggestionRepository.Save();
-            return parseToModel(drugSuggestion);
+            return ParseToModel(drugSuggestion);
+        }
+
+        public DrugSuggestionDomainModel Create(DrugSuggestionCreateDTO drugSuggestionDTO)
+        {
+            DrugDomainModel drug = _drugService.Create(drugSuggestionDTO.DrugDTO);
+
+            foreach(KeyValuePair<decimal, decimal> ingredientAmount in drugSuggestionDTO.IngredientAmmounts)
+            {
+                DrugIngredient drugIngredient = new DrugIngredient
+                {
+                    DrugId = drug.Id,
+                    IngredientId = ingredientAmount.Key,
+                    Amount = ingredientAmount.Value,
+                    IsDeleted = true,
+                };
+                _drugIngredientRepository.Post(drugIngredient);
+            }
+            _drugIngredientRepository.Save();
+
+            DrugSuggestion drugSuggestion = new DrugSuggestion
+            {
+                Comment = null,
+                State = "created",
+                DrugId = drug.Id,
+            };
+            _drugSuggestionRepository.Post(drugSuggestion);
+            _drugSuggestionRepository.Save();
+            return ParseToModel(drugSuggestion);
+
+            
         }
     }
 }

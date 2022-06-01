@@ -1,4 +1,5 @@
 ﻿using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -66,6 +67,18 @@ namespace HealthCare.Domain.Services
                     drug.DrugIngredients.Add(DrugIngredientService.ParseFromModel(drugIngredient));
 
             return drug;
+        }
+
+        public DrugDomainModel Create(DrugDTO dto)
+        {
+            Drug drug = new Drug
+            {
+                Name = dto.Name,
+                IsDeleted = true,
+            };
+            _drugRepository.Post(drug);
+            _drugRepository.Save();
+            return ParseToModel(drug);
         }
     }
 }

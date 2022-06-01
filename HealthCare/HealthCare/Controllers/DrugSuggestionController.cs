@@ -40,9 +40,9 @@ namespace HealthCareAPI.Controllers
 
         [HttpPost]
         [Route("create")]
-        public async Task<ActionResult<DrugSuggestionDomainModel>> Create([FromQuery] DrugSuggestionDTO drugSuggestionDTO)
+        public async Task<ActionResult<DrugSuggestionDomainModel>> Create([FromBody] DrugSuggestionCreateDTO drugSuggestionDTO)
         {
-            DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Create(drugSuggestionDTO);
+            DrugSuggestionDomainModel DrugSuggestion = _drugSuggestionService.Create(drugSuggestionDTO);
             return Ok(DrugSuggestion);
         }
 
@@ -56,7 +56,7 @@ namespace HealthCareAPI.Controllers
 
         [HttpPut]
         [Route("update")]
-        public async Task<ActionResult<DrugSuggestionDomainModel>> Update([FromBody] DrugSuggestionDTO dto)
+        public async Task<ActionResult<DrugSuggestionDomainModel>> Update([FromBody] DrugSuggestionUpdateDTO dto)
         {
             DrugSuggestionDomainModel DrugSuggestion = await _drugSuggestionService.Update(dto);
             return Ok(DrugSuggestion);
