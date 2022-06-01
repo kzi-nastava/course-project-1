@@ -162,7 +162,7 @@ namespace HealthCare.Domain.Services
         {
             DrugDomainModel drug = _drugService.Create(drugSuggestionDTO.DrugDTO);
 
-            foreach(KeyValuePair<decimal, decimal> ingredientAmount in drugSuggestionDTO.IngredientAmmounts)
+            foreach(KeyValuePair<decimal, decimal> ingredientAmount in drugSuggestionDTO.IngredientAmounts)
             {
                 DrugIngredient drugIngredient = new DrugIngredient
                 {

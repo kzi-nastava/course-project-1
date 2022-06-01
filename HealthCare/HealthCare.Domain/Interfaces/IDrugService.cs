@@ -11,5 +11,6 @@ namespace HealthCare.Domain.Interfaces
     public interface IDrugService : IService<DrugDomainModel>
     {
         public DrugDomainModel Create(DrugDTO dto);
+        public Task<DrugDomainModel> Update(decimal id, string name);
     }
 }
