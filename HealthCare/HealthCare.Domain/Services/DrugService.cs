@@ -80,5 +80,14 @@ namespace HealthCare.Domain.Services
             _drugRepository.Save();
             return ParseToModel(drug);
         }
+
+        public async Task<DrugDomainModel> Update(decimal id, string name)
+        {
+            Drug drug = await _drugRepository.GetById(id);
+            drug.Name = name;
+            _drugRepository.Update(drug);
+            _drugRepository.Save();
+            return ParseToModel(drug);
+        }
     }
 }

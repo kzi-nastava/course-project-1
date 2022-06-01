@@ -14,6 +14,7 @@ namespace HealthCare.Repositories
     {
         public Task<Drug> GetById(decimal id);
         Drug Post(Drug drug);
+        Drug Update(Drug drug);
     }
 
     public class DrugRepository : IDrugRepository
@@ -49,6 +50,13 @@ namespace HealthCare.Repositories
         public void Save()
         {
             _healthCareContext.SaveChanges();
+        }
+
+        public Drug Update(Drug drug)
+        {
+            EntityEntry<Drug> updatedEntry = _healthCareContext.Drugs.Attach(drug);
+            _healthCareContext.Entry(drug).State = EntityState.Modified;
+            return updatedEntry.Entity;
         }
     }
 }

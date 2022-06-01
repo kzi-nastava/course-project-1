@@ -34,7 +34,7 @@ namespace HealthCareAPI.Controllers
         [Route("rejected")]
         public async Task<ActionResult<IEnumerable<DrugSuggestionDomainModel>>> GetRejected()
         {
-            IEnumerable<DrugSuggestionDomainModel> suggestions = await _drugSuggestionService.GetPending();
+            IEnumerable<DrugSuggestionDomainModel> suggestions = await _drugSuggestionService.GetRejected();
             return Ok(suggestions);
         }
 
