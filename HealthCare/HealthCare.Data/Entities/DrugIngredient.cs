@@ -11,7 +11,6 @@ namespace HealthCare.Data.Entities
     public class DrugIngredient
     {
         [Column("ingredient_id")]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public decimal IngredientId { get; set; }
 
         [Column("drug_id")]

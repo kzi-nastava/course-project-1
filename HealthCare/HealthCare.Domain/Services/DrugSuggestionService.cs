@@ -145,35 +145,18 @@ namespace HealthCare.Domain.Services
             }
         }
 
-        public async Task<DrugSuggestionDomainModel> Update(DrugSuggestionUpdateDTO dto)
+        public async Task<DrugDomainModel> Update(DrugDTO dto)
         {
-            DrugSuggestion drugSuggestion = new DrugSuggestion
-            {
-                DrugId = dto.DrugId,
-                Comment = dto.Comment,
-                State = dto.State,
-            };
-            _drugSuggestionRepository.Update(drugSuggestion);
+            Drug drug = await _drugRepository.GetById(dto.Id);
+            await _drugService.Update(dto);
+
             _drugSuggestionRepository.Save();
-            return ParseToModel(drugSuggestion);
+            return DrugService.ParseToModel(drug);
         }
 
-        public DrugSuggestionDomainModel Create(DrugSuggestionCreateDTO drugSuggestionDTO)
+        public async Task<DrugSuggestionDomainModel> Create(DrugDTO drugDTO)
         {
-            DrugDomainModel drug = _drugService.Create(drugSuggestionDTO.DrugDTO);
-
-            foreach(KeyValuePair<decimal, decimal> ingredientAmount in drugSuggestionDTO.IngredientAmounts)
-            {
-                DrugIngredient drugIngredient = new DrugIngredient
-                {
-                    DrugId = drug.Id,
-                    IngredientId = ingredientAmount.Key,
-                    Amount = ingredientAmount.Value,
-                    IsDeleted = true,
-                };
-                _drugIngredientRepository.Post(drugIngredient);
-            }
-            _drugIngredientRepository.Save();
+            DrugDomainModel drug = await _drugService.Create(drugDTO);
 
             DrugSuggestion drugSuggestion = new DrugSuggestion
             {

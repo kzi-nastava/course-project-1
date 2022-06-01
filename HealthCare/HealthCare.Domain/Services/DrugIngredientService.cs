@@ -73,9 +73,9 @@ public class DrugIngredientService : IDrugIngredientService
         return ParseToModel(drugIngredient);
     }
 
-    public DrugIngredientDomainModel Delete(decimal id)
+    public async Task<DrugIngredientDomainModel> Delete(decimal drugId, decimal ingredientId)
     {
-        DrugIngredient drugIngredient = _drugIngredientRepository.Get(id);
+        DrugIngredient drugIngredient = await _drugIngredientRepository.GetById(drugId, ingredientId);
         drugIngredient.IsDeleted = true;
         _drugIngredientRepository.Update(drugIngredient);
         _drugIngredientRepository.Save();
