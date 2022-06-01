@@ -10,7 +10,6 @@ namespace HealthCare.Domain.DTOs
     {
         public decimal DrugId { get; set; }
         public string Comment { get; set; }
-
         public string State { get; set; }
     }
 }

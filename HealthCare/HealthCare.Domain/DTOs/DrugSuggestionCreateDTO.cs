@@ -1,4 +1,5 @@
-﻿using System;
+﻿using HealthCare.Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,6 @@ namespace HealthCare.Domain.DTOs
     {
         public DrugDTO DrugDTO { get; set; }
 
-        public Dictionary<decimal, decimal> IngredientAmmounts{ get; set; }
-
+        public Dictionary<decimal, decimal> IngredientAmounts { get; set; }
     }
 }
