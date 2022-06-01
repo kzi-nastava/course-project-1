@@ -128,6 +128,16 @@ builder.Services.AddCors(feature =>
 //sender.SetBody("test");
 //sender.SetSubject("test");
 //sender.Send();
+
+
+// Cron jobs
+builder.Services.AddCronJob<CronJobNotifications>(c =>
+{
+    c.TimeZoneInfo = TimeZoneInfo.Local;
+    c.CronExpression = @"* * * * *";
+});
+
+
 var app = builder.Build();
 
 
