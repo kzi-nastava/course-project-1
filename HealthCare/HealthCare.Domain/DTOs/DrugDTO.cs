@@ -9,6 +9,5 @@ namespace HealthCare.Domain.DTOs
     public class DrugDTO
     {
         public string Name { get; set; }
-
     }
 }

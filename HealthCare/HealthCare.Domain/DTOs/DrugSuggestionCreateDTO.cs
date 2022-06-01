@@ -9,10 +9,8 @@ namespace HealthCare.Domain.DTOs
 {
     public class DrugSuggestionCreateDTO
     {
-
         public DrugDTO DrugDTO { get; set; }
 
         public Dictionary<decimal, decimal> IngredientAmounts { get; set; }
-
     }
 }

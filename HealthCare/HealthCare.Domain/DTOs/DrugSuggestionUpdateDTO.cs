@@ -8,12 +8,8 @@ namespace HealthCare.Domain.DTOs
 {
     public class DrugSuggestionUpdateDTO
     {
-        public decimal Id { get; set; }
-
         public decimal DrugId { get; set; }
-
+        public string Comment { get; set; }
         public string State { get; set; }
-
-        public string? Comment { get; set; }
     }
 }
