@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Domain.Services
 {
-    public class AvailabilityService
+    public class AvailabilityService : IAvailabilityService
     {
         private IExaminationRepository _examinationRepository;
         private IOperationRepository _operationRepository;
