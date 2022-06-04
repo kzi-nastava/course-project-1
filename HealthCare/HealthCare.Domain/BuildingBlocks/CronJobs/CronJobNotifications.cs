@@ -23,15 +23,15 @@ namespace HealthCare.Domain.BuildingBlocks.CronJobs
         public override async Task DoWork(CancellationToken cancellationToken)
         {
             Console.WriteLine("radi");
-            List<string> emails = await _prescriptionService.GetAllReminders();
-            Console.WriteLine(emails.Count);
-            foreach (string item in emails)
-            {
-                MailSender sender = new MailSender("usi2022hospital@gmailcom", item);
-                sender.SetBody("Podsetnik za lek.");
-                sender.SetSubject("Uskoro morate popiti lek!");
-                sender.Send();
-            }
+            //List<string> emails = await _prescriptionService.GetAllReminders();
+            //Console.WriteLine(emails.Count);
+            //foreach (string item in emails)
+            //{
+            //    MailSender sender = new MailSender("usi2022hospital@gmailcom", item);
+            //    sender.SetBody("Podsetnik za lek.");
+            //    sender.SetSubject("Uskoro morate popiti lek!");
+            //    sender.Send();
+            //}
         }
     }
 }
