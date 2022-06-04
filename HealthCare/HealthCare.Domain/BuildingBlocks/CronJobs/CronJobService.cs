@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Cronos;
+using HealthCare.Domain.Interfaces;
+using HealthCare.Domain.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -13,11 +15,13 @@ namespace HealthCare.Domain.BuildingBlocks.CronJobs
     {
         string CronExpression { get; set; }
         TimeZoneInfo TimeZoneInfo { get; set; }
+        IPrescriptionService PrescriptionService { get; set; }
     }
     public class ScheduleConfig<T> : IScheduleConfig<T>
     {
         public string CronExpression { get; set; }
         public TimeZoneInfo TimeZoneInfo { get; set; }
+        public IPrescriptionService PrescriptionService { get; set; }
     }
     public static class ScheduledServiceExtensions
     {
@@ -36,6 +40,7 @@ namespace HealthCare.Domain.BuildingBlocks.CronJobs
 
             services.AddSingleton<IScheduleConfig<T>>(config);
             services.AddHostedService<T>();
+            services.AddTransient<IPrescriptionService, PrescriptionService>();
             return services;
         }
     }
@@ -45,11 +50,13 @@ namespace HealthCare.Domain.BuildingBlocks.CronJobs
         private System.Timers.Timer _timer;
         private readonly CronExpression _expression;
         private readonly TimeZoneInfo _timeZoneInfo;
+        public IPrescriptionService _prescriptionService;
 
-        protected CronJobService(string cronExpression, TimeZoneInfo timeZoneInfo)
+        protected CronJobService(string cronExpression, TimeZoneInfo timeZoneInfo, IPrescriptionService prescriptionService)
         {
             _expression = CronExpression.Parse(cronExpression);
             _timeZoneInfo = timeZoneInfo;
+            _prescriptionService = prescriptionService;
         }
 
         public virtual async Task StartAsync(CancellationToken cancellationToken)

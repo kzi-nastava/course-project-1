@@ -24,6 +24,14 @@ namespace HealthCareAPI.Controllers
             return Ok(prescriptions);
         }
 
+        [HttpGet]
+        [Route("/reminders")]
+        public async Task<ActionResult<IEnumerable<string>>> GetAllReminders()
+        {
+            IEnumerable<string> prescriptions = await _prescriptionService.GetAllReminders();
+            return Ok(prescriptions);
+        }
+
         [HttpPost]
         [Route("create")]
         public async Task<ActionResult<PrescriptionDomainModel>> Create([FromBody] PrescriptionDTO newPrescriptionDTO)
