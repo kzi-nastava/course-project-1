@@ -95,7 +95,7 @@ public class PatientService : IPatientService
         return patient;
     }
 
-    public async Task<bool> isPatientBlocked(decimal patientId)
+    public async Task<bool> IsPatientBlocked(decimal patientId)
     {
         Patient patient = await _patientRepository.GetPatientById(patientId);
         if (patient.BlockedBy != null && !patient.BlockedBy.Equals(""))

@@ -112,7 +112,102 @@ namespace HealthCare.Domain.Services
         {
             if (dto.StartTime <= DateTime.Now)
                 throw new DateInPastExeption();
-            if (await patientService.isPatientBlocked(dto.PatientId))
+            if (await patientService.IsPatientBlocked(dto.PatientId))
+                throw new PatientIsBlockedException();
+
+            bool doctorAvailable = await isDoctorAvailable(dto);
+            if (!doctorAvailable)
+                throw new DoctorNotAvailableException();
+
+            bool patientAvailable = await isPatientAvailable(dto);
+            if (!patientAvailable)
+                throw new PatientNotAvailableException();
+        }
+
+        private async Task<bool> isPatientOnExamination(CUOperationDTO dto)
+        {
+            IEnumerable<Examination> patientsExaminations = await _examinationRepository.GetAllByPatientId(dto.PatientId);
+            foreach (Examination examination in patientsExaminations)
+            {
+                double difference = (dto.StartTime - examination.StartTime).TotalMinutes;
+                if (difference <= 15 && difference >= -(double)dto.Duration)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private async Task<bool> isPatientOnOperation(CUOperationDTO dto)
+        {
+            IEnumerable<Operation> patientsOperations = await _operationRepository.GetAllByPatientId(dto.PatientId);
+            foreach (Operation operation in patientsOperations)
+            {
+                if (operation.Id != dto.Id)
+                {
+                    double difference = (dto.StartTime - operation.StartTime).TotalMinutes;
+                    if (difference <= (double)operation.Duration && difference >= -(double)dto.Duration)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
+        private async Task<bool> isDoctorOnExamination(CUOperationDTO dto)
+        {
+            IEnumerable<Examination> doctorsExaminations = await _examinationRepository.GetAllByDoctorId(dto.DoctorId);
+            if (doctorsExaminations == null)
+                return false;
+
+            foreach (Examination examination in doctorsExaminations)
+            {
+                double difference = (dto.StartTime - examination.StartTime).TotalMinutes;
+                if (difference <= 15 && difference >= -(double)dto.Duration)
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private async Task<bool> isDoctorOnOperation(CUOperationDTO dto)
+        {
+            IEnumerable<Operation> doctorsOperations = await _operationRepository.GetAllByDoctorId(dto.DoctorId);
+            foreach (Operation operation in doctorsOperations)
+            {
+                if (operation.Id != dto.Id)
+                {
+                    double difference = (dto.StartTime - operation.StartTime).TotalMinutes;
+                    if (difference <= (double)operation.Duration && difference >= -(double)dto.Duration)
+                    {
+                        return true;
+                    }
+                }
+
+            }
+            return false;
+        }
+
+        private async Task<bool> isDoctorAvailable(CUOperationDTO dto)
+        {
+            return !(await isDoctorOnOperation(dto) ||
+                     await isDoctorOnExamination(dto));
+        }
+
+        private async Task<bool> isPatientAvailable(CUOperationDTO dto)
+        {
+            return !(await isPatientOnOperation(dto) ||
+                     await isPatientOnExamination(dto));
+        }
+
+        public async Task ValidateUserInput(CUOperationDTO dto, IPatientService patientService)
+        {
+            if (dto.StartTime <= DateTime.Now)
+                throw new DateInPastExeption();
+
+            if (await patientService.IsPatientBlocked(dto.PatientId))
                 throw new PatientIsBlockedException();
 
             bool doctorAvailable = await isDoctorAvailable(dto);

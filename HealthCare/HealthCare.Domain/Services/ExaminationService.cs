@@ -129,7 +129,7 @@ public class ExaminationService : IExaminationService
         if (dto.IsPatient && await antiTrollService.AntiTrollCheck(dto.PatientId, true))
             throw new AntiTrollException();
 
-        decimal roomId = await roomService.GetAvailableRoomId(dto.StartTime);
+        decimal roomId = await roomService.GetAvailableRoomId(dto.StartTime, "examination");
         if (roomId == -1)
             throw new NoFreeRoomsException();
 
@@ -163,7 +163,7 @@ public class ExaminationService : IExaminationService
         Examination examination = await _examinationRepository.GetExaminationWithoutAnamnesis(dto.ExaminationId);
         double daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
 
-        decimal roomId = await roomService.GetAvailableRoomId(dto.StartTime);
+        decimal roomId = await roomService.GetAvailableRoomId(dto.StartTime, "examination");
         if (roomId == -1)
             throw new NoFreeRoomsException();
 

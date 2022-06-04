@@ -17,6 +17,6 @@ public interface IPatientService : IService<PatientDomainModel>
     public Task<IEnumerable<PatientDomainModel>> ReadAll();
     public Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetSchedule(decimal id);
     public Task<PatientDomainModel> UpdateNotificationOffset(NotificationOffsetDTO dto);
-    public Task<bool> isPatientBlocked(decimal patientId);
+    public Task<bool> IsPatientBlocked(decimal patientId);
 
 }

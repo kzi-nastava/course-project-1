@@ -11,12 +11,15 @@ public class RoomService : IRoomService
     private IRoomRepository _roomRepository;
     private IRoomTypeRepository _roomTypeRepository;
     private IExaminationRepository _examinationRepository;
+    private IOperationRepository _operationRepository;
 
-    public RoomService(IRoomRepository roomRepository, IRoomTypeRepository roomTypeRepository, IExaminationRepository examinationRepository) 
+    public RoomService(IRoomRepository roomRepository, IRoomTypeRepository roomTypeRepository,
+                       IExaminationRepository examinationRepository, IOperationRepository operationRepository) 
     {
         _roomRepository = roomRepository;
         _roomTypeRepository = roomTypeRepository;
         _examinationRepository = examinationRepository;
+        _operationRepository = operationRepository;
     }
 
     public async Task<IEnumerable<RoomDomainModel>> ReadAll()
@@ -84,7 +87,24 @@ public class RoomService : IRoomService
         return ParseToModel(deletedRoom);
     }
 
-    private async Task<bool> isRoomAvailable(decimal id, DateTime startTime)
+    private async Task<bool> isRoomAvailableForOperation(decimal id, DateTime startTime, decimal duration)
+    {
+        bool isRoomAvailable = true;
+        IEnumerable<Operation> operations = await _operationRepository.GetAllByRoomId(id);
+        foreach (Operation operation in operations)
+        {
+            double difference = (startTime - operation.StartTime).TotalMinutes;
+            if (difference <= (double)operation.Duration && difference >= -(double)duration)
+            {
+                isRoomAvailable = false;
+                break;
+            }
+        }
+
+        return isRoomAvailable;
+    }
+
+    private async Task<bool> isRoomAvailableForExamination(decimal id, DateTime startTime)
     {
         bool isRoomAvailable = true;
         IEnumerable<Examination> examinations = await _examinationRepository.GetAllByRoomId(id);
@@ -101,12 +121,12 @@ public class RoomService : IRoomService
         return isRoomAvailable;
     }
 
-    public async Task<decimal> GetAvailableRoomId(DateTime startTime)
+    public async Task<decimal> GetAvailableRoomId(DateTime startTime, string roomType, decimal duration = 15)
     {
-        IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms("examination");
+        IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms(roomType);
         foreach (Room room in rooms)
         {
-            bool roomAvailable = await isRoomAvailable(room.Id, startTime);
+            bool roomAvailable = (roomType == "examination") ? await isRoomAvailableForExamination(room.Id, startTime) : await isRoomAvailableForOperation(room.Id, startTime, duration);
             if (roomAvailable)
             {
                 return room.Id;
