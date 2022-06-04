@@ -12,6 +12,8 @@ namespace HealthCare.Domain.Interfaces
     public interface IPrescriptionService : IService<PrescriptionDomainModel>
     {
         public Task<PrescriptionDomainModel> Create(PrescriptionDTO prescriptionDTO);
+        public Task<List<string>> GetAllReminders();
+
 
     }
 }

@@ -97,6 +97,7 @@ builder.Services.AddDbContext<HealthCareContext>(x => x.UseSqlServer(connectionS
 //builder.Services.AddDbContext<HealthCareContext>(x => x.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 builder.Services.AddDbContext<HealthCareContext>(x => x.EnableSensitiveDataLogging());
 
+//builder.Services.AddSingleton<CronJobNotifications>();
 
 //builder.Services.AddCors(options => 
 //{
@@ -136,6 +137,7 @@ builder.Services.AddCronJob<CronJobNotifications>(c =>
     c.TimeZoneInfo = TimeZoneInfo.Local;
     c.CronExpression = @"* * * * *";
 });
+
 
 
 var app = builder.Build();
