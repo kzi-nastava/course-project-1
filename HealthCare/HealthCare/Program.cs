@@ -90,6 +90,10 @@ builder.Services.AddTransient<IEquipmentRequestService, EquipmentRequestService>
 builder.Services.AddTransient<IDrugSuggestionService, DrugSuggestionService>();
 builder.Services.AddTransient<IAnswerService, AnswerService>();
 builder.Services.AddTransient<IQuestionService, QuestionService>();
+builder.Services.AddTransient<IAvailabilityService, AvailabilityService>();
+builder.Services.AddTransient<IUrgentExaminationService, UrgentExaminationService>();
+builder.Services.AddTransient<IUrgentOperationService, UrgentOperationService>();
+builder.Services.AddTransient<IFilteringExaminationService, FilteringExaminationService>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");

@@ -82,7 +82,8 @@ namespace HealthCare.Domain.Services
         {
             try
             {
-                await examinationService.Create(dto);
+                return true;
+                //await examinationService.Create(dto);
             }
             catch (Exception exception)
             {

@@ -14,15 +14,17 @@ namespace HealthCareAPI.Controllers
         private IOperationService _operationService;
         private IDoctorService _doctorService;
         private IPatientService _patientService;
-        private INotificationService _notificationService;
+        private IRoomService _roomService;
+        private IAvailabilityService _availabilityService;
 
-        public OperationController(IOperationService operationService, IDoctorService doctorService, IPatientService patientService,
-            INotificationService notificationService) 
+        public OperationController(IOperationService operationService, IDoctorService doctorService, 
+                                   IPatientService patientService, IRoomService roomService, IAvailabilityService availabilityService) 
         {
             _operationService = operationService;
             _doctorService = doctorService;
             _patientService = patientService;
-            _notificationService = notificationService;
+            _roomService = roomService;
+            _availabilityService = availabilityService;
         }
 
         // https://localhost:7195/api/operation
@@ -61,7 +63,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                OperationDomainModel createdOperationModel = await _operationService.Create(dto);
+                OperationDomainModel createdOperationModel = await _operationService.Create(dto, _patientService, _roomService, _availabilityService);
                 return Ok(createdOperationModel);
             }
             catch (Exception exception)
@@ -77,7 +79,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                OperationDomainModel updatedOperationModel = await _operationService.Update(dto);
+                OperationDomainModel updatedOperationModel = await _operationService.Update(dto, _patientService, _roomService, _availabilityService);
                 return Ok(updatedOperationModel);
             }
             catch (Exception exception)
@@ -99,24 +101,6 @@ namespace HealthCareAPI.Controllers
             {
                 return NotFound(exception.Message);
             }
-        }
-        
-        [HttpPut]
-        [Route("urgentList")]
-        public async Task<ActionResult<IEnumerable<IEnumerable<RescheduleDTO>>>> CreateUrgentOperation(CreateUrgentOperationDTO dto)
-        {
-            OperationDomainModel operationModel = await _operationService.CreateUrgent(dto, _doctorService, _notificationService);
-            if (operationModel != null) return Ok();
-            IEnumerable<IEnumerable<RescheduleDTO>> rescheduleItems = await _operationService.FindFiveAppointments(dto, _doctorService, _patientService);
-            return Ok(rescheduleItems);
-        }
-        
-        [HttpPut]
-        [Route("urgent")]
-        public async Task<ActionResult<OperationDomainModel>> RescheduleForUrgentExamination(List<RescheduleDTO> dto)
-        {
-            OperationDomainModel urgentExamination = await _operationService.AppointUrgent(dto, _notificationService);
-            return Ok(urgentExamination);
         }
     }
 }

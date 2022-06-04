@@ -70,4 +70,35 @@ public class AntiTrollService : IAntiTrollService
 
         return results;
     }
+
+    public async Task<bool> AntiTrollCheck(decimal patientId, bool isCreate)
+    {
+        IEnumerable<AntiTroll> antiTrollHistory = await _antiTrollRepository.GetByPatientId(patientId);
+        int createCounter = 0;
+        int updateCounter = 0;
+        foreach (AntiTroll item in antiTrollHistory)
+        {
+            double difference = (DateTime.Now - item.DateCreated).TotalDays;
+            if (difference < 30)
+            {
+                if (item.State.Equals("create"))
+                    createCounter++;
+                else
+                    updateCounter++;
+            }
+        }
+        return isCreate ? createCounter > 8 : updateCounter > 5;
+    }
+    public void WriteToAntiTroll(decimal patientId, string state)
+    {
+        AntiTroll antiTrollItem = new AntiTroll
+        {
+            PatientId = patientId,
+            State = state,
+            DateCreated = UtilityService.RemoveSeconds(DateTime.Now)
+        };
+
+        _ = _antiTrollRepository.Post(antiTrollItem);
+        _antiTrollRepository.Save();
+    }
 }
