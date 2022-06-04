@@ -10,11 +10,13 @@ public class RoomService : IRoomService
 {
     private IRoomRepository _roomRepository;
     private IRoomTypeRepository _roomTypeRepository;
+    private IExaminationRepository _examinationRepository;
 
-    public RoomService(IRoomRepository roomRepository, IRoomTypeRepository roomTypeRepository) 
+    public RoomService(IRoomRepository roomRepository, IRoomTypeRepository roomTypeRepository, IExaminationRepository examinationRepository) 
     {
         _roomRepository = roomRepository;
         _roomTypeRepository = roomTypeRepository;
+        _examinationRepository = examinationRepository;
     }
 
     public async Task<IEnumerable<RoomDomainModel>> ReadAll()
@@ -80,6 +82,37 @@ public class RoomService : IRoomService
         _ = _roomRepository.Update(deletedRoom);
         _roomRepository.Save();
         return ParseToModel(deletedRoom);
+    }
+
+    private async Task<bool> isRoomAvailable(decimal id, DateTime startTime)
+    {
+        bool isRoomAvailable = true;
+        IEnumerable<Examination> examinations = await _examinationRepository.GetAllByRoomId(id);
+        foreach (Examination examination in examinations)
+        {
+            double difference = (startTime - examination.StartTime).TotalMinutes;
+            if (difference <= 15 && difference >= -15)
+            {
+                isRoomAvailable = false;
+                break;
+            }
+        }
+
+        return isRoomAvailable;
+    }
+
+    public async Task<decimal> GetAvailableRoomId(DateTime startTime)
+    {
+        IEnumerable<Room> rooms = await _roomRepository.GetAllAppointmentRooms("examination");
+        foreach (Room room in rooms)
+        {
+            bool roomAvailable = await isRoomAvailable(room.Id, startTime);
+            if (roomAvailable)
+            {
+                return room.Id;
+            }
+        }
+        return -1;
     }
 
     public static RoomDomainModel ParseToModel(Room room)

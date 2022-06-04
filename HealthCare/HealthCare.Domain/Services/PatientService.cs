@@ -95,6 +95,15 @@ public class PatientService : IPatientService
         return patient;
     }
 
+    public async Task<bool> isPatientBlocked(decimal patientId)
+    {
+        Patient patient = await _patientRepository.GetPatientById(patientId);
+        if (patient.BlockedBy != null && !patient.BlockedBy.Equals(""))
+            return true;
+
+        return false;
+    }
+
 
     // Async awaits info from database
     // GetAll is the equivalent of SELECT *

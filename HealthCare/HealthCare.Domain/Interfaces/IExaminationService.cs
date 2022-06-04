@@ -5,22 +5,9 @@ namespace HealthCare.Domain.Interfaces;
 
 public interface IExaminationService : IService<ExaminationDomainModel> 
 {
-    public Task<IEnumerable<ExaminationDomainModel>> GetAllForPatient(decimal id);
-    public Task<IEnumerable<ExaminationDomainModel>> GetAllForPatientSorted(SortExaminationDTO dto, IDoctorService doctorService);
-
-    public Task<IEnumerable<ExaminationDomainModel>> GetAllForDoctor(decimal id);
-    public Task<ExaminationDomainModel> Delete(DeleteExaminationDTO dto);
-    public Task<ExaminationDomainModel> Create(CUExaminationDTO dto);
-    public Task<ExaminationDomainModel> Update(CUExaminationDTO dto);
-
-    public Task<IEnumerable<CUExaminationDTO>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService);
+    public Task<ExaminationDomainModel> Delete(DeleteExaminationDTO dto, IAntiTrollService antiTrollService);
+    public Task<ExaminationDomainModel> Create(CUExaminationDTO dto, IPatientService patientService, IRoomService roomService, IAvailabilityService availabilityService, IAntiTrollService antiTrollService);
+    public Task<ExaminationDomainModel> Update(CUExaminationDTO dto, IPatientService patientService, IRoomService roomService, IAvailabilityService availabilityService, IAntiTrollService antiTrollService);
     public Task<IEnumerable<ExaminationDomainModel>> ReadAll();
-    public Task<IEnumerable<ExaminationDomainModel>> SearchByAnamnesis(SearchByNameDTO dto);
 
-    public Task<ExaminationDomainModel> CreateUrgent(CreateUrgentExaminationDTO dto, IDoctorService doctorService, INotificationService notificationService);
-
-    public Task<IEnumerable<IEnumerable<RescheduleDTO>>> FindFiveAppointments(CreateUrgentExaminationDTO dto,
-        IDoctorService doctorService, IPatientService patientService);
-
-    public Task<ExaminationDomainModel> AppointUrgent(List<RescheduleDTO> dto, INotificationService notificationService);
 }
