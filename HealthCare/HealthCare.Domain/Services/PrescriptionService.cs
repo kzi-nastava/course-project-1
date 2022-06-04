@@ -192,7 +192,7 @@ namespace HealthCare.Domain.Services
             List<PrescriptionDomainModel> prescriptions = (List<PrescriptionDomainModel>) await GetAll();
             List<string> result = new List<string>();
             foreach (PrescriptionDomainModel item in prescriptions)    
-            {
+            { 
                 if (await IsDue(item))
                 {
                     Patient patient = await _patientRepository.GetPatientById(item.PatientId);
