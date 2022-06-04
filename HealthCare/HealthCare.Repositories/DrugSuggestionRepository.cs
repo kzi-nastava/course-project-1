@@ -44,7 +44,12 @@ namespace HealthCare.Repositories
 
         public async Task<DrugSuggestion> GetById(decimal id)
         {
-            return await _healthCareContext.DrugSuggestions.FindAsync(id);
+            return await _healthCareContext.DrugSuggestions
+                         .Include(x => x.Drug)
+                         .ThenInclude(d => d.DrugIngredients)
+                         .ThenInclude(di => di.Ingredient)
+                         .Where(x => x.Id == id)
+                         .FirstOrDefaultAsync();
         }
 
         public DrugSuggestion Post(DrugSuggestion newDrugSuggestion)
