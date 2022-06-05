@@ -124,6 +124,8 @@ submitBtn.addEventListener("click", function(e) {
             if (this.status === 200) {
                 let recommendedExaminations = JSON.parse(recommendedRequest.responseText);
                 console.log(recommendedExaminations);
+                
+                appointmentBox.innerHTML = "";
                 recommendedExaminations.forEach(examination => {
                     populateAppointments(examination);
                 });

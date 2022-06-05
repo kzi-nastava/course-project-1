@@ -20,7 +20,13 @@ namespace HealthCare.Domain.Services
             {
                 if (DateTime.Now < time.Value && time.Key < paramsDTO.LastDate)
                 {
-                    possibleSlots.Add(time);
+                    if (DateTime.Now.TimeOfDay < paramsDTO.TimeFrom.TimeOfDay)
+                    {
+                        DateTime start = new DateTime(time.Key.Year, time.Key.Month, time.Key.Day, paramsDTO.TimeFrom.Hour, paramsDTO.TimeFrom.Minute, 0);
+                        possibleSlots.Add(new KeyValuePair<DateTime, DateTime>(start, time.Value));
+                    }
+                    else
+                        possibleSlots.Add(time);
                 }
             }
             return possibleSlots;
@@ -65,6 +71,10 @@ namespace HealthCare.Domain.Services
 
             while (numOfExaminations != 3)
             {
+                if(paramsDTO.TimeFrom.TimeOfDay > startTime.TimeOfDay)
+                {
+                    startTime = new DateTime(startTime.Year, startTime.Month, startTime.Day, paramsDTO.TimeFrom.Hour, paramsDTO.TimeFrom.Minute, 0);
+                }
                 //start time is in available range for doctor and patient
                 if (startTime.TimeOfDay < paramsDTO.TimeTo.TimeOfDay && startTime < possibleSlots[possibleSlotIndex].Value)
                 {
