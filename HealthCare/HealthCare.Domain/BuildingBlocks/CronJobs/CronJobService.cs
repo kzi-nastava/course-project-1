@@ -77,7 +77,15 @@ namespace HealthCare.Domain.BuildingBlocks.CronJobs
 
                     if (!cancellationToken.IsCancellationRequested)
                     {
-                        await DoWork(cancellationToken);
+                        try
+                        {
+                            await DoWork(cancellationToken);
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine(ex.Message);
+                        }
+                            
                     }
 
                     if (!cancellationToken.IsCancellationRequested)
