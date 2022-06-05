@@ -165,7 +165,11 @@ public class DoctorService : IDoctorService
         schedule.Sort((x, y) => x.Key.CompareTo(y.Key));
         // Generate available time
         List<KeyValuePair<DateTime, DateTime>> result = new List<KeyValuePair<DateTime, DateTime>>();
-        if (schedule.Count == 0) return result;
+        if (result.Count == 0)
+        {
+            result.Add(new KeyValuePair<DateTime, DateTime>(DateTime.Now, new DateTime(9999, 12, 31)));
+            return result;
+        }
         KeyValuePair<DateTime, DateTime> first = schedule[0];
         for (int i = 1; i < schedule.Count; i++)
         {
@@ -175,6 +179,7 @@ public class DoctorService : IDoctorService
             first = schedule[i];
         }
         result.Add(new KeyValuePair<DateTime, DateTime>(schedule[schedule.Count - 1].Value, new DateTime(9999, 12, 31)));
+        
         return result;
     }
 
