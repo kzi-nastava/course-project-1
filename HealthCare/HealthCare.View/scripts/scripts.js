@@ -1,6 +1,6 @@
 
 function currentTime() {
-    let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    let days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
     let date = new Date(); 
     let hh = date.getHours();
     let mm = date.getMinutes();
@@ -23,7 +23,7 @@ function currentTime() {
   
     document.getElementById("clock").innerText = time; 
     document.getElementById("date").innerText = date.toLocaleDateString();
-    document.getElementById("year").innerText = days[date.getDay() - 1]; 
+    document.getElementById("year").innerText = days[date.getDay()]; 
     let t = setTimeout(function(){ currentTime() }, 1000);
   }
 
