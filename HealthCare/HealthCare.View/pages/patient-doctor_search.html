@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="../styles/patient-recommended.css" />
+  <link rel="stylesheet" href="../styles/patient-doctor_search.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -17,7 +17,7 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="container" id="container">
     <header class="header">
       <div class="header__date">
         <p class="header__date--day" id="date">Friday,13th March</p>
@@ -96,54 +96,69 @@
     <div class="main-div">
       <div class="info-message-box">
         <h4>
-          We got your back!
+          Let's take a closer look on our doctors
         </h4>
-        <p>Here are some recommended dates that are open</p>
+        <p>Here are list of all of them</p>
       </div>
       <div class="params-picker">
-        <div class="time-doctor-picker">
-          <p>I have to be examined by: </p>
-          <select name="doctor-names" id="doctor-names" class="doctor-names">
-            
+        <div class="doctor-params-div">
+          <p>Name: </p>
+          <input type="text" class="form-control" id="name-search">
+          <p>Surname: </p>
+          <input type="text" class="form-control" id="surname-search">
+          <p>Specialization: </p>
+          <input type="text" class="form-control" id="specialization-search">
+        </div>
+        <div class="doctor-params-div">
+          <p>Sort by: </p>
+          <select name="sort-params" id="sort-params" class="doctor-params">Select criteria
+            <option id="name" value="name">Name</option>
+            <option id="name" value="surname">Surname</option>
+            <option id="name" value="specialization">Specialization</option>
+            <option id="name" value="rating">Rating</option>
           </select>
-          <p>from</p>
-          <div class="time-picker">
-            <select name="hourSelect1" id="hourSelect1" class="time-picker__select"></select>
-            :
-            <select name="minuteSelect1" id="minuteSelect1" class="time-picker__select"></select>
-          </div>
-          <p>to</p>
-          <div class="time-picker">
-            <select name="hourSelect2" id="hourSelect2" class="time-picker__select"></select>
-            :
-            <select name="minuteSelect2" id="minuteSelect2" class="time-picker__select"></select>
-          </div>
-          
         </div>
-        <div class="date-picker">
-          <p>I have to be examined until: </p>
-          <input type="date" name="date-until" id="date-until" class="date-until">
-        </div>
-        <div class="priority-picker">
-          <p>Choose your priority: </p>
-          <input type="radio" name="priority" class="radio-priority" value="doctor" checked>Doctor<br>
-          <input type="radio" name="priority" class="radio-priority" value="date">Date<br>
-        </div>
+        <button id="search-btn" class="search-btn">Search</button>
       </div>
-      <div class="buttons">
-        <button class="submitBtn" id="submitBtn">Submit</button>
+      <div class="doctor-select" id="doctor-select"></div>
+
+    </div>
+    
+  </div>
+  <div class="modal js-modal" id="modal">
+    <div class="modal-image">
+      <svg viewBox="0 0 32 32" style="fill:#48DB71">
+        <path d="M1 14 L5 10 L13 18 L27 4 L31 8 L13 26 z"></path>
+      </svg>
+    </div>
+    <h1 id="modal-title">Nice job!</h1>
+    <p>To dismiss click the button below</p>
+    <div class="date-time">
+      <div class="date-picker">
+        <div>
+          <select name="yearSelect" id="yearSelect" class="year"></select>
+        </div>
+        
+        <div>
+          <select name="monthSelect" id="monthSelect" class="month"></select>
+        </div>
+
+        <div>
+          <select name="daySelect" id="daySelect" class="day"></select>
+        </div>
+        
       </div>
-      <div class="appointment-box">
-        <div class="appointment-header">
-          <h4>Here are what we found <i class="fa-solid fa-calendar-plus"></i></h4>
-        </div>
-        <div class="examination-select" id="examination-select">
-          
-        </div>
+      <div class="time-picker">
+        <select name="hourSelect" id="hourSelect" class="time-picker__select"></select>
+        :
+        <select name="minuteSelect" id="minuteSelect" class="time-picker__select"></select>
       </div>
     </div>
-    <script src="../scripts/scripts.js"></script>
-    <script src="../scripts/patient-recommended.js"></script>
+    <button class="js-close" id="submit-btn">Submit</button>
+    <button class="js-close" id="close-btn">Dismiss</button>
+  </div>
+  <script src="../scripts/scripts.js"></script>
+  <script src="../scripts/patient-doctor_search.js"></script>
 </body>
 
 </html>
