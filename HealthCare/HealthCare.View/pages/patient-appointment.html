@@ -17,7 +17,7 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="container" id="container">
     <header class="header">
       <div class="header__date">
         <p class="header__date--day" id="date">Friday,13th March</p>
@@ -134,6 +134,36 @@
         
       </div>
     </div>
+  </div>
+  <div class="modal js-modal" id="modal">
+    <h1 id="modal-title">Edit your appointment</h1>
+    <p>To dismiss click the button below</p>
+    <div class="date-time">
+      <div class="date-picker-relative">
+        <div>
+          <select name="yearSelect-modal" id="yearSelect-modal" class="year"></select>
+        </div>
+        
+        <div>
+          <select name="monthSelect-modal" id="monthSelect-modal" class="month"></select>
+        </div>
+
+        <div>
+          <select name="daySelect-modal" id="daySelect-modal" class="day"></select>
+        </div>
+        
+      </div>
+      <div class="time-picker-relative">
+        <select name="hourSelect-modal" id="hourSelect-modal" class="time-picker__select"></select>
+        :
+        <select name="minuteSelect-modal" id="minuteSelect-modal" class="time-picker__select"></select>
+      </div>
+      <select name="doctor-names" id="doctor-names" class="doctor-names">
+            
+      </select>
+    </div>
+    <button class="js-close" id="submit-btn">Submit</button>
+    <button class="js-close" id="close-btn">Dismiss</button>
   </div>
   <script src="../scripts/scripts.js"></script>
   <script src="../scripts/patient-appointment.js"></script>
