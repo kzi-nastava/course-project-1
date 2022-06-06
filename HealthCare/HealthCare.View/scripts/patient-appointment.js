@@ -1,6 +1,7 @@
 let doctorsUri = "https://localhost:7195/api/Doctor"
 let roomsUri = "https://localhost:7195/api/Room"
 let examinationUri = "https://localhost:7195/api/Examination/create"
+let updateExaminationUri = "https://localhost:7195/api/Examination/update"
 let examinationDeleteUri = "https://localhost:7195/api/Examination/delete"
 let getPatientUri = "https://localhost:7195/api/Patient/patientId=";
 
@@ -15,9 +16,15 @@ const monthSelect = document.getElementById("monthSelect");
 const daySelect = document.getElementById("daySelect");
 const hourSelect = document.getElementById("hourSelect");
 const minuteSelect = document.getElementById("minuteSelect");
+const yearSelectModal = document.getElementById("yearSelect-modal");
+const monthSelectModal = document.getElementById("monthSelect-modal");
+const daySelectModal = document.getElementById("daySelect-modal");
+const hourSelectModal = document.getElementById("hourSelect-modal");
+const minuteSelectModal = document.getElementById("minuteSelect-modal");
 
 let appointmentBox = document.getElementById('examination-select');
 let doctorSelect = document.getElementById("doctor-select");
+let doctorNames = document.getElementById("doctor-names");
 
 const months = ['January', 'February', 'March', 'April', 'May', 'June',
 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -29,6 +36,10 @@ const months = ['January', 'February', 'March', 'April', 'May', 'June',
         option.textContent = months[i];
         option.value = i + 1;
         monthSelect.appendChild(option);
+        const optionModal = document.createElement('option');
+        optionModal.textContent = months[i];
+        optionModal.value = i + 1;
+        monthSelectModal.appendChild(optionModal);
     }
     monthSelect.value = "Month";
 })();
@@ -37,6 +48,7 @@ function populateDays(month) {
     while(daySelect.firstChild)
     {
         daySelect.removeChild(daySelect.firstChild);
+        daySelectModal.removeChild(daySelectModal.firstChild);
     }
     let dayNum;
     if(month === '1' || month === '3' || month === '5' || 
@@ -59,6 +71,10 @@ function populateDays(month) {
         option.textContent = i;
         option.value = i;
         daySelect.appendChild(option);
+        const optionModal = document.createElement('option');
+        optionModal.textContent = i;
+        optionModal.value = i;
+        daySelectModal.appendChild(optionModal);
     }
 }
 
@@ -71,6 +87,10 @@ function populateYears()
         option.textContent = year + i;
         option.value = year + i;
         yearSelect.appendChild(option);
+        const optionModal = document.createElement('option');
+        optionModal.textContent = year + i;
+        optionModal.value = year + i;
+        yearSelectModal.appendChild(optionModal);
     }
 }
 
@@ -93,6 +113,10 @@ function populateHours ()
         option.textContent = i;
         option.value = i;
         hourSelect.appendChild(option);
+        const optionModal = document.createElement('option');
+        optionModal.textContent = i;
+        optionModal.value = i;
+        hourSelectModal.appendChild(optionModal);
     }
 }
 
@@ -106,6 +130,10 @@ function populateMinutes ()
         option.textContent = i;
         option.value = i;
         minuteSelect.appendChild(option);
+        const optionModal = document.createElement('option');
+        optionModal.textContent = i;
+        optionModal.value = i;
+        minuteSelectModal.appendChild(optionModal);
     }
 }
 
@@ -142,6 +170,7 @@ getDoctorsRequest.onreadystatechange = function () {
             doctors.forEach(doctor => {
                 makeDoctorCard(doctor);
             });
+            fillDoctorSelect(doctors);
             for(let i = 0; i < user.examinations.length; i++)
             {
                 if(user.examinations[i].isDeleted == false)
@@ -320,7 +349,7 @@ function populateAppointments(appointment)
     editIcon.classList.add("fa-solid");
     editIcon.classList.add("fa-pencil");
     //editBtn.innerHTML = editIcon;
-    
+    editBtn.onclick = function() {openModal(appointment)}
     examinationButtons.appendChild(editBtn);
     
     let deleteBtn = document.createElement("button");
@@ -413,3 +442,64 @@ function formatDate(param)
     return param;
 }
 
+let modal = document.getElementById("modal");
+let container = document.getElementById("container");
+function openModal(examination)
+{
+    console.log(examination.id)
+    modal.setAttribute("style", "display:block");
+    container.classList.add("wrapper")
+    let submitBtn = document.getElementById('submit-btn');
+    submitBtn.onclick = function() {update(examination.id, examination.doctorId);}
+}
+let btnClose = document.getElementById("close-btn");
+
+btnClose.onclick = (e) => {
+    modal.setAttribute("style", "display:none");
+    container.classList.remove("wrapper");
+};
+
+function fillDoctorSelect(doctors)
+{
+    doctors.forEach(doctor => {
+        const option = document.createElement('option');
+        option.textContent = doctor.name + " " + doctor.surname;
+        option.value = doctor.id;
+        doctorNames.appendChild(option);
+    });
+}
+
+function update(id, doctorId) 
+{
+    let day = formatDate(daySelectModal.value);
+    let month = formatDate(monthSelectModal.value);
+    let year = formatDate(yearSelectModal.value);
+    let hours = formatDate(hourSelectModal.value);
+    let minutes = formatDate(minuteSelectModal.value);
+    let date = year + "-" + month + "-" + day + "T" + hours + ":" + minutes + ":00.000Z";
+    
+    let examination =  {
+        "doctorId": doctorNames.value,
+        "examinationId": id,
+        "patientId": user.id,
+        "startTime": date,
+        "isPatient": true
+    }
+    console.log(JSON.stringify(examination));
+    let updateExaminationRequest = new XMLHttpRequest();
+    updateExaminationRequest.open('PUT', updateExaminationUri); 
+    updateExaminationRequest.setRequestHeader('Content-Type', 'application/json');
+    updateExaminationRequest.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                let examination = JSON.parse(updateExaminationRequest.responseText);
+                reloadUser()
+            } else {
+                alert("Greska prilikom rezervisanja pregleda.")
+            }
+        }
+    }
+    updateExaminationRequest.send(JSON.stringify(examination));
+    modal.setAttribute("style", "display:none");
+    container.classList.remove("wrapper");
+}

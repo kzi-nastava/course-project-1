@@ -26,7 +26,7 @@ loginForm.addEventListener("submit", function(e) {
     }
 
     clearLogin();
-})
+});
 
 function clearLogin() {
     document.getElementById("log-username").value = null;
