@@ -17,7 +17,7 @@
 </head>
 
 <body>
-  <div class="container">
+  <div class="container" id="container">
     <header class="header">
       <div class="header__date">
         <p class="header__date--day" id="date">Friday,13th March</p>
@@ -112,18 +112,53 @@
         <div class="doctor-params-div">
           <p>Sort by: </p>
           <select name="sort-params" id="sort-params" class="doctor-params">Select criteria
-            <option id="name" value="name">Name</option>  
-            <option id="name" value="surname">Surname</option>  
-            <option id="name" value="specialization">Specialization</option>  
-            <option id="name" value="rating">Rating</option>  
+            <option id="name" value="name">Name</option>
+            <option id="name" value="surname">Surname</option>
+            <option id="name" value="specialization">Specialization</option>
+            <option id="name" value="rating">Rating</option>
           </select>
         </div>
         <button id="search-btn" class="search-btn">Search</button>
       </div>
       <div class="doctor-select" id="doctor-select"></div>
+
     </div>
-    <script src="../scripts/scripts.js"></script>
-    <script src="../scripts/patient-doctor_search.js"></script>
+    
+  </div>
+  <div class="modal js-modal" id="modal">
+    <div class="modal-image">
+      <svg viewBox="0 0 32 32" style="fill:#48DB71">
+        <path d="M1 14 L5 10 L13 18 L27 4 L31 8 L13 26 z"></path>
+      </svg>
+    </div>
+    <h1 id="modal-title">Nice job!</h1>
+    <p>To dismiss click the button below</p>
+    <div class="date-time">
+      <div class="date-picker">
+        <div>
+          <select name="yearSelect" id="yearSelect" class="year"></select>
+        </div>
+        
+        <div>
+          <select name="monthSelect" id="monthSelect" class="month"></select>
+        </div>
+
+        <div>
+          <select name="daySelect" id="daySelect" class="day"></select>
+        </div>
+        
+      </div>
+      <div class="time-picker">
+        <select name="hourSelect" id="hourSelect" class="time-picker__select"></select>
+        :
+        <select name="minuteSelect" id="minuteSelect" class="time-picker__select"></select>
+      </div>
+    </div>
+    <button class="js-close" id="submit-btn">Submit</button>
+    <button class="js-close" id="close-btn">Dismiss</button>
+  </div>
+  <script src="../scripts/scripts.js"></script>
+  <script src="../scripts/patient-doctor_search.js"></script>
 </body>
 
 </html>
