@@ -17,18 +17,18 @@ namespace HealthCare.Domain.Services
     public class PrescriptionService : IPrescriptionService
     {
         IPrescriptionRepository _prescriptionRepository;
-        IExaminationRepository _examinationRepository;
         IMedicalRecordRepository _medicalRecordRepository;
         IDrugRepository _drugRepository;
         IIngredientRepository _ingredientRepository;
         IPatientRepository _patientRepository;
 
-        public PrescriptionService(IPrescriptionRepository prescriptionRepository, IExaminationRepository examinationRepository, 
-                                   IMedicalRecordRepository medicalRecordRepository, IDrugRepository drugRepository,
-                                   IIngredientRepository ingredientRepository, IPatientRepository patientRepository)
+        public PrescriptionService(IPrescriptionRepository prescriptionRepository, 
+                                   IMedicalRecordRepository medicalRecordRepository, 
+                                   IDrugRepository drugRepository,
+                                   IIngredientRepository ingredientRepository, 
+                                   IPatientRepository patientRepository)
         {
             _prescriptionRepository = prescriptionRepository;
-            _examinationRepository = examinationRepository;
             _medicalRecordRepository = medicalRecordRepository;
             _drugRepository = drugRepository;
             _ingredientRepository = ingredientRepository;

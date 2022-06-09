@@ -12,30 +12,12 @@ namespace HealthCareAPI.Controllers
     public class ExaminationController : ControllerBase 
     {
         private IExaminationService _examinationService;
-        private IDoctorService _doctorService;
-        private IPatientService _patientService;
-        private INotificationService _notificationService;
-        private IRoomService _roomService;
-        private IAntiTrollService _antiTrollService;
-        private IAvailabilityService _availabilityService;
         private IFilteringExaminationService _filteringExaminationService;
 
         public ExaminationController(IExaminationService examinationService, 
-            IDoctorService doctorService, 
-            IPatientService patientService,
-            INotificationService notificationService,
-            IRoomService roomService,
-            IAntiTrollService antiTrollService,
-            IAvailabilityService availabilityService,
             IFilteringExaminationService filteringExaminationService) 
         {
             _examinationService = examinationService;
-            _doctorService = doctorService;
-            _patientService = patientService;
-            _notificationService = notificationService;
-            _roomService = roomService;
-            _antiTrollService = antiTrollService;
-            _availabilityService = availabilityService;
             _filteringExaminationService = filteringExaminationService;
         }
 
@@ -79,7 +61,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                IEnumerable<ExaminationDomainModel> examinations = await _filteringExaminationService.GetAllForPatientSorted(dto, _doctorService);
+                IEnumerable<ExaminationDomainModel> examinations = await _filteringExaminationService.GetAllForPatientSorted(dto);
                 return Ok(examinations);
             }
             catch (Exception exception)
@@ -110,7 +92,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                ExaminationDomainModel deletedExaminationModel = await _examinationService.Delete(dto, _antiTrollService);
+                ExaminationDomainModel deletedExaminationModel = await _examinationService.Delete(dto);
                 return Ok(deletedExaminationModel);
             }
             catch (Exception exception)
@@ -125,7 +107,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                ExaminationDomainModel createdExaminationModel = await _examinationService.Create(dto, _patientService, _roomService, _availabilityService, _antiTrollService);
+                ExaminationDomainModel createdExaminationModel = await _examinationService.Create(dto);
                 return Ok(createdExaminationModel);
             }
             catch(Exception exception)
@@ -140,7 +122,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                ExaminationDomainModel updatedExaminationModel = await _examinationService.Update(dto, _patientService, _roomService, _availabilityService, _antiTrollService);
+                ExaminationDomainModel updatedExaminationModel = await _examinationService.Update(dto);
                 return Ok(updatedExaminationModel);
             }
             catch (Exception exception)

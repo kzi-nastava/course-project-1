@@ -12,12 +12,10 @@ namespace HealthCareAPI.Controllers
     public class ReferralLetterController : ControllerBase
     {
         private IReferralLetterService _referralLetterService;
-        private IExaminationService _examinationService;
 
-        public ReferralLetterController(IReferralLetterService referralLetterService, IExaminationService examinationService)
+        public ReferralLetterController(IReferralLetterService referralLetterService)
         {
             _referralLetterService = referralLetterService;
-            _examinationService= examinationService;
         }
 
         // https://localhost:7195/api/referralLetter
@@ -35,7 +33,7 @@ namespace HealthCareAPI.Controllers
             try
             {
                 ReferralLetterDomainModel referralLetter =
-                    await _referralLetterService.CreateAppointment(dto, _examinationService);
+                    await _referralLetterService.CreateAppointment(dto);
                 return Ok(referralLetter);
             }
             catch (Exception exception)

@@ -9,44 +9,29 @@ namespace HealthCareAPI.Controllers
     [Route("api/[controller]")]
     public class UrgentOperationController : Controller
     {
-        private IDoctorService _doctorService;
-        private IPatientService _patientService;
-        public IRoomService _roomService;
-        private INotificationService _notificationService;
         private IUrgentOperationService _urgentOperationService;
-        private IOperationService _operationService;
 
-        public UrgentOperationController(IOperationService operationService,
-            IDoctorService doctorService,
-            IPatientService patientService,
-            IRoomService roomService,
-            INotificationService notificationService,
-            IUrgentOperationService urgentOperationService)
+        public UrgentOperationController(IUrgentOperationService urgentOperationService)
         {
-            _doctorService = doctorService;
-            _patientService = patientService;
-            _roomService = roomService;
-            _notificationService = notificationService;
             _urgentOperationService = urgentOperationService;
-            _operationService = operationService;
         }
 
         [HttpPut]
         [Route("urgentList")]
         public async Task<ActionResult<IEnumerable<IEnumerable<RescheduleDTO>>>> CreateUrgentOperation(CreateUrgentOperationDTO dto)
         {
-            OperationDomainModel operationModel = await _urgentOperationService.CreateUrgent(dto, _doctorService, _notificationService, _roomService);
+            OperationDomainModel operationModel = await _urgentOperationService.CreateUrgent(dto);
             if (operationModel != null) return Ok();
-            IEnumerable<IEnumerable<RescheduleDTO>> rescheduleItems = await _urgentOperationService.FindFiveAppointments(dto, _doctorService, _patientService);
+            IEnumerable<IEnumerable<RescheduleDTO>> rescheduleItems = await _urgentOperationService.FindFiveAppointments(dto);
             return Ok(rescheduleItems);
         }
 
         [HttpPut]
         [Route("urgent")]
-        public async Task<ActionResult<OperationDomainModel>> RescheduleForUrgentExamination(List<RescheduleDTO> dto)
+        public async Task<ActionResult<OperationDomainModel>> RescheduleForUrgentOperation(List<RescheduleDTO> dto)
         {
-            OperationDomainModel urgentExamination = await _urgentOperationService.AppointUrgent(dto, _notificationService, _roomService);
-            return Ok(urgentExamination);
+            OperationDomainModel urgentOperation = await _urgentOperationService.AppointUrgent(dto);
+            return Ok(urgentOperation);
         }
     }
 }

@@ -13,12 +13,15 @@ namespace HealthCare.Domain.Services
 {
     public class DrugSuggestionService : IDrugSuggestionService
     {
-        IDrugSuggestionRepository _drugSuggestionRepository;
-        IDrugIngredientRepository _drugIngredientRepository;
-        IDrugRepository _drugRepository;
-        IDrugService _drugService;
+        private IDrugSuggestionRepository _drugSuggestionRepository;
+        private IDrugIngredientRepository _drugIngredientRepository;
+        private IDrugRepository _drugRepository;
+        private IDrugService _drugService;
 
-        public DrugSuggestionService(IDrugSuggestionRepository drugSuggestionRepository, IDrugIngredientRepository drugIngredientRepository, IDrugRepository drugRepository, IDrugService drugService)
+        public DrugSuggestionService(IDrugSuggestionRepository drugSuggestionRepository, 
+            IDrugIngredientRepository drugIngredientRepository, 
+            IDrugRepository drugRepository, 
+            IDrugService drugService)
         {
             _drugSuggestionRepository = drugSuggestionRepository;
             _drugIngredientRepository = drugIngredientRepository;

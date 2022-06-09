@@ -70,10 +70,10 @@ namespace HealthCare.Domain.Services
             return parseToModel(simpleRenovations);
         }
 
-        public async Task<IEnumerable<Renovation>> GetRenovation(Room r)
+        public async Task<IEnumerable<Renovation>> GetRenovation(Room room)
         {
             IEnumerable<Renovation> renovations = await GetAllRenovations();
-            return renovations.Where(r => r.Id == r.Id);
+            return renovations.Where(r => room.Id == room.Id);
         }
 
         private async Task<IEnumerable<Examination>> GetExaminations(Room room)

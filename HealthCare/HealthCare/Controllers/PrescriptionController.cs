@@ -10,7 +10,7 @@ namespace HealthCareAPI.Controllers
     [ApiController]
     public class PrescriptionController : ControllerBase
     {
-        IPrescriptionService _prescriptionService;
+        private IPrescriptionService _prescriptionService;
 
         public PrescriptionController(IPrescriptionService prescriptionService)
         {

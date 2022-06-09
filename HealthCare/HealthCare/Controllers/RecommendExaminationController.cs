@@ -10,17 +10,10 @@ namespace HealthCareAPI.Controllers
     public class RecommendExaminationController : ControllerBase
     {
         IRecommendExaminationService _recommendExaminationService;
-        IDoctorService _doctorService;
-        IPatientService _petientService;
-        IAvailabilityService _availabilityService;
 
-        public RecommendExaminationController(IRecommendExaminationService recommendExaminationService, IDoctorService doctorService,
-                                              IPatientService patientService, IAvailabilityService availabilityService)
+        public RecommendExaminationController(IRecommendExaminationService recommendExaminationService)
         {
             _recommendExaminationService = recommendExaminationService;
-            _doctorService = doctorService;
-            _petientService = patientService;
-            _availabilityService = availabilityService;
         }
 
         [HttpPost]
@@ -29,7 +22,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                IEnumerable<CUExaminationDTO> recommendedExaminations = await _recommendExaminationService.GetRecommendedExaminations(paramsDTO, _doctorService, _availabilityService, _petientService);
+                IEnumerable<CUExaminationDTO> recommendedExaminations = await _recommendExaminationService.GetRecommendedExaminations(paramsDTO);
                 return Ok(recommendedExaminations);
             }
             catch (Exception exception)

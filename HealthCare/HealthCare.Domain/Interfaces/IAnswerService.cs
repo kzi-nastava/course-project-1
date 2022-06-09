@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Domain.Interfaces
 {
-    public interface IAnswerService
+    public interface IAnswerService : IService<AnswerDomainModel>
     {
         Task<IEnumerable<AnswerDomainModel>> GetAll();
         public Task<IEnumerable<AnswerDomainModel>> GetForDoctor(decimal id);

@@ -9,15 +9,12 @@ public class TransferService : ITransferService
 {
     private ITransferRepository _transferRepository;
     private IInventoryRepository _inventoryRepository;
-    private IEquipmentRepository _equipmentRepository;
 
     public TransferService(ITransferRepository transferRepository, 
-                           IEquipmentRepository equipmentRepository, 
                            IInventoryRepository inventioryRepository) 
     {
         _transferRepository = transferRepository;
         _inventoryRepository = inventioryRepository;
-        _equipmentRepository = equipmentRepository;
     }
 
     public async Task<IEnumerable<TransferDomainModel>> GetAll()

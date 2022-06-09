@@ -8,14 +8,10 @@ namespace HealthCare.Domain.Services;
 
 public class AllergyService : IAllergyService
 {
-    private static IAllergyRepository _allergyRepository;
-    private static IIngredientRepository _ingredientRepository;
-    private static IPatientRepository _patientRepository;
-    public AllergyService(IAllergyRepository allergyRepository, IPatientRepository patientRepository, IIngredientRepository ingredientRepository)
+    private IAllergyRepository _allergyRepository;
+    public AllergyService(IAllergyRepository allergyRepository)
     {
         _allergyRepository = allergyRepository;
-        _patientRepository = patientRepository; 
-        _ingredientRepository = ingredientRepository;
     }
 
     public static AllergyDomainModel ParseToModel(Allergy allergy)
