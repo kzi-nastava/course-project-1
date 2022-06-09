@@ -9,8 +9,8 @@ namespace HealthCare.Domain.Interfaces
 {
     public interface IAvailabilityService
     {
-        public Task ValidateUserInput(CUExaminationDTO dto, IPatientService patientService);
-        public Task ValidateUserInput(CUOperationDTO dto, IPatientService patientService);
+        public Task ValidateUserInput(CUExaminationDTO dto);
+        public Task ValidateUserInput(CUOperationDTO dto);
 
     }
 }

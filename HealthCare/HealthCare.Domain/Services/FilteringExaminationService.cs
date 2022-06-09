@@ -13,11 +13,15 @@ namespace HealthCare.Domain.Services
 {
     public class FilteringExaminationService : IFilteringExaminationService
     {
-        IExaminationRepository _examinationRepository;
+        private IExaminationRepository _examinationRepository;
 
-        public FilteringExaminationService(IExaminationRepository examinationRepository)
+        private IDoctorService _doctorService;
+
+        public FilteringExaminationService(IExaminationRepository examinationRepository,
+            IDoctorService doctorService)
         {
             _examinationRepository = examinationRepository;
+            _doctorService = doctorService;
         }
 
         public async Task<IEnumerable<ExaminationDomainModel>> GetAllForPatient(decimal id)
@@ -35,7 +39,7 @@ namespace HealthCare.Domain.Services
             return results;
         }
 
-        public async Task<IEnumerable<ExaminationDomainModel>> GetAllForPatientSorted(SortExaminationDTO dto, IDoctorService doctorService)
+        public async Task<IEnumerable<ExaminationDomainModel>> GetAllForPatientSorted(SortExaminationDTO dto)
         {
             List<ExaminationDomainModel> examinations;
             try
@@ -53,17 +57,17 @@ namespace HealthCare.Domain.Services
             if (dto.SortParam.Equals("doctor"))
                 return examinations.OrderBy(x => x.DoctorId);
 
-            Dictionary<decimal, decimal> doctorsSpecialisations = await MapSpecializations(examinations, doctorService);
+            Dictionary<decimal, decimal> doctorsSpecialisations = await MapSpecializations(examinations);
             return examinations.OrderBy(x => doctorsSpecialisations[x.DoctorId]);
         }
 
-        public async Task<Dictionary<decimal, decimal>> MapSpecializations(List<ExaminationDomainModel> examinations, IDoctorService doctorService)
+        public async Task<Dictionary<decimal, decimal>> MapSpecializations(List<ExaminationDomainModel> examinations)
         {
             Dictionary<decimal, decimal> result = new Dictionary<decimal, decimal>();
             foreach (var examination in examinations)
             {
                 if (result.ContainsKey(examination.DoctorId)) continue;
-                DoctorDomainModel doctor = await doctorService.GetById(examination.DoctorId);
+                DoctorDomainModel doctor = await _doctorService.GetById(examination.DoctorId);
                 result.Add(examination.DoctorId, doctor.SpecializationId);
             }
 

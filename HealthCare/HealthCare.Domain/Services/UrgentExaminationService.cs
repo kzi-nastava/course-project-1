@@ -15,16 +15,26 @@ namespace HealthCare.Domain.Services
     {
 
         private IExaminationRepository _examinationRepository;
-        private IPatientRepository _patientRepository;
         private IDoctorRepository _doctorRepository;
 
+        
+        private IDoctorService _doctorService;
+        private INotificationService _notificationService;
+        private IRoomService _roomService;
+        private IPatientService _patientService;
         public UrgentExaminationService(IExaminationRepository examinationRepository,
-                                  IPatientRepository patientRepository,
-                                  IDoctorRepository doctorRepository)
+                                  IDoctorRepository doctorRepository,
+                                  IDoctorService doctorService,
+                                  INotificationService notificationService,
+                                  IRoomService roomService,
+                                  IPatientService patientService)
         {
             _examinationRepository = examinationRepository;
-            _patientRepository = patientRepository;
             _doctorRepository = doctorRepository;
+            _doctorService = doctorService;
+            _notificationService = notificationService;
+            _roomService = roomService;
+            _patientService = patientService;
         }
 
         public async Task<DateTime?> FirstStartTime(List<KeyValuePair<DateTime, DateTime>> schedule, decimal duration)
@@ -47,8 +57,7 @@ namespace HealthCare.Domain.Services
         }
 
         // DoctorService is needed for doctor's schedule
-        public async Task<ExaminationDomainModel> CreateUrgent(CreateUrgentExaminationDTO dto, IDoctorService doctorService,
-            INotificationService notificationService, IRoomService roomService)
+        public async Task<ExaminationDomainModel> CreateUrgent(CreateUrgentExaminationDTO dto)
         {
             ExaminationDomainModel examinationModel = new ExaminationDomainModel
             {
@@ -60,18 +69,18 @@ namespace HealthCare.Domain.Services
             List<Doctor> doctors = (List<Doctor>)await _doctorRepository.GetBySpecialization(dto.SpecializationId);
             if (doctors == null || doctors.Count == 0) throw new NoAvailableSpecialistsException();
             // Find start times (to sort by earliest) 
-            List<KeyValuePair<DateTime, decimal>> urgentStartTimes = await GetUrgentStartTimes(doctors, doctorService);
+            List<KeyValuePair<DateTime, decimal>> urgentStartTimes = await GetUrgentStartTimes(doctors);
 
             urgentStartTimes.Sort((x, y) => x.Key.CompareTo(y.Key));
             // Try to create examination
-            ExaminationDomainModel? createdModel = await ParsePairs(examinationModel, urgentStartTimes, roomService);
-            _ = await SendNotifications(notificationService, examinationModel.DoctorId, examinationModel.PatientId);
+            ExaminationDomainModel? createdModel = await ParsePairs(examinationModel, urgentStartTimes);
+            _ = await SendNotifications(examinationModel.DoctorId, examinationModel.PatientId);
             return createdModel;
         }
 
-        public async Task<Boolean> TryCreateExamination(ExaminationDomainModel examinationModel, IRoomService roomService)
+        public async Task<Boolean> TryCreateExamination(ExaminationDomainModel examinationModel)
         {
-            decimal roomId = await roomService.GetAvailableRoomId(examinationModel.StartTime, "examination");
+            decimal roomId = await _roomService.GetAvailableRoomId(examinationModel.StartTime, "examination");
             if (roomId == -1) return false;
             examinationModel.RoomId = roomId;
             Examination examination = ExaminationService.ParseFromModel(examinationModel);
@@ -80,25 +89,25 @@ namespace HealthCare.Domain.Services
             return true;
         }
 
-        public async Task<ExaminationDomainModel?> ParsePairs(ExaminationDomainModel examinationModel, List<KeyValuePair<DateTime, decimal>> urgentStartTimes, IRoomService roomService)
+        public async Task<ExaminationDomainModel?> ParsePairs(ExaminationDomainModel examinationModel, List<KeyValuePair<DateTime, decimal>> urgentStartTimes)
         {
             Boolean flag = false;
             foreach (KeyValuePair<DateTime, decimal> pair in urgentStartTimes)
             {
                 examinationModel.StartTime = UtilityService.RemoveSeconds(pair.Key);
                 examinationModel.DoctorId = pair.Value;
-                flag = await TryCreateExamination(examinationModel, roomService);
+                flag = await TryCreateExamination(examinationModel);
                 if (flag) return examinationModel;
             }
             return null;
         }
 
-        public async Task<List<KeyValuePair<DateTime, decimal>>> GetUrgentStartTimes(List<Doctor> doctors, IDoctorService doctorService)
+        public async Task<List<KeyValuePair<DateTime, decimal>>> GetUrgentStartTimes(List<Doctor> doctors)
         {
             List<KeyValuePair<DateTime, decimal>> result = new List<KeyValuePair<DateTime, decimal>>();
             foreach (Doctor doctor in doctors)
             {
-                var schedule = (List<KeyValuePair<DateTime, DateTime>>)await doctorService.GetAvailableSchedule(doctor.Id);
+                var schedule = (List<KeyValuePair<DateTime, DateTime>>)await _doctorService.GetAvailableSchedule(doctor.Id);
                 DateTime? startTime = await FirstStartTime(schedule, 15);
                 if (startTime.HasValue)
                     result.Add(new KeyValuePair<DateTime, decimal>(startTime.GetValueOrDefault(), doctor.Id));
@@ -106,17 +115,16 @@ namespace HealthCare.Domain.Services
             return result;
         }
 
-        public async Task<IEnumerable<IEnumerable<RescheduleDTO>>> FindFiveAppointments(CreateUrgentExaminationDTO dto,
-            IDoctorService doctorService, IPatientService patientService)
+        public async Task<IEnumerable<IEnumerable<RescheduleDTO>>> FindFiveAppointments(CreateUrgentExaminationDTO dto)
         {
             // For every doctor try to find a single reschedule 
             List<Doctor> doctors = (List<Doctor>)await _doctorRepository.GetAll();
             List<List<List<RescheduleDTO>>> reschedule = new List<List<List<RescheduleDTO>>>();
             foreach (Doctor doctor in doctors)
-                reschedule.Add(await GetRescheduleForDoctor(dto, doctor.Id, doctorService, patientService));
+                reschedule.Add(await GetRescheduleForDoctor(dto, doctor.Id));
             List<KeyValuePair<DateTime, List<RescheduleDTO>>> rescheduleSorted = new List<KeyValuePair<DateTime, List<RescheduleDTO>>>();
             foreach (List<List<RescheduleDTO>> item in reschedule)
-                rescheduleSorted.AddRange(await FindRescheduleTime(item, doctorService, patientService, dto.PatientId));
+                rescheduleSorted.AddRange(await FindRescheduleTime(item, dto.PatientId));
             rescheduleSorted.Sort((x, y) => x.Key.CompareTo(y.Key));
             List<List<RescheduleDTO>> result = new List<List<RescheduleDTO>>();
             foreach (var item in rescheduleSorted)
@@ -127,14 +135,13 @@ namespace HealthCare.Domain.Services
             return result;
         }
 
-        public async Task<List<KeyValuePair<DateTime, List<RescheduleDTO>>>> FindRescheduleTime(List<List<RescheduleDTO>> schedule,
-            IDoctorService doctorService, IPatientService patientService, decimal patientId)
+        public async Task<List<KeyValuePair<DateTime, List<RescheduleDTO>>>> FindRescheduleTime(List<List<RescheduleDTO>> schedule, decimal patientId)
         {
             List<KeyValuePair<DateTime, DateTime>> freePatientSchedule =
-                (List<KeyValuePair<DateTime, DateTime>>)await patientService.GetSchedule(patientId);
+                (List<KeyValuePair<DateTime, DateTime>>)await _patientService.GetSchedule(patientId);
             decimal doctorId = schedule[0][0].DoctorId;
             List<KeyValuePair<DateTime, DateTime>> freeDoctorSchedule =
-                (List<KeyValuePair<DateTime, DateTime>>)await doctorService.GetAvailableSchedule(doctorId);
+                (List<KeyValuePair<DateTime, DateTime>>)await _doctorService.GetAvailableSchedule(doctorId);
             List<KeyValuePair<DateTime, List<RescheduleDTO>>> result = new List<KeyValuePair<DateTime, List<RescheduleDTO>>>();
             foreach (List<RescheduleDTO> sequence in schedule)
             {
@@ -224,13 +231,12 @@ namespace HealthCare.Domain.Services
             return DateTime.MaxValue;
         }
 
-        public async Task<List<List<RescheduleDTO>>> GetRescheduleForDoctor(CreateUrgentExaminationDTO dto, decimal doctorId,
-            IDoctorService doctorService, IPatientService patientService, decimal duration = 15)
+        public async Task<List<List<RescheduleDTO>>> GetRescheduleForDoctor(CreateUrgentExaminationDTO dto, decimal doctorId, decimal duration = 15)
         {
             List<KeyValuePair<DateTime, DateTime>> freeSchedule =
-                (List<KeyValuePair<DateTime, DateTime>>)await doctorService.GetAvailableSchedule(doctorId);
+                (List<KeyValuePair<DateTime, DateTime>>)await _doctorService.GetAvailableSchedule(doctorId);
             List<KeyValuePair<DateTime, DateTime>> busySchedule =
-                (List<KeyValuePair<DateTime, DateTime>>)await doctorService.GetBusySchedule(doctorId);
+                (List<KeyValuePair<DateTime, DateTime>>)await _doctorService.GetBusySchedule(doctorId);
             // Loop variables
             DateTime now = UtilityService.RemoveSeconds(DateTime.Now);
             DateTime new_now = now;
@@ -383,36 +389,36 @@ namespace HealthCare.Domain.Services
             return (time1 < time2 ? time1 : time2);
         }
 
-        public async Task<ExaminationDomainModel> AppointUrgent(List<RescheduleDTO> dto, INotificationService notificationService, IRoomService roomService)
+        public async Task<ExaminationDomainModel> AppointUrgent(List<RescheduleDTO> dto)
         {
             foreach (RescheduleDTO item in dto)
-                _ = await RescheduleOne(item, notificationService);
+                _ = await RescheduleOne(item);
             // Any dto will do
-            return await MakeUrgent(dto[0], roomService);
+            return await MakeUrgent(dto[0]);
         }
 
-        public async Task<ExaminationDomainModel> RescheduleOne(RescheduleDTO dto, INotificationService notificationService)
+        public async Task<ExaminationDomainModel> RescheduleOne(RescheduleDTO dto)
         {
             Examination examination = await _examinationRepository.GetByParams(dto.DoctorId, dto.PatientId, dto.StartTime);
             examination.StartTime = dto.RescheduleTime;
             _ = _examinationRepository.Update(examination);
             _examinationRepository.Save();
-            _ = await SendNotifications(notificationService, dto.DoctorId, dto.PatientId);
+            _ = await SendNotifications(dto.DoctorId, dto.PatientId);
             return ExaminationService.ParseToModel(examination);
         }
 
-        public async Task<Boolean> SendNotifications(INotificationService notificationService, decimal doctorId = 0, decimal patientId = 0)
+        public async Task<Boolean> SendNotifications(decimal doctorId = 0, decimal patientId = 0)
         {
             KeyValuePair<string, string> content = new KeyValuePair<string, string>("Rescheduling",
                 "Your appointment has been rescheduled. Please check your schedule");
             if (doctorId != 0)
-                _ = await notificationService.Send(new SendNotificationDTO { IsPatient = false, Content = content, PersonId = doctorId });
+                _ = await _notificationService.Send(new SendNotificationDTO { IsPatient = false, Content = content, PersonId = doctorId });
             if (patientId != 0)
-                _ = await notificationService.Send(new SendNotificationDTO { IsPatient = true, Content = content, PersonId = patientId });
+                _ = await _notificationService.Send(new SendNotificationDTO { IsPatient = true, Content = content, PersonId = patientId });
             return true;
         }
 
-        public async Task<ExaminationDomainModel> MakeUrgent(RescheduleDTO dto, IRoomService roomService)
+        public async Task<ExaminationDomainModel> MakeUrgent(RescheduleDTO dto)
         {
             ExaminationDomainModel examinationModel = new ExaminationDomainModel
             {
@@ -421,7 +427,7 @@ namespace HealthCare.Domain.Services
                 IsEmergency = true,
                 StartTime = dto.UrgentStartTime,
                 PatientId = dto.PatientId,
-                RoomId = await roomService.GetAvailableRoomId(dto.UrgentStartTime, "examination")
+                RoomId = await _roomService.GetAvailableRoomId(dto.UrgentStartTime, "examination")
             };
             _ = _examinationRepository.Post(ExaminationService.ParseFromModel(examinationModel));
             _examinationRepository.Save();

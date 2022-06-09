@@ -11,22 +11,17 @@ namespace HealthCare.Domain.Interfaces;
 public class OperationService : IOperationService
 {
     private IOperationRepository _operationRepository;
-    private IRoomRepository _roomRepository;
-    private IExaminationRepository _examinationRepository;
-    private IPatientRepository _patientRepository;
-    private IDoctorRepository _doctorRepository;
+
+    private IRoomService _roomService;
+    private IAvailabilityService _availabilityService;
 
     public OperationService(IOperationRepository operationRepository,
-                            IRoomRepository roomRepository,
-                            IExaminationRepository examinationRepository,
-                            IPatientRepository patientRepository,
-                            IDoctorRepository doctorRepository)
+                            IAvailabilityService availabilityService,
+                            IRoomService roomService)
     {
         _operationRepository = operationRepository;
-        _roomRepository = roomRepository;
-        _examinationRepository = examinationRepository;
-        _patientRepository = patientRepository;
-        _doctorRepository = doctorRepository;
+        _availabilityService = availabilityService;
+        _roomService = roomService;
     }
 
     public async Task<IEnumerable<OperationDomainModel>> ReadAll()
@@ -70,11 +65,11 @@ public class OperationService : IOperationService
         return results;
     }
 
-    public async Task<OperationDomainModel> Create(CUOperationDTO dto, IPatientService patientService, IRoomService roomService, IAvailabilityService availabilityService)
+    public async Task<OperationDomainModel> Create(CUOperationDTO dto)
     {
-        await availabilityService.ValidateUserInput(dto, patientService);
+        await _availabilityService.ValidateUserInput(dto);
 
-        decimal roomId = await roomService.GetAvailableRoomId(dto.StartTime, "operation", dto.Duration);
+        decimal roomId = await _roomService.GetAvailableRoomId(dto.StartTime, "operation", dto.Duration);
         if (roomId == -1)
             throw new NoFreeRoomsException();
 
@@ -87,16 +82,16 @@ public class OperationService : IOperationService
         return ParseToModel(newOperation);
     }
 
-    public async Task<OperationDomainModel> Update(CUOperationDTO dto, IPatientService patientService, IRoomService roomService, IAvailabilityService availabilityService)
+    public async Task<OperationDomainModel> Update(CUOperationDTO dto)
     {
-        await availabilityService.ValidateUserInput(dto, patientService);
+        await _availabilityService.ValidateUserInput(dto);
 
         Operation operation = await _operationRepository.GetById(dto.Id);
 
         if (operation == null)
             throw new DataIsNullException();
 
-        decimal roomId = await roomService.GetAvailableRoomId(dto.StartTime, "operation", dto.Duration);
+        decimal roomId = await _roomService.GetAvailableRoomId(dto.StartTime, "operation", dto.Duration);
         if (roomId == -1)
             throw new NoFreeRoomsException();
 

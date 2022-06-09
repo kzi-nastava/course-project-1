@@ -12,12 +12,10 @@ namespace HealthCareAPI.Controllers
     public class DoctorController : ControllerBase 
     {
         private IDoctorService _doctorService;
-        private IAnswerService _answerService;
 
-        public DoctorController(IDoctorService doctorService, IAnswerService answerService) 
+        public DoctorController(IDoctorService doctorService) 
         {
             _doctorService = doctorService;
-            _answerService = answerService;
         }
 
         // https://localhost:7195/api/doctor
@@ -49,7 +47,7 @@ namespace HealthCareAPI.Controllers
         [Route("search")]
         public async Task<ActionResult<IEnumerable<DoctorDomainModel>>> SearchDoctors([FromQuery] SearchDoctorsDTO dto)
         {
-            IEnumerable<DoctorDomainModel> doctors = await _doctorService.Search(dto, _answerService);
+            IEnumerable<DoctorDomainModel> doctors = await _doctorService.Search(dto);
             return Ok(doctors);
         }
     }

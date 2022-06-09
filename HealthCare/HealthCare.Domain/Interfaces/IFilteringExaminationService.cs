@@ -11,7 +11,7 @@ namespace HealthCare.Domain.Interfaces
     public interface IFilteringExaminationService
     {
         public Task<IEnumerable<ExaminationDomainModel>> GetAllForPatient(decimal id);
-        public Task<IEnumerable<ExaminationDomainModel>> GetAllForPatientSorted(SortExaminationDTO dto, IDoctorService doctorService);
+        public Task<IEnumerable<ExaminationDomainModel>> GetAllForPatientSorted(SortExaminationDTO dto);
         public Task<IEnumerable<ExaminationDomainModel>> GetAllForDoctor(decimal id);
         public Task<IEnumerable<ExaminationDomainModel>> SearchByAnamnesis(SearchByNameDTO dto);
     }

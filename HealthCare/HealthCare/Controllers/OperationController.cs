@@ -12,19 +12,10 @@ namespace HealthCareAPI.Controllers
     public class OperationController : ControllerBase 
     {
         private IOperationService _operationService;
-        private IDoctorService _doctorService;
-        private IPatientService _patientService;
-        private IRoomService _roomService;
-        private IAvailabilityService _availabilityService;
 
-        public OperationController(IOperationService operationService, IDoctorService doctorService, 
-                                   IPatientService patientService, IRoomService roomService, IAvailabilityService availabilityService) 
+        public OperationController(IOperationService operationService) 
         {
             _operationService = operationService;
-            _doctorService = doctorService;
-            _patientService = patientService;
-            _roomService = roomService;
-            _availabilityService = availabilityService;
         }
 
         // https://localhost:7195/api/operation
@@ -63,7 +54,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                OperationDomainModel createdOperationModel = await _operationService.Create(dto, _patientService, _roomService, _availabilityService);
+                OperationDomainModel createdOperationModel = await _operationService.Create(dto);
                 return Ok(createdOperationModel);
             }
             catch (Exception exception)
@@ -79,7 +70,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                OperationDomainModel updatedOperationModel = await _operationService.Update(dto, _patientService, _roomService, _availabilityService);
+                OperationDomainModel updatedOperationModel = await _operationService.Update(dto);
                 return Ok(updatedOperationModel);
             }
             catch (Exception exception)

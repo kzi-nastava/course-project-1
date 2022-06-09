@@ -10,9 +10,13 @@ public class DoctorService : IDoctorService
 {
     private IDoctorRepository _doctorRepository;
 
-    public DoctorService(IDoctorRepository doctorRepository) 
+    private IAnswerService _answerService;
+
+    public DoctorService(IDoctorRepository doctorRepository,
+        IAnswerService answerService) 
     {
         _doctorRepository = doctorRepository;
+        _answerService = answerService;
     }
 
     public static Doctor ParseFromModel(DoctorDomainModel doctorModel)
@@ -229,7 +233,7 @@ public class DoctorService : IDoctorService
         if (string.IsNullOrEmpty(subString)) return true;
         return doctor.Specialization.Name.ToLower().Contains(subString.ToLower());
     }
-    public async Task<IEnumerable<DoctorDomainModel>> Search(SearchDoctorsDTO dto, IAnswerService _answerService)
+    public async Task<IEnumerable<DoctorDomainModel>> Search(SearchDoctorsDTO dto)
     {
         IEnumerable<Doctor> doctors = await _doctorRepository.GetAll();
         List<DoctorDomainModel> results = new List<DoctorDomainModel>();
@@ -240,11 +244,11 @@ public class DoctorService : IDoctorService
         }
         if (dto.SortParam.ToLower().Equals("name"))
             return results.OrderBy(x => x.Name);
-        else if (dto.SortParam.ToLower().Equals("surname"))
+        if (dto.SortParam.ToLower().Equals("surname"))
             return results.OrderBy(x => x.Surname);
-        else if (dto.SortParam.ToLower().Equals("specialization"))
+        if (dto.SortParam.ToLower().Equals("specialization"))
             return results.OrderBy(x => x.Specialization.Name);
-        else if (dto.SortParam.ToLower().Equals("rating"))
+        if (dto.SortParam.ToLower().Equals("rating"))
         {
             foreach (DoctorDomainModel doctor in results)
             {
@@ -252,9 +256,6 @@ public class DoctorService : IDoctorService
             }
             return results.OrderByDescending(x => x.Rating);
         }
-        else
-            return results;
-        
-
+        return results;
     }
 }

@@ -13,8 +13,10 @@ public class RoomService : IRoomService
     private IExaminationRepository _examinationRepository;
     private IOperationRepository _operationRepository;
 
-    public RoomService(IRoomRepository roomRepository, IRoomTypeRepository roomTypeRepository,
-                       IExaminationRepository examinationRepository, IOperationRepository operationRepository) 
+    public RoomService(IRoomRepository roomRepository, 
+                       IRoomTypeRepository roomTypeRepository,
+                       IExaminationRepository examinationRepository, 
+                       IOperationRepository operationRepository) 
     {
         _roomRepository = roomRepository;
         _roomTypeRepository = roomTypeRepository;

@@ -14,21 +14,16 @@ namespace HealthCare.Domain.Services
     {
         private IExaminationRepository _examinationRepository;
         private IOperationRepository _operationRepository;
-        private IRoomRepository _roomRepository;
-        private IPatientRepository _patientRepository;
-        private IDoctorRepository _doctorRepository;
+
+        private IPatientService _patientService;
 
         public AvailabilityService(IExaminationRepository examinationRepository,
                                   IOperationRepository operationRepository,
-                                  IRoomRepository roomRepository,
-                                  IPatientRepository patientRepository,
-                                  IDoctorRepository doctorRepository)
+                                  IPatientService patientService)
         {
             _examinationRepository = examinationRepository;
             _operationRepository = operationRepository;
-            _roomRepository = roomRepository;
-            _patientRepository = patientRepository;
-            _doctorRepository = doctorRepository;
+            _patientService = patientService;
         }
 
         private async Task<bool> isPatientOnExamination(CUExaminationDTO dto)
@@ -108,11 +103,11 @@ namespace HealthCare.Domain.Services
             return !(await isPatientOnExamination(dto) ||
                      await isPatientOnOperation(dto));
         }
-        public async Task ValidateUserInput(CUExaminationDTO dto, IPatientService patientService)
+        public async Task ValidateUserInput(CUExaminationDTO dto)
         {
             if (dto.StartTime <= DateTime.Now)
                 throw new DateInPastExeption();
-            if (await patientService.IsPatientBlocked(dto.PatientId))
+            if (await _patientService.IsPatientBlocked(dto.PatientId))
                 throw new PatientIsBlockedException();
 
             bool doctorAvailable = await isDoctorAvailable(dto);
@@ -202,12 +197,12 @@ namespace HealthCare.Domain.Services
                      await isPatientOnExamination(dto));
         }
 
-        public async Task ValidateUserInput(CUOperationDTO dto, IPatientService patientService)
+        public async Task ValidateUserInput(CUOperationDTO dto)
         {
             if (dto.StartTime <= DateTime.Now)
                 throw new DateInPastExeption();
 
-            if (await patientService.IsPatientBlocked(dto.PatientId))
+            if (await _patientService.IsPatientBlocked(dto.PatientId))
                 throw new PatientIsBlockedException();
 
             bool doctorAvailable = await isDoctorAvailable(dto);

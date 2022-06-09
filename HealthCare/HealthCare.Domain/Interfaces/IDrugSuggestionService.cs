@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Domain.Interfaces
 {
-    public interface IDrugSuggestionService
+    public interface IDrugSuggestionService : IService<DrugSuggestionDomainModel>
     {
         public Task<IEnumerable<DrugSuggestionDomainModel>> GetAll();
         public Task<DrugSuggestionDomainModel> Create(DTOs.DrugDTO drugDTO);

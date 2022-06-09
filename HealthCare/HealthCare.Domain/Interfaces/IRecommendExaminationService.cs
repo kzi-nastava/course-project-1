@@ -9,7 +9,7 @@ namespace HealthCare.Domain.Interfaces
 {
     public interface IRecommendExaminationService
     {
-        public Task<IEnumerable<CUExaminationDTO>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService, IAvailabilityService availabilityService, IPatientService patientService);
+        public Task<IEnumerable<CUExaminationDTO>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO);
 
 
     }

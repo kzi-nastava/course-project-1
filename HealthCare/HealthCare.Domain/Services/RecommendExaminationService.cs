@@ -11,10 +11,19 @@ namespace HealthCare.Domain.Services
 {
     public class RecommendExaminationService : IRecommendExaminationService
     {
- 
-        private async Task<List<KeyValuePair<DateTime, DateTime>>> getScehdule(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService)
+        private IDoctorService _doctorService;
+        private IAvailabilityService _availabilityService;
+
+        public RecommendExaminationService(IDoctorService doctorService, 
+                                            IAvailabilityService availabilityService)
         {
-            IEnumerable<KeyValuePair<DateTime, DateTime>> freeTimes = await doctorService.GetAvailableSchedule(paramsDTO.DoctorId);
+            _doctorService = doctorService;
+            _availabilityService = availabilityService;
+        }
+
+        private async Task<List<KeyValuePair<DateTime, DateTime>>> getScehdule(ParamsForRecommendingFreeExaminationsDTO paramsDTO)
+        {
+            IEnumerable<KeyValuePair<DateTime, DateTime>> freeTimes = await _doctorService.GetAvailableSchedule(paramsDTO.DoctorId);
             List<KeyValuePair<DateTime, DateTime>> possibleSlots = new List<KeyValuePair<DateTime, DateTime>>();
             foreach (KeyValuePair<DateTime, DateTime> time in freeTimes)
             {
@@ -33,7 +42,8 @@ namespace HealthCare.Domain.Services
         }
 
 
-        private async Task<CUExaminationDTO> checkAviabilityForExamination(ParamsForRecommendingFreeExaminationsDTO paramsDTO, DateTime startTime, IAvailabilityService availabilityService, IPatientService patientService)
+        private async Task<CUExaminationDTO> checkAviabilityForExamination(ParamsForRecommendingFreeExaminationsDTO paramsDTO, 
+            DateTime startTime)
         {
 
             CUExaminationDTO dto = new CUExaminationDTO
@@ -45,7 +55,7 @@ namespace HealthCare.Domain.Services
 
             try
             {
-                await availabilityService.ValidateUserInput(dto, patientService);
+                await _availabilityService.ValidateUserInput(dto);
             }
             catch (Exception ex)
             {
@@ -53,10 +63,10 @@ namespace HealthCare.Domain.Services
             }
             return dto;
         }
-        private async Task<List<CUExaminationDTO>> getRecommendedExaminationsForOneDoctor(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService, IAvailabilityService availabilityService, IPatientService patientService)
+        private async Task<List<CUExaminationDTO>> getRecommendedExaminationsForOneDoctor(ParamsForRecommendingFreeExaminationsDTO paramsDTO)
         {
             List<CUExaminationDTO> recommendedExaminaions = new List<CUExaminationDTO>();
-            List<KeyValuePair<DateTime, DateTime>> possibleSlots = await getScehdule(paramsDTO, doctorService);
+            List<KeyValuePair<DateTime, DateTime>> possibleSlots = await getScehdule(paramsDTO);
             if (possibleSlots.Count == 0) return null;
 
             int numOfExaminations = 0;
@@ -78,7 +88,7 @@ namespace HealthCare.Domain.Services
                 //start time is in available range for doctor and patient
                 if (startTime.TimeOfDay < paramsDTO.TimeTo.TimeOfDay && startTime < possibleSlots[possibleSlotIndex].Value)
                 {
-                    CUExaminationDTO recommendedExamination = await checkAviabilityForExamination(paramsDTO, startTime, availabilityService, patientService);
+                    CUExaminationDTO recommendedExamination = await checkAviabilityForExamination(paramsDTO, startTime);
                     if (recommendedExamination != null)
                     {
                         recommendedExaminaions.Add(recommendedExamination);
@@ -118,11 +128,12 @@ namespace HealthCare.Domain.Services
             return recommendedExaminaions;
         }
 
-        public async Task<IEnumerable<CUExaminationDTO>> RecommendedByDatePriority(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService, decimal numOfExaminations, IAvailabilityService availabilityService, IPatientService patientService)
+        public async Task<IEnumerable<CUExaminationDTO>> RecommendedByDatePriority(ParamsForRecommendingFreeExaminationsDTO paramsDTO, 
+            decimal numOfExaminations)
         {
-            List<CUExaminationDTO> recommendedExaminations = await getRecommendedExaminationsForOneDoctor(paramsDTO, doctorService, availabilityService, patientService);
-            DoctorDomainModel doctorModel = await doctorService.GetById(paramsDTO.DoctorId);
-            List<DoctorDomainModel> otherDoctors = (List<DoctorDomainModel>)await doctorService.GetAllBySpecialization(doctorModel.SpecializationId);
+            List<CUExaminationDTO> recommendedExaminations = await getRecommendedExaminationsForOneDoctor(paramsDTO);
+            DoctorDomainModel doctorModel = await _doctorService.GetById(paramsDTO.DoctorId);
+            List<DoctorDomainModel> otherDoctors = (List<DoctorDomainModel>)await _doctorService.GetAllBySpecialization(doctorModel.SpecializationId);
             int numOfDoctor = 0;
             while (numOfExaminations < 3)
             {
@@ -132,7 +143,7 @@ namespace HealthCare.Domain.Services
                     continue;
                 }
                 paramsDTO.DoctorId = otherDoctors.ElementAt(numOfDoctor++).Id;
-                List<CUExaminationDTO> newDoctorExaminations = await getRecommendedExaminationsForOneDoctor(paramsDTO, doctorService, availabilityService, patientService);
+                List<CUExaminationDTO> newDoctorExaminations = await getRecommendedExaminationsForOneDoctor(paramsDTO);
                 if (newDoctorExaminations == null)
                     continue;
                 foreach (var examination in newDoctorExaminations)
@@ -147,12 +158,13 @@ namespace HealthCare.Domain.Services
             return recommendedExaminations;
         }
 
-        public async Task<IEnumerable<CUExaminationDTO>> RecommendedByDoctorPriority(ParamsForRecommendingFreeExaminationsDTO paramsDTO, decimal numOfExaminations, DateTime startTime, IAvailabilityService availabilityService, IPatientService patientService)
+        public async Task<IEnumerable<CUExaminationDTO>> RecommendedByDoctorPriority(ParamsForRecommendingFreeExaminationsDTO paramsDTO, 
+            decimal numOfExaminations, DateTime startTime)
         {
             List<CUExaminationDTO> recommendedExaminations = new List<CUExaminationDTO>();
             while (numOfExaminations != 3)
             {
-                CUExaminationDTO recommendedExamination = await checkAviabilityForExamination(paramsDTO, startTime, availabilityService, patientService);
+                CUExaminationDTO recommendedExamination = await checkAviabilityForExamination(paramsDTO, startTime);
                 if (recommendedExamination != null)
                 {
                     recommendedExaminations.Add(recommendedExamination);
@@ -166,9 +178,9 @@ namespace HealthCare.Domain.Services
 
             return recommendedExaminations;
         }
-        public async Task<IEnumerable<CUExaminationDTO>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO, IDoctorService doctorService, IAvailabilityService availabilityService, IPatientService patientService)
+        public async Task<IEnumerable<CUExaminationDTO>> GetRecommendedExaminations(ParamsForRecommendingFreeExaminationsDTO paramsDTO)
         {
-            List<CUExaminationDTO> recommendedExaminations = await getRecommendedExaminationsForOneDoctor(paramsDTO, doctorService, availabilityService, patientService);
+            List<CUExaminationDTO> recommendedExaminations = await getRecommendedExaminationsForOneDoctor(paramsDTO);
             int numOfExaminations = recommendedExaminations.Count;
             if (numOfExaminations != 3)
             {
@@ -178,13 +190,13 @@ namespace HealthCare.Domain.Services
                         return null;
                     // Doctor priority
                     DateTime startTime = recommendedExaminations[numOfExaminations - 1].StartTime.AddMinutes(15);
-                    foreach (var examination in await RecommendedByDoctorPriority(paramsDTO, numOfExaminations, startTime, availabilityService, patientService))
+                    foreach (var examination in await RecommendedByDoctorPriority(paramsDTO, numOfExaminations, startTime))
                         recommendedExaminations.Add(examination);
                 }
                 else
                 {
                     // Date priority
-                    foreach (var examination in await RecommendedByDatePriority(paramsDTO, doctorService, numOfExaminations, availabilityService, patientService))
+                    foreach (var examination in await RecommendedByDatePriority(paramsDTO, numOfExaminations))
                         recommendedExaminations.Add(examination);
                 }
             }

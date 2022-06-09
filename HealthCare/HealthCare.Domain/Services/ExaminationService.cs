@@ -16,13 +16,23 @@ public class ExaminationService : IExaminationService
     private IExaminationApprovalRepository _examinationApprovalRepository;
     private IAnamnesisRepository _anamnesisRepository;
 
+    private IRoomService _roomService;
+    private IAvailabilityService _availabilityService;
+    private IAntiTrollService _antiTrollService;
+
     public ExaminationService(IExaminationRepository examinationRepository,
                               IExaminationApprovalRepository examinationApprovalRepository,
-                              IAnamnesisRepository anamnesisRepository)
+                              IAnamnesisRepository anamnesisRepository,
+                              IRoomService roomService,
+                              IAvailabilityService availabilityService,
+                              IAntiTrollService antiTrollService)
     {
         _examinationRepository = examinationRepository;
         _examinationApprovalRepository = examinationApprovalRepository;
         _anamnesisRepository = anamnesisRepository;
+        _roomService = roomService;
+        _availabilityService = availabilityService;
+        _antiTrollService = antiTrollService;
     }
 
     public static ExaminationDomainModel ParseToModel(Examination examination)
@@ -88,9 +98,9 @@ public class ExaminationService : IExaminationService
         return result;
     }
 
-    public async Task<ExaminationDomainModel> Delete(DeleteExaminationDTO dto, IAntiTrollService antiTrollService)
+    public async Task<ExaminationDomainModel> Delete(DeleteExaminationDTO dto)
     {
-        if (dto.IsPatient && await antiTrollService.AntiTrollCheck(dto.PatientId, false))
+        if (dto.IsPatient && await _antiTrollService.AntiTrollCheck(dto.PatientId, false))
             throw new DataIsNullException();
 
         Examination examination = await _examinationRepository.GetExamination(dto.ExaminationId);
@@ -102,7 +112,7 @@ public class ExaminationService : IExaminationService
             CreateExaminationApproval(examination.Id, examination.Id);
 
         if (dto.IsPatient)
-            antiTrollService.WriteToAntiTroll(examination.PatientId, "deleted");
+            _antiTrollService.WriteToAntiTroll(examination.PatientId, "deleted");
 
         return ParseToModel(examination);
     }
@@ -122,19 +132,19 @@ public class ExaminationService : IExaminationService
         _anamnesisRepository.Save();
     }
 
-    public async Task<ExaminationDomainModel> Create(CUExaminationDTO dto, IPatientService patientService, IRoomService roomService, IAvailabilityService availabilityService, IAntiTrollService antiTrollService)
+    public async Task<ExaminationDomainModel> Create(CUExaminationDTO dto)
     {
-        await availabilityService.ValidateUserInput(dto, patientService);
+        await _availabilityService.ValidateUserInput(dto);
 
-        if (dto.IsPatient && await antiTrollService.AntiTrollCheck(dto.PatientId, true))
+        if (dto.IsPatient && await _antiTrollService.AntiTrollCheck(dto.PatientId, true))
             throw new AntiTrollException();
 
-        decimal roomId = await roomService.GetAvailableRoomId(dto.StartTime, "examination");
+        decimal roomId = await _roomService.GetAvailableRoomId(dto.StartTime, "examination");
         if (roomId == -1)
             throw new NoFreeRoomsException();
 
         if (dto.IsPatient)
-            antiTrollService.WriteToAntiTroll(dto.PatientId, "create");
+            _antiTrollService.WriteToAntiTroll(dto.PatientId, "create");
 
         Examination newExamination = new Examination
         {
@@ -151,19 +161,19 @@ public class ExaminationService : IExaminationService
         return ParseToModel(newExamination);
     }
 
-    public async Task<ExaminationDomainModel> Update(CUExaminationDTO dto, IPatientService patientService, IRoomService roomService, IAvailabilityService availabilityService, IAntiTrollService antiTrollService)
+    public async Task<ExaminationDomainModel> Update(CUExaminationDTO dto)
     {
-        await availabilityService.ValidateUserInput(dto, patientService);
+        await _availabilityService.ValidateUserInput(dto);
 
         // One patient can't change other patient's appointment
         // so the patient will always match examinationModel.PatientId
-        if (dto.IsPatient && await antiTrollService.AntiTrollCheck(dto.PatientId, false))
+        if (dto.IsPatient && await _antiTrollService.AntiTrollCheck(dto.PatientId, false))
             throw new AntiTrollException();
 
         Examination examination = await _examinationRepository.GetExaminationWithoutAnamnesis(dto.ExaminationId);
         double daysUntilExamination = (examination.StartTime - DateTime.Now).TotalDays;
 
-        decimal roomId = await roomService.GetAvailableRoomId(dto.StartTime, "examination");
+        decimal roomId = await _roomService.GetAvailableRoomId(dto.StartTime, "examination");
         if (roomId == -1)
             throw new NoFreeRoomsException();
 
@@ -179,7 +189,7 @@ public class ExaminationService : IExaminationService
 
 
         if (dto.IsPatient)
-            antiTrollService.WriteToAntiTroll(dto.PatientId, "update");
+            _antiTrollService.WriteToAntiTroll(dto.PatientId, "update");
 
         return ParseToModel(examination);
     }
