@@ -11,7 +11,8 @@ namespace HealthCare.Domain.Models
         CREATED,
         REVISION,
         APPROVED,
-        REJECTED
+        REJECTED,
+        FOR_REVISION
     }
     public class DrugSuggestionDomainModel
     {

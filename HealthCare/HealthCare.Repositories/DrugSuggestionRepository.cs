@@ -18,6 +18,7 @@ namespace HealthCare.Repositories
         public Task<DrugSuggestion> GetById(decimal id);
         public Task<IEnumerable<DrugSuggestion>> GetPending();
         public Task<IEnumerable<DrugSuggestion>> GetRejected();
+        public Task<DrugSuggestion> Get(Drug drug);
     }
     public class DrugSuggestionRepository : IDrugSuggestionRepository
     {
@@ -38,7 +39,7 @@ namespace HealthCare.Repositories
                          .Include(x => x.Drug)
                          .ThenInclude(d => d.DrugIngredients)
                          .ThenInclude(di => di.Ingredient)
-                         .Where(x => x.State == "created")
+                         .Where(x => x.State == "created" || x.State == "for revision")
                          .ToListAsync();
         }
 
@@ -79,6 +80,16 @@ namespace HealthCare.Repositories
                          .ThenInclude(di => di.Ingredient)
                          .Where(x => x.State == "rejected")
                          .ToListAsync();
+        }
+
+        public async Task<DrugSuggestion> Get(Drug drug)
+        {
+            return await _healthCareContext.DrugSuggestions
+                         .Include(x => x.Drug)
+                         .ThenInclude(d => d.DrugIngredients)
+                         .ThenInclude(di => di.Ingredient)
+                         .Where(x => x.DrugId == drug.Id)
+                         .FirstOrDefaultAsync();
         }
     }
 }

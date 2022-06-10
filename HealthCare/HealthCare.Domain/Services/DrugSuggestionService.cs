@@ -144,6 +144,7 @@ namespace HealthCare.Domain.Services
                 case "revision": return DrugSuggestionState.REVISION; break;
                 case "approved": return DrugSuggestionState.APPROVED; break;              
                 case "rejected": return DrugSuggestionState.REJECTED; break;
+                case "for revision": return DrugSuggestionState.FOR_REVISION; break;
                 default: throw new Exception("Undefined drug suggestion state");
             }
         }
@@ -153,6 +154,9 @@ namespace HealthCare.Domain.Services
             Drug drug = await _drugRepository.GetById(dto.Id);
             await _drugService.Update(dto);
 
+            DrugSuggestion drugSuggestion = await _drugSuggestionRepository.Get(drug);
+            drugSuggestion.State = "for revision";
+            _drugSuggestionRepository.Update(drugSuggestion);
             _drugSuggestionRepository.Save();
             return DrugService.ParseToModel(drug);
         }
