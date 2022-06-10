@@ -39,7 +39,7 @@ namespace HealthCare.Repositories
                          .Include(x => x.Drug)
                          .ThenInclude(d => d.DrugIngredients)
                          .ThenInclude(di => di.Ingredient)
-                         .Where(x => x.State == "created")
+                         .Where(x => x.State == "created" || x.State == "for revision")
                          .ToListAsync();
         }
 
