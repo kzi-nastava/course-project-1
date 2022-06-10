@@ -154,7 +154,7 @@ namespace HealthCare.Domain.Services
             Drug drug = await _drugRepository.GetById(dto.Id);
             await _drugService.Update(dto);
 
-            DrugSuggestion drugSuggestion = _drugSuggestionRepository.Get(drug);
+            DrugSuggestion drugSuggestion = await _drugSuggestionRepository.Get(drug);
             drugSuggestion.State = "for revision";
             _drugSuggestionRepository.Update(drugSuggestion);
             _drugSuggestionRepository.Save();
