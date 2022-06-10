@@ -18,6 +18,7 @@ namespace HealthCare.Repositories
         public Task<DrugSuggestion> GetById(decimal id);
         public Task<IEnumerable<DrugSuggestion>> GetPending();
         public Task<IEnumerable<DrugSuggestion>> GetRejected();
+        DrugSuggestion Get(Drug drug);
     }
     public class DrugSuggestionRepository : IDrugSuggestionRepository
     {
