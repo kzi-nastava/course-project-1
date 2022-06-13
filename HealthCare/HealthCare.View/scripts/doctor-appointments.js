@@ -328,6 +328,7 @@ function requestFreeDays()
             if (this.status === 200) {
                 let approved = urgent ? " and approved" : "";
                 alert("Request successfully sent" + approved + ".");
+                clearDaysOffForm();
             } else {
                 alert(this.responseText)
             }
@@ -335,5 +336,13 @@ function requestFreeDays()
     }
     createDaysOffRequest.send(JSON.stringify(daysOffRequest));
 
+}
+
+function clearDaysOffForm()
+{
+    document.getElementById("from-date").value = "";
+    document.getElementById("to-date").value = "";
+    document.getElementById("urgent").checked = false;
+    document.getElementById("reason").value = "";
 }
 
