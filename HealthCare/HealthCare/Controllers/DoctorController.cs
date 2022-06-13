@@ -50,5 +50,20 @@ namespace HealthCareAPI.Controllers
             IEnumerable<DoctorDomainModel> doctors = await _doctorService.Search(dto);
             return Ok(doctors);
         }
+
+        [HttpGet]
+        [Route("doctorId={id}")]
+        public async Task<ActionResult<DoctorDomainModel>> GetById(decimal id)
+        {
+            try
+            {
+                DoctorDomainModel doctorModel = await _doctorService.GetById(id);
+                return Ok(doctorModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+        }
     }
 }

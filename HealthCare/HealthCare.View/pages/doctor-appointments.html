@@ -8,6 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="../styles/patient-style.css" />
     <link rel="stylesheet" href="../styles/styles.css" />
+    <link rel="stylesheet" href="../styles/appointmentsDoctor.css" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -67,6 +69,29 @@
         </aside>
         <div class="welcome-message-box">
           <h1 class="welcome-message">Here's your schedule, <span id="welcome-name">John!</span></h1>
+        </div>
+        <div class="appointment-box">
+          <div class="appointment-header">
+            <h4>Review all appointments <i class="fa-solid fa-calendar-plus"></i></h4>
+          </div>
+          <div class="examination-select" id="examination-select">
+            
+          </div>
+        </div>
+        <div class="free-days-box">
+          <div class="free-days-header">
+            <h4>Need some time off? Request free days:</h4>
+          </div>
+          <div class="free-days">
+            <label for="from-date">from: </label>
+            <input type="date" id="from-date"/>
+            <label for="to-date" id="to-label">to: </label>
+            <input type="date" id="to-date"/>
+            <input type="checkbox" id="urgent">
+            <label for="urgent" id="urgent-label">urgent</label>
+            <button type="submit" id="request-btn" class="startBtn" onclick="requestFreeDays()">Submit</button>
+          </div>
+          
         </div>
       </div>
     <script src="../scripts/doctor-appointments.js"></script>
