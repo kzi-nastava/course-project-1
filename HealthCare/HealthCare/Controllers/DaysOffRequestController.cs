@@ -1,4 +1,5 @@
-﻿using HealthCare.Domain.Interfaces;
+﻿using HealthCare.Domain.DTOs;
+using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +20,21 @@ namespace HealthCareAPI.Controllers
         {
             IEnumerable<DaysOffRequestDomainModel> anamnesis = await _daysOffRequestService.GetAll();
             return Ok(anamnesis);
+        }
+
+        [HttpPost]
+        [Route("create")]
+        public async Task<ActionResult<DaysOffRequestDomainModel>> Create([FromBody] CreateDaysOffRequestDTO daysOffRequest)
+        {
+            try
+            {
+                DaysOffRequestDomainModel daysOffRequestModel = await _daysOffRequestService.Create(daysOffRequest);
+                return Ok(daysOffRequestModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
         }
     }
 }

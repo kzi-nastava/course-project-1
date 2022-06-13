@@ -1,4 +1,5 @@
 ﻿using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -12,11 +13,18 @@ namespace HealthCare.Domain.Services
 {
     public class DaysOffRequestService : IDaysOffRequestService
     {
-        IDaysOffRequestRepository _daysOffRequestRepository;
+        private IDaysOffRequestRepository _daysOffRequestRepository;
+        private IDoctorRepository _doctorRepository;
 
-        public DaysOffRequestService(IDaysOffRequestRepository daysOffRequestRepository)
+        private IAvailabilityService _availabilityService;
+
+        public DaysOffRequestService(IDaysOffRequestRepository daysOffRequestRepository, IDoctorRepository doctorRepository,
+                                     IAvailabilityService availabilityService)
         {
             _daysOffRequestRepository = daysOffRequestRepository;
+            _doctorRepository = doctorRepository;
+
+            _availabilityService = availabilityService;
         }
 
         public async Task<IEnumerable<DaysOffRequestDomainModel>> GetAll()
@@ -34,6 +42,49 @@ namespace HealthCare.Domain.Services
             return results;
         }
 
+        public async Task<DaysOffRequestDomainModel> Create(CreateDaysOffRequestDTO daysOffRequestDTO)
+        {
+            await validateRequestData(daysOffRequestDTO);
+
+            DaysOffRequest daysOffRequest = _daysOffRequestRepository.Post(ParseFromDTO(daysOffRequestDTO));
+            _daysOffRequestRepository.Save();
+
+            return ParseToModel(daysOffRequest);
+        }
+
+        private async Task validateRequestData(CreateDaysOffRequestDTO daysOffRequestDTO)
+        {
+            if (!daysOffRequestDTO.IsUrgent)
+            {
+                checkIfItsTooLate(daysOffRequestDTO);
+                await _availabilityService.IsDoctorFreeOnDateRange(daysOffRequestDTO.From, daysOffRequestDTO.To, daysOffRequestDTO.DoctorId);
+            }
+            else
+            {
+                if ((daysOffRequestDTO.To - daysOffRequestDTO.From).Days > 5)
+                    throw new NumberOfUrgentDaysOfNotAllowedException();
+            }
+        }
+
+        private void checkIfItsTooLate(CreateDaysOffRequestDTO daysOffRequestDTO)
+        {
+            if ((daysOffRequestDTO.From - DateTime.Now).Days < 2)
+                throw new LateForDaysOffRequestException();
+        }
+
+        private DaysOffRequest ParseFromDTO(CreateDaysOffRequestDTO daysOffRequest)
+        {
+            return new DaysOffRequest
+            {
+                DoctorId = daysOffRequest.DoctorId,
+                Comment = daysOffRequest.Comment,
+                From = daysOffRequest.From,
+                To = daysOffRequest.To,
+                IsUrgent = daysOffRequest.IsUrgent,
+                State = daysOffRequest.IsUrgent ? "approved" : "created"
+            };
+        }
+
         private DaysOffRequestDomainModel ParseToModel(DaysOffRequest daysOffRequest)
         {
             return new DaysOffRequestDomainModel
@@ -43,7 +94,9 @@ namespace HealthCare.Domain.Services
                 Comment = daysOffRequest.Comment,
                 RejectionReason = daysOffRequest.RejectionReason,
                 DoctorId = daysOffRequest.DoctorId,
-                IsUrgent = daysOffRequest.IsUrgent
+                IsUrgent = daysOffRequest.IsUrgent,
+                From = daysOffRequest.From,
+                To = daysOffRequest.To
             };
         }
 

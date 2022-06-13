@@ -137,4 +137,26 @@ namespace HealthCare.Domain.Interfaces
         }
     }
 
+    public class LateForDaysOffRequestException : Exception
+    {
+        public LateForDaysOffRequestException() : base("Days off must be requested at least 2 days in advance (5 days for urgent requests))")
+        {
+        }
+    }
+    
+    public class DoctorIsNotFreeOnDayException : Exception
+    {
+        public DoctorIsNotFreeOnDayException() : base("You are not free on requested days. Check your schedule and make sure you have no appointmets in the selected date range.")
+        {
+        }
+    }
+
+    public class NumberOfUrgentDaysOfNotAllowedException : Exception
+    {
+        public NumberOfUrgentDaysOfNotAllowedException() : base("You can request a maximum of 5 days off with urgent requests.")
+        {
+        }
+    }
+    
+
 }

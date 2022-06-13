@@ -28,5 +28,11 @@ namespace HealthCare.Data.Entities
 
         [Column("doctor_id")]
         public decimal DoctorId { get; set; }
+
+        [Column("start_date")]
+        public DateTime From { get; set; }
+
+        [Column("end_date")]
+        public DateTime To { get; set; }
     }
 }

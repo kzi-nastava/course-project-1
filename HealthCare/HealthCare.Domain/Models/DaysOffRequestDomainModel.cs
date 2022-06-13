@@ -26,5 +26,9 @@ namespace HealthCare.Domain.Models
         public string? RejectionReason { get; set; }
 
         public decimal DoctorId { get; set; }
+
+        public DateTime From { get; set; }
+
+        public DateTime To { get; set; }
     }
 }
