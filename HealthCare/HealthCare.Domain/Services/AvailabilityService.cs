@@ -1,6 +1,7 @@
 ﻿using HealthCare.Data.Entities;
 using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
+using HealthCare.Domain.Models;
 using HealthCare.Repositories;
 using System;
 using System.Collections.Generic;
@@ -16,14 +17,17 @@ namespace HealthCare.Domain.Services
         private IOperationRepository _operationRepository;
 
         private IPatientService _patientService;
+        private IAppointmentService _appointmentService;
 
         public AvailabilityService(IExaminationRepository examinationRepository,
                                   IOperationRepository operationRepository,
-                                  IPatientService patientService)
+                                  IPatientService patientService,
+                                  IAppointmentService appointmentService)
         {
             _examinationRepository = examinationRepository;
             _operationRepository = operationRepository;
             _patientService = patientService;
+            _appointmentService = appointmentService;
         }
 
         private async Task<bool> isPatientOnExamination(CUExaminationDTO dto)
@@ -212,6 +216,29 @@ namespace HealthCare.Domain.Services
             bool patientAvailable = await isPatientAvailable(dto);
             if (!patientAvailable)
                 throw new PatientNotAvailableException();
+        }
+
+        public async Task<bool> IsDoctorFreeOnDay(decimal doctorId, DateTime singleDate)
+        {
+            IEnumerable<AppointmentDomainModel> appointments = await _appointmentService.GetAllForDoctor(new DoctorsScheduleDTO
+            {
+                DoctorId = doctorId,
+                Date = singleDate,
+                ThreeDays = false
+            });
+
+            return appointments.Count() == 0 ? true : false;
+        }
+
+        public async Task IsDoctorFreeOnDateRange(DateTime from, DateTime to, decimal doctorId)
+        {
+            DateTime singleDate = from;
+            while (singleDate <= to)
+            {
+                if (!(await IsDoctorFreeOnDay(doctorId, singleDate)))
+                    throw new DoctorIsNotFreeOnDayException();
+                singleDate = singleDate.AddDays(1);
+            }
         }
     }
 }

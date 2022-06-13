@@ -16,6 +16,7 @@ namespace HealthCare.Data.Context
         public DbSet<Anamnesis> Anamneses { get; set; }
         public DbSet<Allergy> Allergies { get; set; }
         public DbSet<Credentials> Credentials { get; set; }
+        public DbSet<DaysOffRequest> DaysOffRequests { get; set; }
         public DbSet<Doctor> Doctors { get; set; }
         public DbSet<Drug> Drugs { get; set; }
         public DbSet<DrugIngredient> DrugIngredients { get; set; }
@@ -114,6 +115,7 @@ namespace HealthCare.Data.Context
 
             modelBuilder.Entity<Anamnesis>().HasKey(x => x.Id);
             modelBuilder.Entity<Drug>().HasKey(x => x.Id);
+            modelBuilder.Entity<DaysOffRequest>().HasKey(x => x.Id);
             modelBuilder.Entity<DrugIngredient>().HasKey(x => new {x.DrugId, x.IngredientId});
             modelBuilder.Entity<Allergy>().HasKey(x => new { x.PatientId, x.IngredientId });
             modelBuilder.Entity<Examination>().HasKey(x => x.Id);

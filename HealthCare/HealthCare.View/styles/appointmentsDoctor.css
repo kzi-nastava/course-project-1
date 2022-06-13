@@ -472,29 +472,83 @@ select option {
 
 }
 
-.appointment-box {
+.free-days-box {
   display: grid;
+  grid-template-rows: 14% 86%;
   position: relative;
   left: 26%;
-  top: 65%;
+  top: 12%;
   font-size: 2rem;
-  height: 50rem;
+  height: 40rem;
+  width: 55%;
+}
+
+.free-days-header {
+  height: 5rem !important;
+}
+
+#reason {
+  border: none;
+  border-radius: 10px;
+  height: 3rem;
+  width: 60%;
+}
+
+.free-days {
+  color: var(--color-primary);
+  font-size: 1.7rem !important;
+  font-weight: bold;
+}
+
+label {
+  margin-right: 5px;
+}
+
+#to-label {
+  margin-left: 30px;
+}
+
+#urgent {
+  margin-left: 30px;
+
+}
+
+.free-days input {
+  padding: 5px;
+  border-radius: none;
+  margin-bottom: 20px;
+}
+
+#request-btn {
+  margin-left: -5px;
+  padding: 8px 15px;
+}
+
+.appointment-box {
+  display: grid;
+  grid-template-rows: 15% 85%;
+  position: relative;
+  left: 26%;
+  top: 10%;
+  font-size: 2rem;
+  height: 40rem;
+  width: 55%;
 }
 
 .appointment-header {
   height: 5rem !important;
 }
 
+
+
 .examination-select {
-  display: grid;
+  /* display: grid; */
   position: relative;
   left: 0%;
-  top: 5%;
   grid-template-columns: repeat(1, 1fr);
-  gap: 3rem;
   overflow: scroll;
-  height: 75%;
   width: 120%;
+
   padding: 0.5rem;
   background-color: white;
   border-radius: 40px;
@@ -512,7 +566,7 @@ select option {
 }
 
 .examination {
-  width: 70rem;
+  width: 95%;
   height: 7rem;
   background-color: var(--color-primary-medium-light);
   border-radius: 50px;
@@ -527,20 +581,45 @@ margin-left: 10px; */
   display: inline-block;
 }
 
+
 .examination-buttons {
   display: grid;
   position: relative;
-  left: 88%;
-  top: 5%;
+  left: 72%;
   grid-template-columns: repeat(1, 1fr);
   gap: 0.5rem;
-  height: 20%;
+  height: 19%;
   width: 10%;
   padding: 0.5rem;
 }
 
+.start-button-box {
+  position: absolute;
+  left: 85%;
+  grid-template-columns: repeat(1, 1fr);
+  padding: 0.5rem;
+  z-index: 15;
+  margin-top: -60px;
+}
+
+.startBtn {
+  color: white;
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  outline: none;
+  border: none;
+  border-radius: 50px;
+  padding: 10px;
+  transition: 0.3s;
+  margin: 5px;
+}
+
+.startBtn:hover {
+  cursor: pointer;
+}
+
 .editBtn,
-.deleteBtn {
+.deleteBtn{
   color: var(--color-primary);
   background-color: white;
   border-color: var(--color-primary);
@@ -564,14 +643,18 @@ margin-left: 10px; */
 
 .appointment-type-box {
   grid-template-columns: repeat(2, 1fr);
-  width: 40rem;
+  width: 10rem;
   height: 5rem;
   border-radius: 50px;
-  display: flex;
-  position: relative;
+  position: absolute;
+  left: 28%;
+  top: 15%;
   margin: 0;
-
   color: var(--color-primary);
+}
+
+.appointment-type-box p {
+  display: inline-block;
 }
 
 .examination-datetime {
@@ -594,15 +677,21 @@ margin-left: 10px; */
   border-radius: 50px;
   display: flex;
   position: relative;
-  float: right;
+  float: left;
   margin: 0;
+  margin-left: -50px;
 }
+
 
 
 .examination-doctor-info {
   font-size: 1.5rem;
   padding: 10px;
   padding-left: 0;
+}
+
+.examination-doctor-name:hover {
+  cursor: pointer;
 }
 
 .modal {
