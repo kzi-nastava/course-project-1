@@ -474,7 +474,7 @@ select option {
 
 .free-days-box {
   display: grid;
-  grid-template-rows: 12% 88%;
+  grid-template-rows: 14% 86%;
   position: relative;
   left: 26%;
   top: 12%;
@@ -485,6 +485,13 @@ select option {
 
 .free-days-header {
   height: 5rem !important;
+}
+
+#reason {
+  border: none;
+  border-radius: 10px;
+  height: 3rem;
+  width: 60%;
 }
 
 .free-days {
@@ -503,15 +510,17 @@ label {
 
 #urgent {
   margin-left: 30px;
+
 }
 
 .free-days input {
   padding: 5px;
   border-radius: none;
+  margin-bottom: 20px;
 }
 
 #request-btn {
-  margin-left: 30px;
+  margin-left: -5px;
   padding: 8px 15px;
 }
 

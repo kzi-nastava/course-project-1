@@ -1,6 +1,7 @@
 let scheduleUrl = "https://localhost:7195/api/Appointment/schedule"
 let patientsUri = "https://localhost:7195/api/Patient"
 let roomsUri = "https://localhost:7195/api/Room"
+let createDaysOffRequestUri = "https://localhost:7195/api/DaysOffRequest/create"
 
 let scheduleRequest = new XMLHttpRequest();
 let scheduleTable = document.getElementById("schedule-tbody");
@@ -306,8 +307,33 @@ function requestFreeDays()
         alert("Dates must be in the future.");
 
     let urgent = document.getElementById("urgent").checked;
+    let reason = document.getElementById("reason").value;
 
-    //TODO: send request
+    if (reason == "" || fromDate == "" || toDate == "")
+        alert("You must fill all input fields.")
+
+    let daysOffRequest = {
+        "comment": reason,
+        "isUrgent": urgent,
+        "doctorId": doctorId,
+        "from": fromDate,
+        "to": toDate
+    }
+
+    let createDaysOffRequest = new XMLHttpRequest();
+    createDaysOffRequest.open('POST', createDaysOffRequestUri); 
+    createDaysOffRequest.setRequestHeader('Content-Type', 'application/json');
+    createDaysOffRequest.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                let approved = urgent ? " and approved" : "";
+                alert("Request successfully sent" + approved + ".");
+            } else {
+                alert(this.responseText)
+            }
+        }
+    }
+    createDaysOffRequest.send(JSON.stringify(daysOffRequest));
 
 }
 
