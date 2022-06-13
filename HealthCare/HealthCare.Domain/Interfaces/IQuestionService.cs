@@ -10,5 +10,6 @@ namespace HealthCare.Domain.Interfaces
     public interface IQuestionService
     {
         Task<IEnumerable<QuestionDomainModel>> GetAll();
+        Task<IEnumerable<AverageCountEvaluationDomainModel>> GetAverageCountEvaluations();
     }
 }
