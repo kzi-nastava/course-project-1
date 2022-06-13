@@ -42,6 +42,15 @@ public class SecretaryService : ISecretaryService
         return results;
     }
 
+    public async Task<SecretaryDomainModel> GetById(decimal id)
+    {
+        Secretary secretary = await _secretaryRepository.GetById(id);
+        if (secretary == null)
+            throw new DataIsNullException();
+
+        return ParseToModel(secretary);
+    }
+
     public static SecretaryDomainModel ParseToModel(Secretary secretary)
     {
         SecretaryDomainModel secretaryModel = new SecretaryDomainModel

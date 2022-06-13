@@ -31,5 +31,13 @@ namespace HealthCareAPI.Controllers
             IEnumerable<SecretaryDomainModel> secretaries = await _secretaryService.ReadAll();
             return Ok(secretaries);
         }
+        
+        [HttpGet]
+        [Route("secretaryId={id}")]
+        public async Task<ActionResult<SecretaryDomainModel>> GetById(decimal id) 
+        {
+            SecretaryDomainModel secretary = await _secretaryService.GetById(id);
+            return Ok(secretary);
+        }
     }
 }
