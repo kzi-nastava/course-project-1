@@ -55,7 +55,7 @@ namespace HealthCare.Domain.Services
         }
 
         // DoctorService is needed for doctor's schedule
-        public async Task<OperationDomainModel> CreateUrgent(CreateUrgentOperationDTO dto)
+        public async Task<OperationDomainModel?> CreateUrgent(CreateUrgentOperationDTO dto)
         {
             OperationDomainModel operationModel = new OperationDomainModel
             {

@@ -20,7 +20,7 @@ namespace HealthCareAPI.Controllers
         [Route("urgentList")]
         public async Task<ActionResult<IEnumerable<IEnumerable<RescheduleDTO>>>> CreateUrgentOperation(CreateUrgentOperationDTO dto)
         {
-            OperationDomainModel operationModel = await _urgentOperationService.CreateUrgent(dto);
+            OperationDomainModel? operationModel = await _urgentOperationService.CreateUrgent(dto);
             if (operationModel != null) return Ok();
             IEnumerable<IEnumerable<RescheduleDTO>> rescheduleItems = await _urgentOperationService.FindFiveAppointments(dto);
             return Ok(rescheduleItems);
