@@ -29,7 +29,7 @@ namespace HealthCare.Data.Entities
         [Column("specialization_id")]
         public decimal? SpecializationId { get; set; }
 
-        public MedicalRecord MedicalRecord { get; set; }
+        public MedicalRecord? MedicalRecord { get; set; }
 
         public Specialization? Specialization { get; set; }
     }

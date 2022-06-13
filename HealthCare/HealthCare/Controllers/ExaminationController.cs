@@ -12,19 +12,13 @@ namespace HealthCareAPI.Controllers
     public class ExaminationController : ControllerBase 
     {
         private IExaminationService _examinationService;
-        private IDoctorService _doctorService;
-        private IPatientService _patientService;
-        private INotificationService _notificationService;
+        private IFilteringExaminationService _filteringExaminationService;
 
         public ExaminationController(IExaminationService examinationService, 
-            IDoctorService doctorService, 
-            IPatientService patientService,
-            INotificationService notificationService) 
+            IFilteringExaminationService filteringExaminationService) 
         {
             _examinationService = examinationService;
-            _doctorService = doctorService;
-            _patientService = patientService;
-            _notificationService = notificationService;
+            _filteringExaminationService = filteringExaminationService;
         }
 
         // https://localhost:7195/api/examination
@@ -50,7 +44,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatient(id);
+                IEnumerable<ExaminationDomainModel> examinations = await _filteringExaminationService.GetAllForPatient(id);
                 return Ok(examinations);
             }
             catch (Exception exception)
@@ -67,7 +61,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForPatientSorted(dto, _doctorService);
+                IEnumerable<ExaminationDomainModel> examinations = await _filteringExaminationService.GetAllForPatientSorted(dto);
                 return Ok(examinations);
             }
             catch (Exception exception)
@@ -82,7 +76,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.GetAllForDoctor(id);
+                IEnumerable<ExaminationDomainModel> examinations = await _filteringExaminationService.GetAllForDoctor(id);
                 return Ok(examinations);
             }
             catch (Exception exception)
@@ -138,22 +132,6 @@ namespace HealthCareAPI.Controllers
 
         }
 
-        [HttpPost]
-        [Route("recommend")]
-        public async Task<ActionResult<IEnumerable<CUExaminationDTO>>> RecommendExaminations([FromBody] ParamsForRecommendingFreeExaminationsDTO paramsDTO)
-        {
-            try
-            {
-                IEnumerable<CUExaminationDTO> recommendedExaminations = await _examinationService.GetRecommendedExaminations(paramsDTO, _doctorService);
-                return Ok(recommendedExaminations);
-            }
-            catch (Exception exception)
-            {
-                return NotFound(exception.Message);
-            }
-        }
-
-
         // https://localhost:7195/api/examination/search
         [HttpGet]
         [Route("search/")]
@@ -161,7 +139,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                IEnumerable<ExaminationDomainModel> examinations = await _examinationService.SearchByAnamnesis(dto);
+                IEnumerable<ExaminationDomainModel> examinations = await _filteringExaminationService.SearchByAnamnesis(dto);
                 return Ok(examinations);
 
             }
@@ -171,23 +149,7 @@ namespace HealthCareAPI.Controllers
             }
         }
 
-        [HttpPut]
-        [Route("urgentList")]
-        public async Task<ActionResult<IEnumerable<IEnumerable<RescheduleDTO>>>> CreateUrgentExamination(CreateUrgentExaminationDTO dto)
-        {
-            ExaminationDomainModel examinationModel = await _examinationService.CreateUrgent(dto, _doctorService, _notificationService);
-            if (examinationModel != null) return Ok();
-            IEnumerable<IEnumerable<RescheduleDTO>> rescheduleItems = await _examinationService.FindFiveAppointments(dto, _doctorService, _patientService);
-            return Ok(rescheduleItems);
-        }
         
-        [HttpPut]
-        [Route("urgent")]
-        public async Task<ActionResult<ExaminationDomainModel>> RescheduleForUrgentExamination(List<RescheduleDTO> dto)
-        {
-            ExaminationDomainModel urgentExamination = await _examinationService.AppointUrgent(dto, _notificationService);
-            return Ok(urgentExamination);
-        }
 
     }
 }

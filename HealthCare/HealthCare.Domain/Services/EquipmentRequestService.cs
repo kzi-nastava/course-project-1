@@ -45,6 +45,7 @@ public class EquipmentRequestService : IEquipmentRequestService
         foreach (Equipment item in equipment)
         {
             EquipmentDomainModel equipmentModel = EquipmentService.ParseToModel(item);
+            if (!equipmentModel.IsDynamic) continue;
             if (!result.ContainsKey(equipmentModel.Id)) result.Add(equipmentModel.Id, equipmentModel);
         }
         return result;
@@ -57,6 +58,7 @@ public class EquipmentRequestService : IEquipmentRequestService
         foreach (Inventory item in inventories)
         {
             InventoryDomainModel inventoryModel = InventoryService.ParseToModel(item);
+            if (!inventoryModel.Equipment.IsDynamic) continue;
             if (missingEquipment.ContainsKey(inventoryModel.EquipmentId) && item.Amount != 0) missingEquipment.Remove(inventoryModel.EquipmentId);
         }
         foreach (KeyValuePair<decimal, EquipmentDomainModel> pair in missingEquipment)
@@ -151,7 +153,7 @@ public class EquipmentRequestService : IEquipmentRequestService
     {
         List<RoomAndEquipmentDTO> result = new List<RoomAndEquipmentDTO>();
         List<Room> rooms = (List<Room>) await _roomRepository.GetAll();
-        List<EquipmentDomainModel> allEquipment = await GetAllEquipment();
+        List<EquipmentDomainModel> allEquipment = await GetAllDynamicEquipment();
         foreach (Room item in rooms)
         {
             RoomAndEquipmentDTO dto = new RoomAndEquipmentDTO { RoomName = item.RoomName };
@@ -183,12 +185,16 @@ public class EquipmentRequestService : IEquipmentRequestService
         }
     }
 
-    public async Task<List<EquipmentDomainModel>> GetAllEquipment()
+    public async Task<List<EquipmentDomainModel>> GetAllDynamicEquipment()
     {
         List<EquipmentDomainModel> result = new List<EquipmentDomainModel>();
         List<Equipment> equipments = (List<Equipment>) await _equipmentRepository.GetAll();
         foreach (Equipment item in equipments)
+        {
+            if (!item.IsDynamic) continue;
             result.Add(EquipmentService.ParseToModel(item));
+        }
+
         return result;
     }
 

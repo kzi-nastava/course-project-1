@@ -122,4 +122,19 @@ namespace HealthCare.Domain.Interfaces
         {
         }
     }
+
+    public class DrugSuggestionAlreadyApprovedException : Exception
+    {
+        public DrugSuggestionAlreadyApprovedException() : base("Drug suggestion is already approved")
+        {
+        }
+    }
+
+    public class DrugSuggestionAlreadyRejectedException : Exception
+    {
+        public DrugSuggestionAlreadyRejectedException() : base("Drug suggestion is already rejected")
+        {
+        }
+    }
+
 }

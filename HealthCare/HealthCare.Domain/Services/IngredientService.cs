@@ -1,4 +1,5 @@
 ﻿using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -36,6 +37,18 @@ namespace HealthCare.Domain.Services
             return ingredientModel;
         }
 
+        public static IngredientDTO ParseToDTO(Ingredient ingredient)
+        {
+            IngredientDTO ingredientDTO = new IngredientDTO
+            {
+                Id = ingredient.Id,
+                IsAllergen = ingredient.IsAllergen,
+                Name = ingredient.Name
+            };
+
+            return ingredientDTO;
+        }
+
         public static Ingredient ParseFromModel(IngredientDomainModel ingredientModel)
         {
             Ingredient ingredient = new Ingredient
@@ -67,6 +80,64 @@ namespace HealthCare.Domain.Services
             }
 
             return results;
+        }
+
+        public IngredientDomainModel Create(IngredientDTO dto)
+        {
+            Ingredient ingredient = new Ingredient
+            {
+                Id = dto.Id,
+                IsAllergen = dto.IsAllergen,
+                Name = dto.Name,
+                IsDeleted = false,
+            };
+            _ingredientRepository.Post(ingredient);
+            _ingredientRepository.Save();
+            return parseToModel(ingredient);
+        }
+
+        private IngredientDomainModel parseToModel(Ingredient ingredient)
+        {
+            return new IngredientDomainModel
+            {
+                Id = ingredient.Id,
+                Name = ingredient.Name,
+                IsAllergen = ingredient.IsAllergen,
+                IsDeleted = ingredient.IsDeleted,
+            };
+        }
+
+        public IngredientDomainModel Update(IngredientDTO dto)
+        {
+            Ingredient ingredient = new Ingredient
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                IsAllergen = dto.IsAllergen,
+            };
+            _ingredientRepository.Update(ingredient);
+            _ingredientRepository.Save();
+            return parseToModel(ingredient);
+        }
+
+        public async Task<IngredientDomainModel> Delete(decimal id)
+        {
+            Ingredient ingredient = await _ingredientRepository.Get(id);
+            ingredient.IsDeleted = true;
+            _ingredientRepository.Update(ingredient);
+            _ingredientRepository.Save();
+            return parseToModel(ingredient);
+        }
+
+        public async Task<IngredientDomainModel> Get(decimal id)
+        {
+            Ingredient ingredient = await _ingredientRepository.Get(id);
+            return parseToModel(ingredient);
+        }
+
+        public void Save()
+        {
+            _ingredientRepository.Save();
         }
     }
 }

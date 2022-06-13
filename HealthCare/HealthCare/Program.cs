@@ -1,4 +1,6 @@
 using HealthCare.Data.Context;
+using HealthCare.Domain.BuildingBlocks.CronJobs;
+using HealthCare.Domain.BuildingBlocks.Mail;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Services;
 using HealthCare.Repositories;
@@ -50,6 +52,10 @@ builder.Services.AddTransient<ISimpleRenovationRepository, SimpleRenovationRepos
 builder.Services.AddTransient<ISplitRenovationRepository, SplitRenovationRepository>();
 builder.Services.AddTransient<INotificationRepository, NotificationRepository>();
 builder.Services.AddTransient<IEquipmentRequestRepository, EquipmentRequestRepository>();
+builder.Services.AddTransient<IDrugSuggestionRepository, DrugSuggestionRepository>();
+builder.Services.AddTransient<IDrugIngredientRepository, DrugIngredientRepository>();
+builder.Services.AddTransient<IAnswerRepository, AnswerRepository>();
+builder.Services.AddTransient<IQuestionRepository, QuestionRepository>();
 
 //Domain
 builder.Services.AddTransient<IAntiTrollService, AntiTrollService>();
@@ -59,6 +65,7 @@ builder.Services.AddTransient<IAppointmentService, AppointmentService>();
 builder.Services.AddTransient<ICredentialsService, CredentialsService>();
 builder.Services.AddTransient<IDoctorService, DoctorService>();
 builder.Services.AddTransient<IDrugService, DrugService>();
+builder.Services.AddTransient<IDrugIngredientService, DrugIngredientService>();
 builder.Services.AddTransient<IEquipmentService, EquipmentService>();
 builder.Services.AddTransient<IEquipmentTypeService, EquipmentTypeService>();
 builder.Services.AddTransient<IExaminationApprovalService, ExaminationApprovalService>();
@@ -80,6 +87,14 @@ builder.Services.AddTransient<IUserRoleService, UserRoleService>();
 builder.Services.AddTransient<IRenovationService, RenovationService>();
 builder.Services.AddTransient<INotificationService, NotificationService>();
 builder.Services.AddTransient<IEquipmentRequestService, EquipmentRequestService>();
+builder.Services.AddTransient<IDrugSuggestionService, DrugSuggestionService>();
+builder.Services.AddTransient<IAnswerService, AnswerService>();
+builder.Services.AddTransient<IQuestionService, QuestionService>();
+builder.Services.AddTransient<IAvailabilityService, AvailabilityService>();
+builder.Services.AddTransient<IUrgentExaminationService, UrgentExaminationService>();
+builder.Services.AddTransient<IUrgentOperationService, UrgentOperationService>();
+builder.Services.AddTransient<IFilteringExaminationService, FilteringExaminationService>();
+builder.Services.AddTransient<IRecommendExaminationService, RecommendExaminationService>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");
@@ -87,17 +102,51 @@ builder.Services.AddDbContext<HealthCareContext>(x => x.UseSqlServer(connectionS
 //builder.Services.AddDbContext<HealthCareContext>(x => x.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking));
 builder.Services.AddDbContext<HealthCareContext>(x => x.EnableSensitiveDataLogging());
 
+//builder.Services.AddSingleton<CronJobNotifications>();
 
-builder.Services.AddCors(options => 
+//builder.Services.AddCors(options => 
+//{
+//    options.AddPolicy("CorsPolicy", 
+//        corsBuilder => corsBuilder.WithOrigins("http://localhost:7195").AllowAnyMethod()
+//           .AllowAnyHeader()
+//            .AllowCredentials());
+//});
+
+builder.Services.AddCors(feature =>
+                feature.AddPolicy(
+                    "CorsPolicy",
+                    apiPolicy => apiPolicy
+                                    //.AllowAnyOrigin()
+                                    //.WithOrigins("http://localhost:4200")
+                                    .AllowAnyHeader()
+                                    .AllowAnyMethod()
+                                    .SetIsOriginAllowed(host => true)
+                                    .AllowCredentials()
+                                ));
+
+
+//builder.Services.AddCronJob<CronJobNotifications>(c =>
+//{
+//    c.TimeZoneInfo = TimeZoneInfo.Local;
+//    c.CronExpression = @"*/5 * * * *";
+//});
+//MailSender sender = new MailSender("usi2022hospital@gmailcom", "lazzarmilanovic@gmail.com");
+//sender.SetBody("test");
+//sender.SetSubject("test");
+//sender.Send();
+
+
+// Cron jobs
+builder.Services.AddCronJob<CronJobNotifications>(c =>
 {
-    options.AddPolicy("CorsPolicy", 
-        corsBuilder => corsBuilder.WithOrigins("http://localhost:7195").AllowAnyMethod()
-           .AllowAnyHeader()
-            .AllowCredentials());
+    c.TimeZoneInfo = TimeZoneInfo.Local;
+    c.CronExpression = @"* * * * *";
 });
 
 
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.`
 if (!app.Environment.IsDevelopment())
@@ -120,13 +169,13 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
+app.UseCors("CorsPolicy");
 app.UseAuthorization();
-
 app.UseEndpoints(endpoints => endpoints.MapControllers());
-
 //app.MapRazorPages();
+
+
+
 
 app.Run();

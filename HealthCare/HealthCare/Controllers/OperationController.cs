@@ -12,17 +12,10 @@ namespace HealthCareAPI.Controllers
     public class OperationController : ControllerBase 
     {
         private IOperationService _operationService;
-        private IDoctorService _doctorService;
-        private IPatientService _patientService;
-        private INotificationService _notificationService;
 
-        public OperationController(IOperationService operationService, IDoctorService doctorService, IPatientService patientService,
-            INotificationService notificationService) 
+        public OperationController(IOperationService operationService) 
         {
             _operationService = operationService;
-            _doctorService = doctorService;
-            _patientService = patientService;
-            _notificationService = notificationService;
         }
 
         // https://localhost:7195/api/operation
@@ -99,24 +92,6 @@ namespace HealthCareAPI.Controllers
             {
                 return NotFound(exception.Message);
             }
-        }
-        
-        [HttpPut]
-        [Route("urgentList")]
-        public async Task<ActionResult<IEnumerable<IEnumerable<RescheduleDTO>>>> CreateUrgentOperation(CreateUrgentOperationDTO dto)
-        {
-            OperationDomainModel operationModel = await _operationService.CreateUrgent(dto, _doctorService, _notificationService);
-            if (operationModel != null) return Ok();
-            IEnumerable<IEnumerable<RescheduleDTO>> rescheduleItems = await _operationService.FindFiveAppointments(dto, _doctorService, _patientService);
-            return Ok(rescheduleItems);
-        }
-        
-        [HttpPut]
-        [Route("urgent")]
-        public async Task<ActionResult<OperationDomainModel>> RescheduleForUrgentExamination(List<RescheduleDTO> dto)
-        {
-            OperationDomainModel urgentExamination = await _operationService.AppointUrgent(dto, _notificationService);
-            return Ok(urgentExamination);
         }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System.Diagnostics.Eventing.Reader;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
+using HealthCare.Domain.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareAPI.Controllers 
@@ -42,18 +44,11 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpGet]
-        [Route("doctorId={id}")]
-        public async Task<ActionResult<DoctorDomainModel>> GetById(decimal id)
+        [Route("search")]
+        public async Task<ActionResult<IEnumerable<DoctorDomainModel>>> SearchDoctors([FromQuery] SearchDoctorsDTO dto)
         {
-            try
-            {
-                DoctorDomainModel doctorModel = await _doctorService.GetById(id);
-                return Ok(doctorModel);
-            }
-            catch (Exception exception)
-            {
-                return NotFound(exception.Message);
-            }
+            IEnumerable<DoctorDomainModel> doctors = await _doctorService.Search(dto);
+            return Ok(doctors);
         }
     }
 }

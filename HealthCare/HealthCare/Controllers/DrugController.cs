@@ -1,4 +1,5 @@
-﻿using HealthCare.Domain.Interfaces;
+﻿using HealthCare.Domain.DTOs;
+using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 
@@ -21,5 +22,6 @@ namespace HealthCareAPI.Controllers
             IEnumerable<DrugDomainModel> drugs = await _drugService.GetAll();
             return Ok(drugs);
         }
+
     }
 }

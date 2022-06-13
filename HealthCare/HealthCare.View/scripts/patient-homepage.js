@@ -1,6 +1,5 @@
 let getPatientUri = "https://localhost:7195/api/Patient/patientId=";
 let userId = sessionStorage.getItem("userId");
-let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 
 currentTime();
@@ -14,6 +13,7 @@ getDoctorRequest.onreadystatechange = function () {
             let user = JSON.parse(getDoctorRequest.responseText);
             console.log(user);
             fillLabels(user);
+            sessionStorage.setItem("user", JSON.stringify(user));
         } else {
             alert("Greska prilikom ucitavanja korisnika.");
         }
@@ -24,8 +24,7 @@ getDoctorRequest.send();
 
 function fillLabels(user)
 {
-    let smallName = document.getElementById("smallName");
-    smallName.innerText = user.name + ' ' + user.surname;
+    setNameOnCorner(user);
 
     let bigName = document.getElementById("bigName");
     bigName.innerText = user.name + ' ' + user.surname;
@@ -57,30 +56,5 @@ function fillLabels(user)
 }
 
 
-function currentTime() {
-    let date = new Date(); 
-    let hh = date.getHours();
-    let mm = date.getMinutes();
-    let ss = date.getSeconds();
-    let session = "AM";
-  
-    if(hh == 0){
-        hh = 12;
-    }
-    if(hh > 12){
-        hh = hh - 12;
-        session = "PM";
-     }
-  
-     hh = (hh < 10) ? "0" + hh : hh;
-     mm = (mm < 10) ? "0" + mm : mm;
-     ss = (ss < 10) ? "0" + ss : ss;
-      
-     let time = hh + ":" + mm + ":" + ss + " " + session;
-  
-    document.getElementById("clock").innerText = time; 
-    document.getElementById("date").innerText = date.toLocaleDateString();
-    document.getElementById("year").innerText = days[date.getDay() - 1]; 
-    let t = setTimeout(function(){ currentTime() }, 1000);
-  }
+
   

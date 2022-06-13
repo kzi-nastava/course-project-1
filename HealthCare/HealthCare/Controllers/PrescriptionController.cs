@@ -10,7 +10,7 @@ namespace HealthCareAPI.Controllers
     [ApiController]
     public class PrescriptionController : ControllerBase
     {
-        IPrescriptionService _prescriptionService;
+        private IPrescriptionService _prescriptionService;
 
         public PrescriptionController(IPrescriptionService prescriptionService)
         {
@@ -21,6 +21,14 @@ namespace HealthCareAPI.Controllers
         public async Task<ActionResult<IEnumerable<PrescriptionDomainModel>>> GetAll()
         {
             IEnumerable<PrescriptionDomainModel> prescriptions = await _prescriptionService.GetAll();
+            return Ok(prescriptions);
+        }
+
+        [HttpGet]
+        [Route("/reminders")]
+        public async Task<ActionResult<IEnumerable<string>>> GetAllReminders()
+        {
+            IEnumerable<string> prescriptions = await _prescriptionService.GetAllReminders();
             return Ok(prescriptions);
         }
 

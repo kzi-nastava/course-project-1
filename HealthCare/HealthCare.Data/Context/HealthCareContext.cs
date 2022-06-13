@@ -23,7 +23,7 @@ namespace HealthCare.Data.Context
         public DbSet<EquipmentType> EquipmentTypes { get; set; }
         public DbSet<Examination> Examinations { get; set; }
         public DbSet<ExaminationApproval> ExaminationApprovals { get; set; }
-        public DbSet<Ingredient> Ingridients { get; set; }
+        public DbSet<Ingredient> Ingredients { get; set; }
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<Manager> Managers { get; set; }
         public DbSet<MedicalRecord> MedicalRecords { get; set; }
@@ -43,10 +43,15 @@ namespace HealthCare.Data.Context
         public DbSet<SplitRenovation> SplitRenovations { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<EquipmentRequest> EquipmentRequests { get; set; }
+        public DbSet<DrugSuggestion> DrugSuggestions{ get; set; }
+
+        public DbSet<Answer> Answers { get; set; }
+        public DbSet<Question> Questions{ get; set; }
 
         public HealthCareContext(DbContextOptions options) : base(options)
         {
-            
+            this.ChangeTracker.LazyLoadingEnabled = false;
+
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -95,11 +100,16 @@ namespace HealthCare.Data.Context
                 .WithMany(d => d.DrugIngredients)
                 .HasForeignKey(x => x.DrugId);
 
+            modelBuilder.Entity<DrugSuggestion>()
+                .HasOne(x => x.Drug);
+
             modelBuilder.Entity<Prescription>()
                 .HasOne(x => x.Drug);
             
             modelBuilder.Entity<EquipmentRequest>()
                 .HasOne(x => x.Equipment);
+            //add drug suggestion
+            // add questions and answers
 
 
             modelBuilder.Entity<Anamnesis>().HasKey(x => x.Id);
@@ -125,6 +135,10 @@ namespace HealthCare.Data.Context
             modelBuilder.Entity<SplitRenovation>().HasKey(x => x.Id);
             modelBuilder.Entity<Notification>().HasKey(x => x.Id);
             modelBuilder.Entity<EquipmentRequest>().HasKey(x => x.Id);
+            modelBuilder.Entity<DrugSuggestion>().HasKey(x => x.Id);
+            modelBuilder.Entity<Answer>().HasKey(x => x.Id);
+            modelBuilder.Entity<Question>().HasKey(x => x.Id);
+
         }
     }
 }

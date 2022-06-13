@@ -1,8 +1,11 @@
 ﻿using HealthCare.Data.Entities;
+using HealthCare.Domain.BuildingBlocks.CronJobs;
 using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
+using Microsoft.Extensions.Hosting;
+using Sgbj.Cron;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,18 +17,18 @@ namespace HealthCare.Domain.Services
     public class PrescriptionService : IPrescriptionService
     {
         IPrescriptionRepository _prescriptionRepository;
-        IExaminationRepository _examinationRepository;
         IMedicalRecordRepository _medicalRecordRepository;
         IDrugRepository _drugRepository;
         IIngredientRepository _ingredientRepository;
         IPatientRepository _patientRepository;
 
-        public PrescriptionService(IPrescriptionRepository prescriptionRepository, IExaminationRepository examinationRepository, 
-                                   IMedicalRecordRepository medicalRecordRepository, IDrugRepository drugRepository,
-                                   IIngredientRepository ingredientRepository, IPatientRepository patientRepository)
+        public PrescriptionService(IPrescriptionRepository prescriptionRepository, 
+                                   IMedicalRecordRepository medicalRecordRepository, 
+                                   IDrugRepository drugRepository,
+                                   IIngredientRepository ingredientRepository, 
+                                   IPatientRepository patientRepository)
         {
             _prescriptionRepository = prescriptionRepository;
-            _examinationRepository = examinationRepository;
             _medicalRecordRepository = medicalRecordRepository;
             _drugRepository = drugRepository;
             _ingredientRepository = ingredientRepository;
@@ -65,7 +68,7 @@ namespace HealthCare.Domain.Services
                 {
                     if (allergy.IngredientId == drugIngredient.IngredientId)
                     {
-                        Ingredient allergen = await _ingredientRepository.GetById(allergy.IngredientId);
+                        Ingredient allergen = await _ingredientRepository.Get(allergy.IngredientId);
                         throw new PatientIsAllergicException(allergen.Name);
                     }
                         
@@ -98,7 +101,8 @@ namespace HealthCare.Domain.Services
                 DrugId = prescriptionDTO.DrugId,
                 TakeAt = prescriptionDTO.TakeAt,
                 PerDay = prescriptionDTO.PerDay,    
-                MealCombination = prescriptionDTO.MealCombination
+                MealCombination = prescriptionDTO.MealCombination,
+                TreatmentDays = prescriptionDTO.TreatmentDays
             };
 
             return prescription;
@@ -126,7 +130,8 @@ namespace HealthCare.Domain.Services
                 TakeAt = removeSeconds(prescription.TakeAt),
                 PerDay = prescription.PerDay,
                 IsDeleted = prescription.IsDeleted,
-                MealCombination = (MealCombination)Enum.Parse(typeof(MealCombination), prescription.MealCombination)
+                MealCombination = (MealCombination)Enum.Parse(typeof(MealCombination), prescription.MealCombination),
+                TreatmentDays = prescription.TreatmentDays
             };
 
             if (prescription.Drug != null)
@@ -145,7 +150,8 @@ namespace HealthCare.Domain.Services
                 TakeAt = prescriptionModel.TakeAt,
                 PerDay = prescriptionModel.PerDay,
                 IsDeleted = prescriptionModel.IsDeleted,
-                MealCombination = prescriptionModel.MealCombination.ToString()
+                MealCombination = prescriptionModel.MealCombination.ToString(),
+                TreatmentDays = prescriptionModel.TreatmentDays
             };
 
             if (prescriptionModel.Drug != null)
@@ -153,6 +159,73 @@ namespace HealthCare.Domain.Services
 
             return prescription;
         }
+
+        private async Task<bool> IsDue(PrescriptionDomainModel prescriptionModel)
+        {
+            //TODO
+            Patient patient = await _patientRepository.GetPatientById(prescriptionModel.PatientId);
+            double timeSpan = (double) patient.NotificationOffset;
+            double hoursSpan = (double) (24 / prescriptionModel.PerDay);
+            for (int i = 0; i < prescriptionModel.PerDay; i++)
+            {
+                var notificationTime = prescriptionModel.TakeAt.AddHours(i * hoursSpan).AddMinutes(-timeSpan).TimeOfDay;
+                if (isOnTime(notificationTime) && isOnDay(prescriptionModel.TakeAt, (double)prescriptionModel.TreatmentDays))
+                    return true;
+            }
+                
+            return false;
+        }
+
+        private bool isOnDay(DateTime dateTime, double treatmentDays)
+        {
+            return dateTime.AddDays(treatmentDays) > DateTime.Now;
+        }
+
+        private bool isOnTime(TimeSpan notificationTime)
+        {
+            return notificationTime < DateTime.Now.AddMinutes(1).TimeOfDay && notificationTime > DateTime.Now.AddMinutes(-1).TimeOfDay;
+        }
+
+        public async Task<List<string>> GetAllReminders()
+        {
+            //TODO
+            List<PrescriptionDomainModel> prescriptions = (List<PrescriptionDomainModel>) await GetAll();
+            List<string> result = new List<string>();
+            foreach (PrescriptionDomainModel item in prescriptions)    
+            { 
+                if (await IsDue(item))
+                {
+                    Patient patient = await _patientRepository.GetPatientById(item.PatientId);
+                    result.Add(patient.Email);
+                }
+            }
+            return result;
+        }
+
+        //public override Task StartAsync(CancellationToken cancellationToken)
+        //{
+        //    return base.StartAsync(cancellationToken);
+        //}
+
+        //public override async Task DoWork(CancellationToken cancellationToken)
+        //{
+        //    Console.WriteLine("radi");
+        //    List<string> lista = await GetAllReminders();
+        //    Console.WriteLine(lista.Count);
+        //}
+
+        //protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+        //{
+        //    using var timer = new CronTimer("* * * * *", TimeZoneInfo.Local);
+
+        //    while (await timer.WaitForNextTickAsync(stoppingToken))
+        //    {
+        //        // Do work
+        //        Console.WriteLine("radi");
+        //        List<PrescriptionDomainModel> prescriptionModels = await GetAllReminders();
+        //        Console.WriteLine(prescriptionModels.Count);
+        //    }
+        //}
     }
     
 }

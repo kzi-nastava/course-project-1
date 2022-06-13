@@ -1,4 +1,5 @@
 using HealthCare.Data.Entities;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
@@ -9,9 +10,13 @@ public class DoctorService : IDoctorService
 {
     private IDoctorRepository _doctorRepository;
 
-    public DoctorService(IDoctorRepository doctorRepository) 
+    private IAnswerService _answerService;
+
+    public DoctorService(IDoctorRepository doctorRepository,
+        IAnswerService answerService) 
     {
         _doctorRepository = doctorRepository;
+        _answerService = answerService;
     }
 
     public static Doctor ParseFromModel(DoctorDomainModel doctorModel)
@@ -164,7 +169,11 @@ public class DoctorService : IDoctorService
         schedule.Sort((x, y) => x.Key.CompareTo(y.Key));
         // Generate available time
         List<KeyValuePair<DateTime, DateTime>> result = new List<KeyValuePair<DateTime, DateTime>>();
-        if (schedule.Count == 0) return result;
+        if (result.Count == 0)
+        {
+            result.Add(new KeyValuePair<DateTime, DateTime>(DateTime.Now, new DateTime(9999, 12, 31)));
+            return result;
+        }
         KeyValuePair<DateTime, DateTime> first = schedule[0];
         for (int i = 1; i < schedule.Count; i++)
         {
@@ -174,6 +183,7 @@ public class DoctorService : IDoctorService
             first = schedule[i];
         }
         result.Add(new KeyValuePair<DateTime, DateTime>(schedule[schedule.Count - 1].Value, new DateTime(9999, 12, 31)));
+        
         return result;
     }
 
@@ -204,5 +214,48 @@ public class DoctorService : IDoctorService
         schedule.Sort((x, y) => x.Key.CompareTo(y.Key));
         // Generate busy time
         return schedule;
+    }
+
+    private bool IsInName(Doctor doctor, string subString)
+    {
+        if (string.IsNullOrEmpty(subString)) return true;
+        return doctor.Name.ToLower().Contains(subString.ToLower());
+    }
+
+    private bool IsInSurname(Doctor doctor, string subString)
+    {
+        if (string.IsNullOrEmpty(subString)) return true;
+        return doctor.Surname.ToLower().Contains(subString.ToLower());
+    }
+
+    private bool IsInSpecialization(Doctor doctor, string subString)
+    {
+        if (string.IsNullOrEmpty(subString)) return true;
+        return doctor.Specialization.Name.ToLower().Contains(subString.ToLower());
+    }
+    public async Task<IEnumerable<DoctorDomainModel>> Search(SearchDoctorsDTO dto)
+    {
+        IEnumerable<Doctor> doctors = await _doctorRepository.GetAll();
+        List<DoctorDomainModel> results = new List<DoctorDomainModel>();
+        foreach(Doctor doctor in doctors)
+        {
+            if (IsInName(doctor, dto.Name) && IsInSurname(doctor, dto.Surname) && IsInSpecialization(doctor, dto.Specialization))
+                results.Add(ParseToModel(doctor));
+        }
+        if (dto.SortParam.ToLower().Equals("name"))
+            return results.OrderBy(x => x.Name);
+        if (dto.SortParam.ToLower().Equals("surname"))
+            return results.OrderBy(x => x.Surname);
+        if (dto.SortParam.ToLower().Equals("specialization"))
+            return results.OrderBy(x => x.Specialization.Name);
+        if (dto.SortParam.ToLower().Equals("rating"))
+        {
+            foreach (DoctorDomainModel doctor in results)
+            {
+                doctor.Rating = await _answerService.GetAverageRating(doctor.Id);
+            }
+            return results.OrderByDescending(x => x.Rating);
+        }
+        return results;
     }
 }

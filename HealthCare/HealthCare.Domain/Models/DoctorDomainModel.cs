@@ -17,6 +17,8 @@ public class DoctorDomainModel
     public string Phone { get; set; }
 
     public bool IsDeleted { get; set; }
+
+    public decimal Rating { get; set; }
     public decimal SpecializationId { get; set; }
 
     public List<OperationDomainModel> Operations { get; set; }

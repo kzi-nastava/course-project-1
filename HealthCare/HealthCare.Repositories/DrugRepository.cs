@@ -1,6 +1,7 @@
 ﻿using HealthCare.Data.Context;
 using HealthCare.Data.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,8 @@ namespace HealthCare.Repositories
     public interface IDrugRepository : IRepository<Drug>
     {
         public Task<Drug> GetById(decimal id);
+        Drug Post(Drug drug);
+        Drug Update(Drug drug);
     }
 
     public class DrugRepository : IDrugRepository
@@ -38,9 +41,22 @@ namespace HealthCare.Repositories
                 .FirstOrDefaultAsync();
         }
 
+        public Drug Post(Drug drug)
+        {
+            EntityEntry<Drug> result = _healthCareContext.Drugs.Add(drug);
+            return result.Entity;
+        }
+
         public void Save()
         {
             _healthCareContext.SaveChanges();
+        }
+
+        public Drug Update(Drug drug)
+        {
+            EntityEntry<Drug> updatedEntry = _healthCareContext.Drugs.Attach(drug);
+            _healthCareContext.Entry(drug).State = EntityState.Modified;
+            return updatedEntry.Entity;
         }
     }
 }

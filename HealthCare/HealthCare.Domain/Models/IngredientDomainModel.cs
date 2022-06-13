@@ -14,6 +14,6 @@ namespace HealthCare.Domain.Models
 
         public bool IsAllergen { get; set; }
         public List<DrugIngredientDomainModel> DrugIngredients { get; set; }
-
+        public bool IsDeleted { get; internal set; }
     }
 }

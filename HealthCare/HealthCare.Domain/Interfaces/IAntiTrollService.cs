@@ -10,5 +10,7 @@ namespace HealthCare.Domain.Interfaces
     public interface IAntiTrollService : IService<AntiTrollDomainModel> 
     {
         public Task<IEnumerable<AntiTrollDomainModel>> GetByPatientId(decimal patientId);
+        public Task<bool> AntiTrollCheck(decimal patientId, bool isCreate);
+        public void WriteToAntiTroll(decimal patientId, string state);
     }
 }

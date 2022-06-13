@@ -17,16 +17,22 @@ namespace HealthCare.Domain.Services
         private IReferralLetterRepository _referralLetterRepository;
         private IDoctorRepository _doctorRepository;
         private ISpecializationRepository _specializationRepository;
-        IPatientRepository _patientRepository;
+        private IPatientRepository _patientRepository;
+
+        private IExaminationService _examinationService;
 
 
-        public ReferralLetterService(IReferralLetterRepository referralLetterRepository, IDoctorRepository doctorRepository,
-                                    ISpecializationRepository specializationRepository, IPatientRepository patient_repository)
+        public ReferralLetterService(IReferralLetterRepository referralLetterRepository, 
+                                    IDoctorRepository doctorRepository,
+                                    ISpecializationRepository specializationRepository, 
+                                    IPatientRepository patientRepository,
+                                    IExaminationService examinationService)
         {
             _referralLetterRepository = referralLetterRepository;
             _doctorRepository = doctorRepository;
             _specializationRepository = specializationRepository;
-            _patientRepository = patient_repository;
+            _patientRepository = patientRepository;
+            _examinationService = examinationService;
         }
 
         public static ReferralLetterDomainModel ParseToModel(ReferralLetter referralLetter)
@@ -78,11 +84,11 @@ namespace HealthCare.Domain.Services
             return results;
         }
 
-        public async Task<Boolean> TryCreateExamination(CUExaminationDTO dto, IExaminationService examinationService)
+        public async Task<Boolean> TryCreateExamination(CUExaminationDTO dto)
         {
             try
             {
-                await examinationService.Create(dto);
+                await _examinationService.Create(dto);
             }
             catch (Exception exception)
             {
@@ -103,11 +109,11 @@ namespace HealthCare.Domain.Services
             return examinationModel;
         }
 
-        public async Task<ReferralLetterDomainModel?> DoctorSpecifiedAppointment(CUExaminationDTO examinationModel, IExaminationService examinationService,
+        public async Task<ReferralLetterDomainModel?> DoctorSpecifiedAppointment(CUExaminationDTO examinationModel, 
             ReferralLetterDomainModel referralLetterModel, ReferralLetter referralLetter)
         {
             examinationModel.DoctorId = referralLetterModel.ToDoctorId.GetValueOrDefault();
-            Boolean flag = await TryCreateExamination(examinationModel, examinationService);
+            Boolean flag = await TryCreateExamination(examinationModel);
             if (flag == false) return null;
             UpdateReferralLetter(referralLetter);
             return referralLetterModel;
@@ -120,7 +126,7 @@ namespace HealthCare.Domain.Services
             _referralLetterRepository.Save();
         }
         public async Task<ReferralLetterDomainModel?> DoctorNotSpecifiedAppointment(CUExaminationDTO examinationModel, 
-            IExaminationService examinationService, ReferralLetterDomainModel referralLetterModel, ReferralLetter referralLetter)
+            ReferralLetterDomainModel referralLetterModel, ReferralLetter referralLetter)
         {
             IEnumerable<Doctor> allDoctors = await _doctorRepository.GetAll();
             Boolean created = false;
@@ -131,7 +137,7 @@ namespace HealthCare.Domain.Services
                 if (doctor.SpecializationId == referralLetterModel.SpecializationId)
                 {
                     examinationModel.DoctorId = doctor.Id;
-                    created = await TryCreateExamination(examinationModel, examinationService);
+                    created = await TryCreateExamination(examinationModel);
                     if (created)
                     {
                         referralLetter.ToDoctorId = doctor.Id;
@@ -145,7 +151,7 @@ namespace HealthCare.Domain.Services
             return referralLetterModel;
         }
 
-        public async Task<ReferralLetterDomainModel> CreateAppointment(CreateAppointmentDTO dto, IExaminationService examinationService)
+        public async Task<ReferralLetterDomainModel> CreateAppointment(CreateAppointmentDTO dto)
         {
             ReferralLetter referralLetter = await _referralLetterRepository.GetById(dto.ReferralId);
             ReferralLetterDomainModel referralLetterModel = ParseToModel(referralLetter);
@@ -156,12 +162,12 @@ namespace HealthCare.Domain.Services
             CUExaminationDTO examinationModel = MakeMockup(referralLetterModel.PatientId, dto.StartTime);
             if (referralLetterModel.ToDoctorId != null)
             {
-                returnModel = await DoctorSpecifiedAppointment(examinationModel, examinationService, referralLetterModel, referralLetter);
+                returnModel = await DoctorSpecifiedAppointment(examinationModel, referralLetterModel, referralLetter);
                 if (returnModel == null) throw new NoFreeRoomsException();
             }
             else
             {
-                returnModel = await DoctorNotSpecifiedAppointment(examinationModel, examinationService, referralLetterModel, referralLetter);
+                returnModel = await DoctorNotSpecifiedAppointment(examinationModel, referralLetterModel, referralLetter);
                 if (returnModel == null) throw new NoAvailableSpecialistsException();
             }
 
@@ -179,6 +185,7 @@ namespace HealthCare.Domain.Services
 
         public async Task<ReferralLetterDomainModel> Create(ReferralLetterDTO referralDTO)
         {
+    
             if (referralDTO.FromDoctorId == referralDTO.ToDoctorId)
                 throw new ReferredYourselfException();
 

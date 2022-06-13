@@ -11,7 +11,8 @@ public class NotificationService : INotificationService
     private INotificationRepository _notificationRepository;
     private ICredentialsRepository _credentialsRepository;
 
-    public NotificationService(INotificationRepository notificationRepository, ICredentialsRepository credentialsRepository)
+    public NotificationService(INotificationRepository notificationRepository, 
+        ICredentialsRepository credentialsRepository)
     {
         _notificationRepository = notificationRepository;
         _credentialsRepository = credentialsRepository;
