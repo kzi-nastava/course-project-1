@@ -10,7 +10,7 @@ namespace HealthCare.Domain.Interfaces
 {
     public interface IUrgentExaminationService
     {
-        public Task<ExaminationDomainModel> CreateUrgent(CreateUrgentExaminationDTO dto);
+        public Task<ExaminationDomainModel?> CreateUrgent(CreateUrgentExaminationDTO dto);
 
         public Task<IEnumerable<IEnumerable<RescheduleDTO>>> FindFiveAppointments(CreateUrgentExaminationDTO dto);
 
