@@ -5,12 +5,12 @@ let userId = sessionStorage.getItem("userId");
 currentTime();
 
 
-let getPatientRequest = new XMLHttpRequest();
-getPatientRequest.open('GET', getPatientUri + userId);
-getPatientRequest.onreadystatechange = function () {
+let getDoctorRequest = new XMLHttpRequest();
+getDoctorRequest.open('GET', getPatientUri + userId);
+getDoctorRequest.onreadystatechange = function () {
     if (this.readyState === 4) {
         if (this.status === 200) {
-            let user = JSON.parse(getPatientRequest.responseText);
+            let user = JSON.parse(getDoctorRequest.responseText);
             console.log(user);
             fillLabels(user);
             sessionStorage.setItem("user", JSON.stringify(user));
@@ -19,7 +19,7 @@ getPatientRequest.onreadystatechange = function () {
         }
     }
 }
-getPatientRequest.send();
+getDoctorRequest.send();
 
 
 function fillLabels(user)
