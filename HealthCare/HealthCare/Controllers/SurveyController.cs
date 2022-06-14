@@ -24,7 +24,7 @@ namespace HealthCareAPI.Controllers
 
 
         [HttpGet]
-        [Route("doctor/stats")]
+        [Route("doctor/stats/{doctorId}")]
         public async Task<ActionResult<IEnumerable<AnswerStatsDomainModel>>> GetDoctorStats(decimal doctorId)
         {
             IEnumerable<AnswerStatsDomainModel> result = await _surveyService.GetDoctorStats(doctorId);
