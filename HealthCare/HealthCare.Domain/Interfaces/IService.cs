@@ -158,5 +158,11 @@ namespace HealthCare.Domain.Interfaces
         }
     }
     
+    public class DaysOffRequestAlreadyHandledException : Exception
+    {
+        public DaysOffRequestAlreadyHandledException() : base("This request was already handled.")
+        {
+        }
+    }
 
 }

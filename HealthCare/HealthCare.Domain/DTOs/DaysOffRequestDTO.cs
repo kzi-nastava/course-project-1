@@ -18,4 +18,11 @@ namespace HealthCare.Domain.DTOs
 
         public DateTime To { get; set; }
     }
+
+    public class RejectDaysOffRequestDTO
+    {
+        public decimal Id { get; set; }
+        
+        public string Comment { get; set; }
+    }
 }
