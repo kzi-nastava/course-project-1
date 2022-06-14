@@ -18,8 +18,8 @@ namespace HealthCareAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<DaysOffRequestDomainModel>>> GetAll()
         {
-            IEnumerable<DaysOffRequestDomainModel> anamnesis = await _daysOffRequestService.GetAll();
-            return Ok(anamnesis);
+            IEnumerable<DaysOffRequestDomainModel> daysOff = await _daysOffRequestService.GetAll();
+            return Ok(daysOff);
         }
 
         [HttpPost]
@@ -30,6 +30,36 @@ namespace HealthCareAPI.Controllers
             {
                 DaysOffRequestDomainModel daysOffRequestModel = await _daysOffRequestService.Create(daysOffRequest);
                 return Ok(daysOffRequestModel);
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+        }
+        
+        [HttpPut]
+        [Route("approve/{id}")]
+        public async Task<ActionResult<DaysOffRequestDomainModel>> Approve(decimal id)
+        {
+            try
+            {
+                _ = await _daysOffRequestService.Approve(id);
+                return Ok();
+            }
+            catch (Exception exception)
+            {
+                return NotFound(exception.Message);
+            }
+        }
+        
+        [HttpPut]
+        [Route("reject")]
+        public async Task<ActionResult<DaysOffRequestDomainModel>> Approve([FromBody] RejectDaysOffRequestDTO dto)
+        {
+            try
+            { 
+                _ = await _daysOffRequestService.Reject(dto);
+                return Ok();
             }
             catch (Exception exception)
             {

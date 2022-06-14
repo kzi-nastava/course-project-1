@@ -11,5 +11,7 @@ namespace HealthCare.Domain.Interfaces
     public interface IDaysOffRequestService : IService<DaysOffRequestDomainModel>
     {
         public Task<DaysOffRequestDomainModel> Create(CreateDaysOffRequestDTO daysOffRequest);
+        public Task<Boolean> Approve(decimal id);
+        public Task<Boolean> Reject(RejectDaysOffRequestDTO dto);
     }
 }

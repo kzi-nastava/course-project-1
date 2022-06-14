@@ -13,6 +13,9 @@ namespace HealthCare.Repositories
     public interface IDaysOffRequestRepository : IRepository<DaysOffRequest>
     {
         public DaysOffRequest Post(DaysOffRequest daysOffRequest);
+        public Task<DaysOffRequest> GetById(decimal id);
+
+        public DaysOffRequest Update(DaysOffRequest daysOff);
     }
 
     public class DaysOffRequesRepository : IDaysOffRequestRepository
@@ -29,6 +32,13 @@ namespace HealthCare.Repositories
             return await _healthCareContext.DaysOffRequests.ToListAsync();
         }
 
+        public async Task<DaysOffRequest> GetById(decimal id)
+        {
+            return await _healthCareContext.DaysOffRequests
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+        }
+
         public DaysOffRequest Post(DaysOffRequest daysOffRequest)
         {
             EntityEntry<DaysOffRequest> result = _healthCareContext.DaysOffRequests.Add(daysOffRequest);
@@ -38,6 +48,13 @@ namespace HealthCare.Repositories
         public void Save()
         {
             _healthCareContext.SaveChanges();
+        }
+        
+        public DaysOffRequest Update(DaysOffRequest daysOff)
+        {
+            EntityEntry<DaysOffRequest> updatedEntry = _healthCareContext.DaysOffRequests.Attach(daysOff);
+            _healthCareContext.Entry(daysOff).State = EntityState.Modified;
+            return updatedEntry.Entity;
         }
     }
 }

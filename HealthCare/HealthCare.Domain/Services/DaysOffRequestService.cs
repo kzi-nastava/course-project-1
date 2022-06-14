@@ -52,6 +52,27 @@ namespace HealthCare.Domain.Services
             return ParseToModel(daysOffRequest);
         }
 
+        public async Task<Boolean> Approve(decimal id)
+        {
+            DaysOffRequest daysOff = await _daysOffRequestRepository.GetById(id);
+            if (!daysOff.State.Equals("created")) throw new DaysOffRequestAlreadyHandledException();
+            daysOff.State = "approved";
+            _ = _daysOffRequestRepository.Update(daysOff);
+            _daysOffRequestRepository.Save();
+            return true;
+        }
+
+        public async Task<Boolean> Reject(RejectDaysOffRequestDTO dto)
+        {
+            DaysOffRequest daysOff = await _daysOffRequestRepository.GetById(dto.Id);
+            if (!daysOff.State.Equals("created")) throw new DaysOffRequestAlreadyHandledException();
+            daysOff.State = "rejected";
+            daysOff.RejectionReason = dto.Comment;
+            _ = _daysOffRequestRepository.Update(daysOff);
+            _daysOffRequestRepository.Save();
+            return true;
+        }
+
         private async Task validateRequestData(CreateDaysOffRequestDTO daysOffRequestDTO)
         {
             if (!daysOffRequestDTO.IsUrgent)
