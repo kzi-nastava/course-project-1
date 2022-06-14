@@ -1,7 +1,9 @@
 using HealthCare.Data.Context;
 using HealthCare.Domain.BuildingBlocks.CronJobs;
 using HealthCare.Domain.BuildingBlocks.Mail;
+using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
+using HealthCare.Domain.Models;
 using HealthCare.Domain.Services;
 using HealthCare.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -98,6 +100,9 @@ builder.Services.AddTransient<IUrgentOperationService, UrgentOperationService>()
 builder.Services.AddTransient<IFilteringExaminationService, FilteringExaminationService>();
 builder.Services.AddTransient<IRecommendExaminationService, RecommendExaminationService>();
 builder.Services.AddTransient<ISurveyService, SurveyService>();
+builder.Services.AddTransient(typeof(ISubRenovationService<CreateJoinRenovationDTO, JoinRenovationDomainModel>), typeof(JoinRenovationService));
+builder.Services.AddTransient(typeof(ISubRenovationService<CreateSplitRenovationDTO, SplitRenovationDomainModel>), typeof(SplitRenovationService));
+builder.Services.AddTransient(typeof(ISubRenovationService<CreateSimpleRenovationDTO, SimpleRenovationDomainModel>), typeof(SimpleRenovationService));
 
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");
