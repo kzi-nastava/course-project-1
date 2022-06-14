@@ -11,5 +11,7 @@ namespace HealthCare.Domain.Interfaces
     {
         public Task<IEnumerable<AnswerStatsDomainModel>> GetHospitalStats();
         public Task<IEnumerable<AnswerStatsDomainModel>> GetDoctorStats(decimal doctorId);
+        public Task<IEnumerable<DoctorStatsDomainModel>> GetBestDoctors();
+        public Task<IEnumerable<DoctorStatsDomainModel>> GetWorstDoctors();
     }
 }
