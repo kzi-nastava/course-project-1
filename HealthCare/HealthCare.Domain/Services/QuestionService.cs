@@ -13,11 +13,12 @@ namespace HealthCare.Domain.Services
     public class QuestionService : IQuestionService
     {
         private IQuestionRepository _questionRepository;
-        public QuestionService(IQuestionRepository questionRepository)
+        private IAnswerRepository _answerRepository;
+        public QuestionService(IQuestionRepository questionRepository, IAnswerRepository answerRepository)
         {
             _questionRepository = questionRepository;
+            _answerRepository = answerRepository;
         }
-
         public async Task<IEnumerable<QuestionDomainModel>> GetAll()
         {
             IEnumerable<Question> questions = await _questionRepository.GetAll();

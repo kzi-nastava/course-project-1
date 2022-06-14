@@ -11,5 +11,4 @@ public interface IDoctorService : IService<DoctorDomainModel>
     public Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetAvailableSchedule(decimal doctorId, decimal duration = 15);
     public Task<IEnumerable<KeyValuePair<DateTime, DateTime>>> GetBusySchedule(decimal doctorId);
     public Task<IEnumerable<DoctorDomainModel>> Search(SearchDoctorsDTO dto);
-
 }

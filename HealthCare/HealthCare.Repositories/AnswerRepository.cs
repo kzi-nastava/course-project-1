@@ -14,7 +14,9 @@ namespace HealthCare.Repositories
     {
         public Task<IEnumerable<Answer>> GetForHospital();
         public Task<IEnumerable<Answer>> GetForDoctor(decimal id);
+        public Task<IEnumerable<Answer>> GetForQuestion(decimal questionId);
         public Answer Post(Answer answer);
+        
     }
     public class AnswerRepository : IAnswerRepository
     {
@@ -26,15 +28,21 @@ namespace HealthCare.Repositories
         }
         public async Task<IEnumerable<Answer>> GetAll()
         {
-            return await _healthCareContext.Answers.ToListAsync();
+            return await _healthCareContext.Answers.Include(x => x.Question).ToListAsync();
         }
+
+        public async Task<IEnumerable<Answer>> GetForQuestion(decimal questionId)
+        {
+            return await _healthCareContext.Answers.Where(a => a.QuestionId == questionId).ToListAsync();
+        }
+
         public async Task<IEnumerable<Answer>> GetForDoctor(decimal id)
         {
-            return await _healthCareContext.Answers.Where(a => a.DoctorId == id).ToListAsync();
+            return await _healthCareContext.Answers.Include(x => x.Question).Where(a => a.DoctorId == id).ToListAsync();
         }
         public async Task<IEnumerable<Answer>> GetForHospital()
         {
-            return await _healthCareContext.Answers.Where(a => a.DoctorId == null).ToListAsync();
+            return await _healthCareContext.Answers.Include(x => x.Question).Where(a => a.DoctorId == null).ToListAsync();
         }
 
         public Answer Post(Answer answer)

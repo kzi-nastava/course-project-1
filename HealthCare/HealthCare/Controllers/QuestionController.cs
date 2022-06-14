@@ -13,7 +13,7 @@ namespace HealthCareAPI.Controllers
     {
         private IQuestionService _questionService;
 
-        public QuestionController(IQuestionService questionService)
+        public QuestionController(IQuestionService questionService, ISurveyService surveyService)
         {
             _questionService = questionService;
         }

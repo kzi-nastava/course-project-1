@@ -12,10 +12,12 @@ namespace HealthCareAPI.Controllers
     public class DoctorController : ControllerBase 
     {
         private IDoctorService _doctorService;
+        private ISurveyService _surveyService;
 
-        public DoctorController(IDoctorService doctorService) 
+        public DoctorController(IDoctorService doctorService, ISurveyService surveyService) 
         {
             _doctorService = doctorService;
+            _surveyService = surveyService;
         }
 
         // https://localhost:7195/api/doctor
