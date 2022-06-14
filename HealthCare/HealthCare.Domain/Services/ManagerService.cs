@@ -25,7 +25,14 @@ public class ManagerService : IManagerService
             if (!item.IsDeleted) result.Add(item);
         }
         return result;
-    } 
+    }
+
+    public async Task<ManagerDomainModel> GetById(decimal id)
+    {
+        Manager manager = await _managerRepository.GetById(id);
+        return ParseToModel(manager);
+    }
+
     public async Task<IEnumerable<ManagerDomainModel>> GetAll()
     {
         IEnumerable<Manager> data = await _managerRepository.GetAll();
