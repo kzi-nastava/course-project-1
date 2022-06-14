@@ -30,5 +30,21 @@ namespace HealthCareAPI.Controllers
             IEnumerable<AnswerStatsDomainModel> result = await _surveyService.GetDoctorStats(doctorId);
             return Ok(result);
         }
+
+        [HttpGet]
+        [Route("best-doctors")]
+        public async Task<ActionResult<IEnumerable<DoctorStatsDomainModel>>> GetBestDoctors()
+        {
+            IEnumerable<DoctorStatsDomainModel> result = await _surveyService.GetBestDoctors();
+            return Ok(result);
+        }
+
+        [HttpGet]
+        [Route("worst-doctors")]
+        public async Task<ActionResult<IEnumerable<DoctorStatsDomainModel>>> GetWorstDoctors()
+        {
+            IEnumerable<DoctorStatsDomainModel> result = await _surveyService.GetWorstDoctors();
+            return Ok(result);
+        }
     }
 }
