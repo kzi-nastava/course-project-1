@@ -95,6 +95,7 @@ builder.Services.AddTransient<IUrgentExaminationService, UrgentExaminationServic
 builder.Services.AddTransient<IUrgentOperationService, UrgentOperationService>();
 builder.Services.AddTransient<IFilteringExaminationService, FilteringExaminationService>();
 builder.Services.AddTransient<IRecommendExaminationService, RecommendExaminationService>();
+builder.Services.AddTransient<ISurveyService, SurveyService>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");

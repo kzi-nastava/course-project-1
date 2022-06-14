@@ -13,7 +13,7 @@ namespace HealthCareAPI.Controllers
     {
         private IQuestionService _questionService;
 
-        public QuestionController(IQuestionService questionService)
+        public QuestionController(IQuestionService questionService, ISurveyService surveyService)
         {
             _questionService = questionService;
         }
@@ -23,22 +23,6 @@ namespace HealthCareAPI.Controllers
         {
             IEnumerable<QuestionDomainModel> questions = await _questionService.GetAll();
             return Ok(questions);
-        }
-
-        [HttpGet]
-        [Route("/evauluations-count-avg")]
-        public async Task<ActionResult<IEnumerable<AverageCountEvaluationDomainModel>>> GetAverageCountEvaluations()
-        {
-            IEnumerable<AverageCountEvaluationDomainModel> result = await _questionService.GetAverageCountEvaluations();
-            return Ok(result);
-        }
-
-        [HttpGet]
-        [Route("/stats")]
-        public async Task<ActionResult<IEnumerable<QuestionDomainModel>>> GetStats()
-        {
-            IEnumerable<AverageCountEvaluationDomainModel> result = await _questionService.GetStats();
-            return Ok(result);
         }
     }
 }
