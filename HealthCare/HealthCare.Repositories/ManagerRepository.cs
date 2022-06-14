@@ -9,7 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HealthCare.Repositories 
 {
-    public interface IManagerRepository : IRepository<Manager> {
+    public interface IManagerRepository : IRepository<Manager>
+    {
+        public Task<Manager> GetById(decimal id);
     }
     public class ManagerRepository : IManagerRepository 
     {
@@ -24,6 +26,13 @@ namespace HealthCare.Repositories
             return await _healthCareContext.Managers
                 .Include(x => x.Credentials)
                 .ToListAsync();
+        }
+        public async Task<Manager> GetById(decimal id) 
+        {
+            return await _healthCareContext.Managers
+                .Include(x => x.Credentials)
+                .Where(x=>x.Id == id)
+                .FirstOrDefaultAsync();
         }
 
         public void Save()

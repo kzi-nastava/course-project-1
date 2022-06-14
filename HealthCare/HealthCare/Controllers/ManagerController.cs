@@ -31,5 +31,13 @@ namespace HealthCareAPI.Controllers
             IEnumerable<ManagerDomainModel> managers = await _managerService.ReadAll();
             return Ok(managers);
         }
+        
+        [HttpGet]
+        [Route("{id}")]
+        public async Task<ActionResult<IEnumerable<ManagerDomainModel>>> GetById(decimal id) 
+        {
+            ManagerDomainModel manager = await _managerService.GetById(id);
+            return Ok(manager);
+        }
     }
 }
