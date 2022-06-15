@@ -20,4 +20,13 @@
     <ProjectReference Include="..\HealthCare.Repositories\HealthCare.Repositories.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="BuildingBlocks\CronJobs" />
+    <Folder Include="BuildingBlocks\Mail" />
+    <Folder Include="DTOs" />
+    <Folder Include="Interfaces" />
+    <Folder Include="Models" />
+    <Folder Include="Services" />
+  </ItemGroup>
+
 </Project>
