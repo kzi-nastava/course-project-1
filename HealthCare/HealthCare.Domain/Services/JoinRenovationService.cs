@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Domain.Services
 {
-    public class JoinRenovationService : ISubRenovationService<CreateJoinRenovationDTO, JoinRenovationDomainModel>
+    public class JoinRenovationService : IJoinRenovationService
     {
         private IJoinRenovationRepository _joinRenovationRepository;
         private IRoomRepository _roomRepository;
@@ -32,7 +32,7 @@ namespace HealthCare.Domain.Services
             IEnumerable<JoinRenovation> joinRenovations = await _joinRenovationRepository.GetAll();
             return ParseToModel(joinRenovations);
         }
-        private async Task<bool> validateJoinRenovation(CreateJoinRenovationDTO dto)
+        public async Task<bool> validateJoinRenovation(CreateJoinRenovationDTO dto)
         {
             if (dto.StartDate >= dto.EndDate)
                 throw new Exception("Start is equal or after end");

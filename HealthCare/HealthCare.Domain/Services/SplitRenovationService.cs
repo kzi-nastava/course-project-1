@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Domain.Services
 {
-    public class SplitRenovationService : ISubRenovationService<CreateSplitRenovationDTO, SplitRenovationDomainModel>
+    public class SplitRenovationService : ISplitRenovationService
     {
         private ISplitRenovationRepository _splitRenovationRepository;
         private IRoomRepository _roomRepository;
@@ -27,18 +27,12 @@ namespace HealthCare.Domain.Services
             _roomTypeRepository = roomTypeRepository;
             _renovationService = renovationService;
         }
-
-        public Task<RenovationDomainModel> Create(RenovationDTO newRenovation)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<IEnumerable<SplitRenovationDomainModel>> GetAll()
         {
             IEnumerable<SplitRenovation> splitRenovations = await _splitRenovationRepository.GetAll();
-            return parseToModel(splitRenovations);
+            return ParseToModel(splitRenovations);
         }
-        private async Task<bool> validateSplitRenovation(CreateSplitRenovationDTO dto)
+        public async Task<bool> validateSplitRenovation(CreateSplitRenovationDTO dto)
         {
             if (dto.resultRoomName1.Trim().Equals(String.Empty) || dto.resultRoomName2.Trim().Equals(String.Empty))
                 throw new Exception("Invalid room name given");
@@ -92,11 +86,11 @@ namespace HealthCare.Domain.Services
                 };
                 _splitRenovationRepository.Post(newRenovation);
                 _splitRenovationRepository.Save();
-                return parseToModel(newRenovation);
+                return ParseToModel(newRenovation);
             }
             return null;
         }
-        public SplitRenovationDomainModel parseToModel(SplitRenovation splitRenovation)
+        public SplitRenovationDomainModel ParseToModel(SplitRenovation splitRenovation)
         {
             return new SplitRenovationDomainModel
             {
@@ -108,12 +102,12 @@ namespace HealthCare.Domain.Services
                 SplitRoomId = splitRenovation.SplitRoomId
             };
         }
-        public IEnumerable<SplitRenovationDomainModel> parseToModel(IEnumerable<SplitRenovation> renovations)
+        public IEnumerable<SplitRenovationDomainModel> ParseToModel(IEnumerable<SplitRenovation> renovations)
         {
             List<SplitRenovationDomainModel> renovationModels = new List<SplitRenovationDomainModel>();
             foreach (var renovation in renovations)
             {
-                renovationModels.Add(parseToModel(renovation));
+                renovationModels.Add(ParseToModel(renovation));
             }
             return renovationModels;
         }

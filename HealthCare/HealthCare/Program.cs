@@ -100,9 +100,9 @@ builder.Services.AddTransient<IUrgentOperationService, UrgentOperationService>()
 builder.Services.AddTransient<IFilteringExaminationService, FilteringExaminationService>();
 builder.Services.AddTransient<IRecommendExaminationService, RecommendExaminationService>();
 builder.Services.AddTransient<ISurveyService, SurveyService>();
-builder.Services.AddTransient(typeof(ISubRenovationService<CreateJoinRenovationDTO, JoinRenovationDomainModel>), typeof(JoinRenovationService));
-builder.Services.AddTransient(typeof(ISubRenovationService<CreateSplitRenovationDTO, SplitRenovationDomainModel>), typeof(SplitRenovationService));
-builder.Services.AddTransient(typeof(ISubRenovationService<CreateSimpleRenovationDTO, SimpleRenovationDomainModel>), typeof(SimpleRenovationService));
+builder.Services.AddTransient<ISimpleRenovationService, SimpleRenovationService>();
+builder.Services.AddTransient<ISplitRenovationService, SplitRenovationService>();
+builder.Services.AddTransient<IJoinRenovationService, JoinRenovationService>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");

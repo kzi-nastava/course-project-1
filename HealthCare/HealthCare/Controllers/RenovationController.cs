@@ -12,13 +12,19 @@ namespace HealthCareAPI.Controllers
     public class RenovationController : ControllerBase
     {
         private IRenovationService _renovationService;
-        private ISubRenovationService<CreateJoinRenovationDTO, JoinRenovationDomainModel> _joinRenovationService;
-        private ISubRenovationService<CreateSplitRenovationDTO, SplitRenovationDomainModel> _splitRenovationService;
-        private ISubRenovationService<CreateSimpleRenovationDTO, SimpleRenovationDomainModel> _simpleRenovationService;
+        private IJoinRenovationService _joinRenovationService;
+        private ISplitRenovationService _splitRenovationService;
+        private ISimpleRenovationService _simpleRenovationService;
 
-        public RenovationController(IRenovationService renovationService)
+        public RenovationController(IRenovationService renovationService,
+            IJoinRenovationService joinRenovationService,
+            ISimpleRenovationService simpleRenovationService,
+            ISplitRenovationService splitRenovationService)
         {
             _renovationService = renovationService;
+            _joinRenovationService = joinRenovationService;
+            _simpleRenovationService = simpleRenovationService;
+            _splitRenovationService = splitRenovationService;
         }
 
         [HttpGet]

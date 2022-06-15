@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace HealthCare.Domain.Services
 {
-    public class SimpleRenovationService : ISubRenovationService<CreateSimpleRenovationDTO, SimpleRenovationDomainModel>
+    public class SimpleRenovationService : ISimpleRenovationService
     {
         private ISimpleRenovationRepository _simpleRenovationRepository;
         private IRoomRepository _roomRepository;
@@ -28,17 +28,13 @@ namespace HealthCare.Domain.Services
             _renovationService = renovationService;
 
         }
-        public Task<RenovationDomainModel> Create(RenovationDTO newRenovation)
-        {
-            throw new NotImplementedException();
-        }
 
         public async Task<IEnumerable<SimpleRenovationDomainModel>> GetAll()
         {
             IEnumerable<SimpleRenovation> simpleRenovations = await _simpleRenovationRepository.GetAll();
-            return parseToModel(simpleRenovations);
+            return ParseToModel(simpleRenovations);
         }
-        private async Task<bool> validateSimpleRenovation(CreateSimpleRenovationDTO renovation)
+        public async Task<bool> validateSimpleRenovation(CreateSimpleRenovationDTO renovation)
         {
             if (renovation.StartDate >= renovation.EndDate)
                 throw new Exception("Start is equal or after end");
@@ -62,12 +58,12 @@ namespace HealthCare.Domain.Services
                 };
                 _simpleRenovationRepository.Post(newSimpleRenovation);
                 _simpleRenovationRepository.Save();
-                return parseToModel(newSimpleRenovation);
+                return ParseToModel(newSimpleRenovation);
             }
             return null;
 
         }
-        public SimpleRenovationDomainModel parseToModel(SimpleRenovation simpleRenovation)
+        public SimpleRenovationDomainModel ParseToModel(SimpleRenovation simpleRenovation)
         {
             return new SimpleRenovationDomainModel
             {
@@ -77,12 +73,12 @@ namespace HealthCare.Domain.Services
                 RoomId = simpleRenovation.RoomId
             };
         }
-        public IEnumerable<SimpleRenovationDomainModel> parseToModel(IEnumerable<SimpleRenovation> renovations)
+        public IEnumerable<SimpleRenovationDomainModel> ParseToModel(IEnumerable<SimpleRenovation> renovations)
         {
             List<SimpleRenovationDomainModel> renovationModels = new List<SimpleRenovationDomainModel>();
             foreach (var renovation in renovations)
             {
-                renovationModels.Add(parseToModel(renovation));
+                renovationModels.Add(ParseToModel(renovation));
             }
             return renovationModels;
         }
