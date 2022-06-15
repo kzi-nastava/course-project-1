@@ -13,7 +13,7 @@ namespace HealthCare.Domain.Models
     }
 
     public class AppointmentDomainModel
-    {
+{
         public decimal Id { get; set; }
         public decimal DoctorId { get; set; }
 

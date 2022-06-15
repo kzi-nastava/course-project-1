@@ -95,14 +95,13 @@ builder.Services.AddTransient<IDrugSuggestionService, DrugSuggestionService>();
 builder.Services.AddTransient<IAnswerService, AnswerService>();
 builder.Services.AddTransient<IQuestionService, QuestionService>();
 builder.Services.AddTransient<IAvailabilityService, AvailabilityService>();
-builder.Services.AddTransient<IUrgentExaminationService, UrgentExaminationService>();
-builder.Services.AddTransient<IUrgentOperationService, UrgentOperationService>();
 builder.Services.AddTransient<IFilteringExaminationService, FilteringExaminationService>();
 builder.Services.AddTransient<IRecommendExaminationService, RecommendExaminationService>();
 builder.Services.AddTransient<ISurveyService, SurveyService>();
 builder.Services.AddTransient<ISimpleRenovationService, SimpleRenovationService>();
 builder.Services.AddTransient<ISplitRenovationService, SplitRenovationService>();
 builder.Services.AddTransient<IJoinRenovationService, JoinRenovationService>();
+builder.Services.AddTransient<IUrgentAppointmentService, UrgentAppointmentService>();
 
 
 var connectionString = builder.Configuration.GetConnectionString("HealthCareConnection");

@@ -1,38 +1,38 @@
-﻿using HealthCare.Data.Entities;
+using HealthCare.Data.Entities;
 using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace HealthCare.Domain.Services
 {
-    public class UrgentOperationService : IUrgentOperationService
+    public class UrgentAppointmentService : IUrgentAppointmentService
     {
-        private IDoctorRepository _doctorRepository;
-        private IOperationRepository _operationRepository;
 
+        private IExaminationRepository _examinationRepository;
+        private IOperationRepository _operationRepository;
+        private IDoctorRepository _doctorRepository;
+
+        
         private IDoctorService _doctorService;
         private INotificationService _notificationService;
         private IRoomService _roomService;
         private IPatientService _patientService;
-        public UrgentOperationService(IDoctorRepository doctorRepository, 
-            IOperationRepository operationRepository,
-            IDoctorService doctorService,
-            INotificationService notificationService,
-            IRoomService roomService,
-            IPatientService patientService)
+        public UrgentAppointmentService(IExaminationRepository examinationRepository,
+                                  IDoctorRepository doctorRepository,
+                                  IDoctorService doctorService,
+                                  INotificationService notificationService,
+                                  IRoomService roomService,
+                                  IPatientService patientService,
+                                  IOperationRepository operationRepository)
         {
-           _doctorRepository = doctorRepository;
-           _operationRepository = operationRepository;
-           _doctorService = doctorService;
-           _notificationService = notificationService;
-           _roomService = roomService;
-           _patientService = patientService;
+            _examinationRepository = examinationRepository;
+            _doctorRepository = doctorRepository;
+            _doctorService = doctorService;
+            _notificationService = notificationService;
+            _roomService = roomService;
+            _patientService = patientService;
+            _operationRepository = operationRepository;
         }
 
         public async Task<DateTime?> FirstStartTime(List<KeyValuePair<DateTime, DateTime>> schedule, decimal duration)
@@ -55,32 +55,34 @@ namespace HealthCare.Domain.Services
         }
 
         // DoctorService is needed for doctor's schedule
-        public async Task<OperationDomainModel?> CreateUrgent(CreateUrgentOperationDTO dto)
+        public async Task<Boolean> CreateUrgent(CreateUrgentAppointmentDTO dto)
         {
-            OperationDomainModel operationModel = new OperationDomainModel
+            AppointmentDomainModel appointmentModel = new AppointmentDomainModel
             {
-                IsDeleted = false,
-                IsEmergency = true,
                 PatientId = dto.PatientId,
-                Duration = dto.Duration
+                Duration = dto.Duration,
+                Type = dto.IsExamination ? Appointment.Examination : Appointment.Operation,
+                IsDeleted = false,
+                IsEmergency = true
             };
             // Find examination in the first 2 hours for any doctor that matches the specialization criteria
             List<Doctor> doctors = (List<Doctor>)await _doctorRepository.GetBySpecialization(dto.SpecializationId);
             if (doctors == null || doctors.Count == 0) throw new NoAvailableSpecialistsException();
             // Find start times (to sort by earliest) 
-            List<KeyValuePair<DateTime, decimal>> urgentStartTimes = await GetUrgentStartTimes(doctors, dto.Duration);
+            List<KeyValuePair<DateTime, decimal>> urgentStartTimes = await GetUrgentStartTimes(doctors);
 
             urgentStartTimes.Sort((x, y) => x.Key.CompareTo(y.Key));
             // Try to create examination
-            OperationDomainModel? createdModel = await ParsePairs(operationModel, urgentStartTimes, dto.Duration);
-            _ = await SendNotifications(operationModel.DoctorId, operationModel.PatientId);
-            return createdModel;
+            Boolean isCreated = await ParsePairs(appointmentModel, urgentStartTimes);
+            _ = await SendNotifications(appointmentModel.DoctorId, appointmentModel.PatientId);
+            return isCreated;
         }
 
-        public async Task<Boolean> TryCreateOperation(OperationDomainModel operationModel)
+        public async Task<Boolean> TryCreateOperation(AppointmentDomainModel appointmentModel)
         {
-            decimal roomId = await _roomService.GetAvailableRoomId(operationModel.StartTime, "operation", operationModel.Duration);
+            decimal roomId = await _roomService.GetAvailableRoomId(appointmentModel.StartTime, "operation");
             if (roomId == -1) return false;
+            OperationDomainModel operationModel = (OperationDomainModel)appointmentModel;
             operationModel.RoomId = roomId;
             Operation operation = OperationService.ParseFromModel(operationModel);
             _ = _operationRepository.Post(operation);
@@ -88,41 +90,58 @@ namespace HealthCare.Domain.Services
             return true;
         }
 
-        public async Task<OperationDomainModel?> ParsePairs(OperationDomainModel operationModel,
-            List<KeyValuePair<DateTime, decimal>> urgentStartTimes, decimal duration)
+        public async Task<Boolean> TryCreateExamination(AppointmentDomainModel appointmentModel)
+        {
+            decimal roomId = await _roomService.GetAvailableRoomId(appointmentModel.StartTime, "examination");
+            if (roomId == -1) return false;
+            ExaminationDomainModel examinationModel = (ExaminationDomainModel)appointmentModel;
+            examinationModel.RoomId = roomId;
+            Examination examination = ExaminationService.ParseFromModel(examinationModel);
+            _ = _examinationRepository.Post(examination);
+            _examinationRepository.Save();
+            return true;
+        }
+
+        public async Task<Boolean> TryCreateAppointment(AppointmentDomainModel appointmentModel)
+        {
+            if (appointmentModel.Type == Appointment.Examination) return await TryCreateExamination(appointmentModel);
+            return await TryCreateOperation(appointmentModel);
+        }
+
+        public async Task<Boolean> ParsePairs(AppointmentDomainModel appointmentModel, 
+            List<KeyValuePair<DateTime, decimal>> urgentStartTimes)
         {
             Boolean flag;
             foreach (KeyValuePair<DateTime, decimal> pair in urgentStartTimes)
             {
-                operationModel.StartTime = UtilityService.RemoveSeconds(pair.Key);
-                operationModel.DoctorId = pair.Value;
-                operationModel.Duration = duration;
-                flag = await TryCreateOperation(operationModel);
-                if (flag) return operationModel;
+                appointmentModel.StartTime = UtilityService.RemoveSeconds(pair.Key);
+                appointmentModel.DoctorId = pair.Value;
+                flag = await TryCreateAppointment(appointmentModel);
+                if (flag) return true;
             }
-            return null;
+            return false;
         }
 
-        public async Task<List<KeyValuePair<DateTime, decimal>>> GetUrgentStartTimes(List<Doctor> doctors, decimal duration)
+        public async Task<List<KeyValuePair<DateTime, decimal>>> GetUrgentStartTimes(List<Doctor> doctors)
         {
             List<KeyValuePair<DateTime, decimal>> result = new List<KeyValuePair<DateTime, decimal>>();
             foreach (Doctor doctor in doctors)
             {
                 var schedule = (List<KeyValuePair<DateTime, DateTime>>)await _doctorService.GetAvailableSchedule(doctor.Id);
-                DateTime? startTime = await FirstStartTime(schedule, duration);
+                DateTime? startTime = await FirstStartTime(schedule, 15);
                 if (startTime.HasValue)
                     result.Add(new KeyValuePair<DateTime, decimal>(startTime.GetValueOrDefault(), doctor.Id));
             }
             return result;
         }
 
-        public async Task<IEnumerable<IEnumerable<RescheduleDTO>>> FindFiveAppointments(CreateUrgentOperationDTO dto)
+        public async Task<IEnumerable<IEnumerable<RescheduleDTO>>> FindFiveAppointments(CreateUrgentAppointmentDTO dto)
         {
             // For every doctor try to find a single reschedule 
             List<Doctor> doctors = (List<Doctor>)await _doctorRepository.GetAll();
             List<List<List<RescheduleDTO>>> reschedule = new List<List<List<RescheduleDTO>>>();
             foreach (Doctor doctor in doctors)
-                reschedule.Add(await GetRescheduleForDoctor(dto, doctor.Id, dto.Duration));
+                reschedule.Add(await GetRescheduleForDoctor(dto, doctor.Id));
             List<KeyValuePair<DateTime, List<RescheduleDTO>>> rescheduleSorted = new List<KeyValuePair<DateTime, List<RescheduleDTO>>>();
             foreach (List<List<RescheduleDTO>> item in reschedule)
                 rescheduleSorted.AddRange(await FindRescheduleTime(item, dto.PatientId));
@@ -190,7 +209,7 @@ namespace HealthCare.Domain.Services
             {
                 KeyValuePair<DateTime, DateTime> doctorPair = doctorSchedule[doctorIndex];
                 KeyValuePair<DateTime, DateTime> patientPair = patientSchedule[patientIndex];
-                if (!IsDateTimeOverlap(doctorPair, patientPair))
+                if (!UtilityService.IsDateTimeOverlap(doctorPair, patientPair))
                 {
                     // Update smaller
                     if (doctorPair.Key < patientPair.Key && doctorPair.Value < patientPair.Value)
@@ -208,8 +227,7 @@ namespace HealthCare.Domain.Services
             return true;
         }
 
-        public DateTime CalculateRescheduleTime(KeyValuePair<DateTime, DateTime> first, 
-            KeyValuePair<DateTime, DateTime> second, decimal duration)
+        public DateTime CalculateRescheduleTime(KeyValuePair<DateTime, DateTime> first, KeyValuePair<DateTime, DateTime> second, decimal duration)
         {
             decimal window = 0;
             if (first.Key < second.Key)
@@ -233,7 +251,8 @@ namespace HealthCare.Domain.Services
             return DateTime.MaxValue;
         }
 
-        public async Task<List<List<RescheduleDTO>>> GetRescheduleForDoctor(CreateUrgentOperationDTO dto, decimal doctorId, decimal duration = 15)
+        public async Task<List<List<RescheduleDTO>>> GetRescheduleForDoctor(CreateUrgentAppointmentDTO dto, 
+            decimal doctorId)
         {
             List<KeyValuePair<DateTime, DateTime>> freeSchedule =
                 (List<KeyValuePair<DateTime, DateTime>>)await _doctorService.GetAvailableSchedule(doctorId);
@@ -251,7 +270,7 @@ namespace HealthCare.Domain.Services
             List<RescheduleDTO> tempList = new List<RescheduleDTO>();
             if (index == -1)
                 // If doctor has no free room in his schedule
-                return CalculateWithNoFreeTime(busySchedule, dto.PatientId, doctorId, duration);
+                return CalculateWithNoFreeTime(busySchedule, dto.PatientId, doctorId, dto.Duration);
 
             // If doctor has free time in his schedule
             int busyIndex = GetFirstIndex(busySchedule, true);
@@ -275,7 +294,7 @@ namespace HealthCare.Domain.Services
 
                 int old_free = index;
                 int old_busy = busyIndex;
-                result.Add(FindSequence(freeSchedule, busySchedule, index, busyIndex, duration, now, dto.PatientId, doctorId));
+                result.Add(FindSequence(freeSchedule, busySchedule, index, busyIndex, dto.Duration, now, dto.PatientId, doctorId));
 
                 if (flagFree)
                     if (UpdateIndex(freeSchedule, old_free) != -1) index = UpdateIndex(freeSchedule, old_free);
@@ -375,23 +394,8 @@ namespace HealthCare.Domain.Services
 
             return -1;
         }
-        private bool IsDateTimeOverlap(KeyValuePair<DateTime, DateTime> first, KeyValuePair<DateTime, DateTime> second)
-        {
-            return MaxDate(first.Key, second.Key) < MinDate(first.Value, second.Value);
 
-        }
-
-        private DateTime MaxDate(DateTime time1, DateTime time2)
-        {
-            return (time1 > time2 ? time1 : time2);
-        }
-
-        private DateTime MinDate(DateTime time1, DateTime time2)
-        {
-            return (time1 < time2 ? time1 : time2);
-        }
-
-        public async Task<OperationDomainModel> AppointUrgent(List<RescheduleDTO> dto)
+        public async Task<Boolean> AppointUrgent(List<RescheduleDTO> dto)
         {
             foreach (RescheduleDTO item in dto)
                 _ = await RescheduleOne(item);
@@ -399,14 +403,31 @@ namespace HealthCare.Domain.Services
             return await MakeUrgent(dto[0]);
         }
 
-        public async Task<OperationDomainModel> RescheduleOne(RescheduleDTO dto)
+        public async Task<Boolean> RescheduleOneExamination(RescheduleDTO dto)
+        {
+            Examination examination = await _examinationRepository.GetByParams(dto.DoctorId, dto.PatientId, dto.StartTime);
+            examination.StartTime = dto.RescheduleTime;
+            _ = _examinationRepository.Update(examination);
+            _examinationRepository.Save();
+            _ = await SendNotifications(dto.DoctorId, dto.PatientId);
+            return true;
+        }
+
+        public async Task<Boolean> RescheduleOneOperation(RescheduleDTO dto)
         {
             Operation operation = await _operationRepository.GetByParams(dto.DoctorId, dto.PatientId, dto.StartTime);
             operation.StartTime = dto.RescheduleTime;
             _ = _operationRepository.Update(operation);
             _operationRepository.Save();
             _ = await SendNotifications(dto.DoctorId, dto.PatientId);
-            return OperationService.ParseToModel(operation);
+            return true;
+        }
+
+        public async Task<Boolean> RescheduleOne(RescheduleDTO dto)
+        {
+            if (dto.Duration == 15)
+                return await RescheduleOneExamination(dto);
+            return await RescheduleOneOperation(dto);
         }
 
         public async Task<Boolean> SendNotifications(decimal doctorId = 0, decimal patientId = 0)
@@ -420,7 +441,24 @@ namespace HealthCare.Domain.Services
             return true;
         }
 
-        public async Task<OperationDomainModel> MakeUrgent(RescheduleDTO dto)
+
+        public async Task<Boolean> MakeUrgentExamination(RescheduleDTO dto)
+        {
+            ExaminationDomainModel examinationModel = new ExaminationDomainModel
+            {
+                DoctorId = dto.DoctorId,
+                IsDeleted = false,
+                IsEmergency = true,
+                StartTime = dto.UrgentStartTime,
+                PatientId = dto.PatientId,
+                RoomId = await _roomService.GetAvailableRoomId(dto.UrgentStartTime, "examination")
+            };
+            _ = _examinationRepository.Post(ExaminationService.ParseFromModel(examinationModel));
+            _examinationRepository.Save();
+            return true;
+        }
+
+        public async Task<Boolean> MakeUrgentOperation(RescheduleDTO dto)
         {
             OperationDomainModel operationModel = new OperationDomainModel
             {
@@ -433,7 +471,19 @@ namespace HealthCare.Domain.Services
             };
             _ = _operationRepository.Post(OperationService.ParseFromModel(operationModel));
             _operationRepository.Save();
-            return operationModel;
+            return true;
+        }
+        public async Task<Boolean> MakeUrgent(RescheduleDTO dto)
+        {
+            if (dto.Duration == 15)
+                return await MakeUrgentExamination(dto);
+            return await MakeUrgentOperation(dto);
+        }
+
+        public Task<IEnumerable<AppointmentDomainModel>> GetAll()
+        {
+            throw new NotImplementedException();
         }
     }
 }
+
