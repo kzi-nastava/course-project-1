@@ -71,7 +71,7 @@ namespace HealthCare.Domain.Services
             IEnumerable<Renovation> roomRenovations = await GetRenovation(room);
             foreach(Renovation renovation in roomRenovations)
             {
-                if (IsDateTimeOverlap(renovation.StartDate, renovation.EndDate,
+                if (UtilityService.IsDateTimeOverlap(renovation.StartDate, renovation.EndDate,
                     renovationToCheck.StartDate, renovationToCheck.EndDate))
                     return false;
             }
@@ -79,7 +79,7 @@ namespace HealthCare.Domain.Services
             IEnumerable<Examination> roomExaminations = await GetExaminations(room);
             foreach (Examination examination in roomExaminations)
             {
-                if (IsDateTimeOverlap(examination.StartTime, examination.StartTime.AddMinutes(15),
+                if (UtilityService.IsDateTimeOverlap(examination.StartTime, examination.StartTime.AddMinutes(15),
                     renovationToCheck.StartDate, renovationToCheck.EndDate))
                     return false;
             }
@@ -87,27 +87,12 @@ namespace HealthCare.Domain.Services
             IEnumerable<Operation> roomOperations = await GetOperations(room);
             foreach (Operation operation in roomOperations)
             {
-                if (IsDateTimeOverlap(operation.StartTime, operation.StartTime.AddMinutes(Decimal.ToDouble(operation.Duration)),
+                if (UtilityService.IsDateTimeOverlap(operation.StartTime, operation.StartTime.AddMinutes(Decimal.ToDouble(operation.Duration)),
                     renovationToCheck.StartDate, renovationToCheck.EndDate))
                     return false;
             }
 
             return true;
-        }
-        private bool IsDateTimeOverlap(DateTime start1, DateTime end1, DateTime start2, DateTime end2)
-        {
-            return MaxDate(start1, start2) < MinDate(end1, end2);
-
-        }
-
-        private DateTime MaxDate(DateTime time1, DateTime time2)
-        {
-            return (time1 > time2 ? time1 : time2);
-        }
-
-        private DateTime MinDate(DateTime time1, DateTime time2)
-        {
-            return (time1 < time2 ? time1 : time2);
         }
         public async Task ExecuteComplexRenovations()
         {

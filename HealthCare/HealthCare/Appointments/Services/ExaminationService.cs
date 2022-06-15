@@ -45,7 +45,8 @@ public class ExaminationService : IExaminationService
             IsDeleted = examination.IsDeleted,
             PatientId = examination.PatientId,
             RoomId = examination.RoomId,
-            IsEmergency = examination.IsEmergency
+            IsEmergency = examination.IsEmergency,
+            Duration = 15
         };
 
         if (examination.Anamnesis != null)

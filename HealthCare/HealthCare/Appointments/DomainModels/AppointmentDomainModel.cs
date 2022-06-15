@@ -13,7 +13,7 @@ namespace HealthCare.Domain.Models
     }
 
     public class AppointmentDomainModel
-    {
+{
         public decimal Id { get; set; }
         public decimal DoctorId { get; set; }
 
@@ -28,6 +28,6 @@ namespace HealthCare.Domain.Models
         public Appointment Type { get; set; }
 
         public bool IsDeleted { get; set; }
-        public AnamnesisDomainModel? Anamnesis { get; set; }
+        public bool IsEmergency { get; set; }
     }
 }

@@ -62,10 +62,7 @@ namespace HealthCare.Domain.Services
                 RoomId = examination.RoomId,
                 Type = Appointment.Examination
             };
-            if (examination.Anamnesis != null)
-            {
-                appointmentModel.Anamnesis = AnamnesisService.ParseToModel(examination.Anamnesis);
-            }
+            
             return appointmentModel;
         }
 
@@ -80,7 +77,6 @@ namespace HealthCare.Domain.Services
                 IsDeleted = operation.IsDeleted,
                 PatientId = operation.PatientId,
                 RoomId = operation.RoomId,
-                Anamnesis = null,
                 Type = Appointment.Operation
             };
 
