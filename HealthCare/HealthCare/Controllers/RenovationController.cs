@@ -12,10 +12,19 @@ namespace HealthCareAPI.Controllers
     public class RenovationController : ControllerBase
     {
         private IRenovationService _renovationService;
+        private IJoinRenovationService _joinRenovationService;
+        private ISplitRenovationService _splitRenovationService;
+        private ISimpleRenovationService _simpleRenovationService;
 
-        public RenovationController(IRenovationService renovationService)
+        public RenovationController(IRenovationService renovationService,
+            IJoinRenovationService joinRenovationService,
+            ISimpleRenovationService simpleRenovationService,
+            ISplitRenovationService splitRenovationService)
         {
             _renovationService = renovationService;
+            _joinRenovationService = joinRenovationService;
+            _simpleRenovationService = simpleRenovationService;
+            _splitRenovationService = splitRenovationService;
         }
 
         [HttpGet]
@@ -29,7 +38,7 @@ namespace HealthCareAPI.Controllers
         [Route("/join")]
         public async Task<ActionResult<IEnumerable<JoinRenovationDomainModel>>> GetJoin()
         {
-            IEnumerable<JoinRenovationDomainModel> renovations = await _renovationService.GetJoin();
+            IEnumerable<JoinRenovationDomainModel> renovations = await _joinRenovationService.GetAll();
             return Ok(renovations);
         }
 
@@ -37,7 +46,7 @@ namespace HealthCareAPI.Controllers
         [Route("/split")]
         public async Task<ActionResult<IEnumerable<SplitRenovationDomainModel>>> GetSplit()
         {
-            IEnumerable<SplitRenovationDomainModel> renovations = await _renovationService.GetSplit();
+            IEnumerable<SplitRenovationDomainModel> renovations = await _splitRenovationService.GetAll();
             return Ok(renovations);
         }
 
@@ -45,7 +54,7 @@ namespace HealthCareAPI.Controllers
         [Route("/simple")]
         public async Task<ActionResult<IEnumerable<SimpleRenovationDomainModel>>> GetSimple()
         {
-            IEnumerable<SimpleRenovationDomainModel> renovations = await _renovationService.GetSimple();
+            IEnumerable<SimpleRenovationDomainModel> renovations = await _simpleRenovationService.GetAll();
             return Ok(renovations);
         }
 
@@ -55,7 +64,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                SimpleRenovationDomainModel renovationModel = await _renovationService.Create(dto);
+                SimpleRenovationDomainModel renovationModel = await _simpleRenovationService.Create(dto);
                 return Ok(renovationModel);
             }
             catch (Exception exception)
@@ -71,7 +80,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                JoinRenovationDomainModel renovationModel = await _renovationService.Create(dto);
+                JoinRenovationDomainModel renovationModel = await _joinRenovationService.Create(dto);
                 return Ok(renovationModel);
             }
             catch (Exception exception)
@@ -87,7 +96,7 @@ namespace HealthCareAPI.Controllers
         {
             try
             {
-                SplitRenovationDomainModel renovationModel = await _renovationService.Create(dto);
+                SplitRenovationDomainModel renovationModel = await _splitRenovationService.Create(dto);
                 return Ok(renovationModel);
             }
             catch (Exception exception)

@@ -21,7 +21,7 @@ namespace HealthCare.Domain.DTOs
         public DateTime EndDate { get; set; }
 
     }
-    public class SimpleRenovationDTO : CreateRenovationDTO
+    public class SimpleRenovationDTO : RenovationDTO
     {
         public decimal RoomId { get; set; }
     }

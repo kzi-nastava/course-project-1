@@ -17,7 +17,6 @@ namespace HealthCare.Domain.Services
         private readonly ISplitRenovationRepository _splitRenovationRepository;
         private readonly ISimpleRenovationRepository _simpleRenovationRepository;
         private readonly IRoomRepository _roomRepository;
-        private readonly IRoomTypeRepository _roomTypeRepository;
         private readonly IExaminationRepository _examinationRepository;
         private readonly IOperationRepository _operationRepository;
         private readonly IInventoryRepository _inventoryRepository;
@@ -28,7 +27,6 @@ namespace HealthCare.Domain.Services
             ISplitRenovationRepository splitRenovationRepository,
             ISimpleRenovationRepository simpleRenovationRepository,
             IRoomRepository roomRepository,
-            IRoomTypeRepository roomTypeRepository,
             IExaminationRepository examinationRepository,
             IOperationRepository operationRepository,
             IInventoryRepository inventoryRepository,
@@ -38,7 +36,6 @@ namespace HealthCare.Domain.Services
             _splitRenovationRepository = splitRenovationRepository;
             _simpleRenovationRepository = simpleRenovationRepository;
             _roomRepository = roomRepository;
-            _roomTypeRepository = roomTypeRepository;
             _examinationRepository = examinationRepository;
             _operationRepository = operationRepository;
             _inventoryRepository = inventoryRepository;
@@ -50,24 +47,6 @@ namespace HealthCare.Domain.Services
         {
             IEnumerable<Renovation> renovations = await GetAllRenovations();
             return parseToModel(renovations);
-        }
-
-        public async Task<IEnumerable<JoinRenovationDomainModel>> GetJoin()
-        {
-            IEnumerable<JoinRenovation> joinRenovations = await _joinRenovationRepository.GetAll();
-            return parseToModel(joinRenovations);
-        }
-
-        public async Task<IEnumerable<SplitRenovationDomainModel>> GetSplit()
-        {
-            IEnumerable<SplitRenovation> splitRenovations = await _splitRenovationRepository.GetAll();
-            return parseToModel(splitRenovations);
-        }
-
-        public async Task<IEnumerable<SimpleRenovationDomainModel>> GetSimple()
-        {
-            IEnumerable<SimpleRenovation> simpleRenovations = await _simpleRenovationRepository.GetAll();
-            return parseToModel(simpleRenovations);
         }
 
         public async Task<IEnumerable<Renovation>> GetRenovation(Room room)
@@ -87,69 +66,7 @@ namespace HealthCare.Domain.Services
             IEnumerable<Operation> operations = await _operationRepository.GetAll();
             return operations.Where(o => o.RoomId == room.Id);
         }
-
-
-
-
-        private async Task<bool> validateSimpleRenovation(CreateSimpleRenovationDTO renovation)
-        {
-            if (renovation.StartDate >= renovation.EndDate)
-                throw new Exception("Start is equal or after end");
-            Room room = await _roomRepository.GetRoomById(renovation.RoomId);
-            if (room == null)
-                throw new Exception("Non existant room");
-
-            if (!IsAvaliable(room, renovation).Result)
-                throw new Exception("Room is already renovating in that period");
-            return true;
-        }
-
-        private async Task<bool> validateJoinRenovation(CreateJoinRenovationDTO dto)
-        {
-            if (dto.StartDate >= dto.EndDate)
-                throw new Exception("Start is equal or after end");
-
-            if (dto.resultRoomName.Trim().Equals(String.Empty))
-                throw new Exception("Invalid room name given");
-
-            Room join1 = await _roomRepository.GetRoomById(dto.JoinRoomId1);
-            Room join2 = await _roomRepository.GetRoomById(dto.JoinRoomId2);
-            if (join1 == null || join2 == null)
-                throw new Exception("Non existant room");
-
-            RoomType roomType = await _roomTypeRepository.GetById(dto.roomTypeId);
-            if (roomType == null)
-                throw new Exception("Non existant room type");
-
-            if (!IsAvaliable(join1, dto).Result || !IsAvaliable(join2, dto).Result)
-                throw new Exception("Room is already renovating in that period");
-
-            return true;
-        }
-
-        private async Task<bool> validateSplitRenovation(CreateSplitRenovationDTO dto)
-        {
-            if (dto.resultRoomName1.Trim().Equals(String.Empty) || dto.resultRoomName2.Trim().Equals(String.Empty))
-                throw new Exception("Invalid room name given");
-
-            RoomType roomType1 = await _roomTypeRepository.GetById(dto.roomTypeId1);
-            RoomType roomType2 = await _roomTypeRepository.GetById(dto.roomTypeId2);
-            if (roomType1 == null || roomType2 == null)
-                throw new Exception("No room type with such id exists");
-
-            if (dto.StartDate >= dto.EndDate)
-                throw new Exception("Start is equal or after end");
-            Room split = await _roomRepository.GetRoomById(dto.SplitRoomId);
-            if (split == null)
-                throw new Exception("Non existant room");
-
-            if (!IsAvaliable(split, dto).Result)
-                throw new Exception("Room is already renovating in that period");
-            return true;
-        }
-
-
-        private async Task<bool> IsAvaliable(Room room, CreateRenovationDTO renovationToCheck)
+        public async Task<bool> IsAvaliable(Room room, CreateRenovationDTO renovationToCheck)
         {
             IEnumerable<Renovation> roomRenovations = await GetRenovation(room);
             foreach(Renovation renovation in roomRenovations)
@@ -177,9 +94,6 @@ namespace HealthCare.Domain.Services
 
             return true;
         }
-
-       
-
         private bool IsDateTimeOverlap(DateTime start1, DateTime end1, DateTime start2, DateTime end2)
         {
             return MaxDate(start1, start2) < MinDate(end1, end2);
@@ -195,26 +109,6 @@ namespace HealthCare.Domain.Services
         {
             return (time1 < time2 ? time1 : time2);
         }
-
-
-        public async Task<SimpleRenovationDomainModel> Create(CreateSimpleRenovationDTO dto)
-        {
-            if (validateSimpleRenovation(dto).Result)
-            {
-                SimpleRenovation newSimpleRenovation = new SimpleRenovation
-                {
-                    StartDate = dto.StartDate,
-                    EndDate = dto.EndDate,
-                    RoomId = dto.RoomId
-                };
-                _simpleRenovationRepository.Post(newSimpleRenovation);
-                _simpleRenovationRepository.Save();
-                return parseToModel(newSimpleRenovation);
-            }
-            return null;
-
-        }
-
         public async Task ExecuteComplexRenovations()
         {
             await ExecuteJoinRenovations();
@@ -308,80 +202,6 @@ namespace HealthCare.Domain.Services
 
             }
         }
-
-        public async Task<JoinRenovationDomainModel> Create(CreateJoinRenovationDTO dto)
-        {
-            if (validateJoinRenovation(dto).Result)
-            {
-
-                Room result = new Room
-                {
-                    RoomName = dto.resultRoomName,
-                    RoomTypeId = dto.roomTypeId,
-                    IsDeleted = false,
-                    IsFormed = false
-                };
-
-                _roomRepository.Post(result);
-                _roomRepository.Save();
-
-                JoinRenovation newJoinRenovation = new JoinRenovation
-                {
-                    EndDate = dto.EndDate,
-                    StartDate = dto.StartDate,
-                    JoinRoomId1 = dto.JoinRoomId1,
-                    JoinRoomId2 = dto.JoinRoomId2,
-                    ResultRoomId = result.Id,
-                };
-                _joinRenovationRepository.Post(newJoinRenovation);
-                _joinRenovationRepository.Save();
-                return parseToModel(newJoinRenovation);
-            }
-            return null;
-        }
-
-        public async Task<SplitRenovationDomainModel> Create(CreateSplitRenovationDTO dto)
-        {
-            if (validateSplitRenovation(dto).Result)
-            {
-
-                Room result1 = new Room
-                {
-                    RoomName = dto.resultRoomName1,
-                    RoomTypeId = dto.roomTypeId1,
-                    IsDeleted = false,
-                    IsFormed = false,
-                };
-                _roomRepository.Post(result1);
-
-                Room result2 = new Room
-                {
-                    RoomName = dto.resultRoomName2,
-                    RoomTypeId = dto.roomTypeId2,
-                    IsDeleted = false,
-                    IsFormed = false,
-                };
-                _roomRepository.Post(result2);
-                _roomRepository.Save();
-
-                SplitRenovation newRenovation = new SplitRenovation
-                {
-                    EndDate = dto.EndDate,
-                    StartDate = dto.StartDate,
-                    ResultRoomId1 = result1.Id,
-                    ResultRoomId2 = result2.Id,
-                    SplitRoomId = dto.SplitRoomId,
-                };
-                _splitRenovationRepository.Post(newRenovation);
-                _splitRenovationRepository.Save();
-                return parseToModel(newRenovation);
-            }
-            return null;
-        }
-
-
-
-
         public async Task<IEnumerable<Renovation>> GetAllRenovations()
         {
             IEnumerable<Renovation> simpleRenovations = await _simpleRenovationRepository.GetAll();
@@ -398,49 +218,6 @@ namespace HealthCare.Domain.Services
                 result = result.Concat<Renovation>(splitRenovations);
 
             return result;
-        }
-
-        
-
-
-
-
-
-        public SimpleRenovationDomainModel parseToModel(SimpleRenovation simpleRenovation)
-        {
-            return new SimpleRenovationDomainModel
-            {
-                Id = simpleRenovation.Id,
-                EndDate = simpleRenovation.EndDate,
-                StartDate = simpleRenovation.StartDate,
-                RoomId = simpleRenovation.RoomId
-            };
-        }
-
-        public JoinRenovationDomainModel parseToModel(JoinRenovation joinRenovation)
-        {
-            return new JoinRenovationDomainModel
-            {
-                Id = joinRenovation.Id,
-                EndDate = joinRenovation.EndDate,
-                StartDate = joinRenovation.StartDate,
-                JoinRoomId1 = joinRenovation.JoinRoomId1,
-                JoinRoomId2 = joinRenovation.JoinRoomId2,
-                ResultRoomId = joinRenovation.ResultRoomId
-            };
-        }
-
-        public SplitRenovationDomainModel parseToModel(SplitRenovation splitRenovation)
-        {
-            return new SplitRenovationDomainModel
-            {
-                Id = splitRenovation.Id,
-                EndDate = splitRenovation.EndDate,
-                StartDate = splitRenovation.StartDate,
-                ResultRoomId1 = splitRenovation.ResultRoomId1,
-                ResultRoomId2 = splitRenovation.ResultRoomId2,
-                SplitRoomId = splitRenovation.SplitRoomId
-            };
         }
         public RenovationDomainModel parseToModel(Renovation renovation)
         {
@@ -461,36 +238,5 @@ namespace HealthCare.Domain.Services
             }
             return renovationModels;
         }
-        public IEnumerable<JoinRenovationDomainModel> parseToModel(IEnumerable<JoinRenovation> renovations)
-        {
-            List<JoinRenovationDomainModel> renovationModels = new List<JoinRenovationDomainModel>();
-            foreach (var renovation in renovations)
-            {
-                renovationModels.Add(parseToModel(renovation));
-            }
-            return renovationModels;
-        }
-
-        public IEnumerable<SplitRenovationDomainModel> parseToModel(IEnumerable<SplitRenovation> renovations)
-        {
-            List<SplitRenovationDomainModel> renovationModels = new List<SplitRenovationDomainModel>();
-            foreach (var renovation in renovations)
-            {
-                renovationModels.Add(parseToModel(renovation));
-            }
-            return renovationModels;
-        }
-
-        public IEnumerable<SimpleRenovationDomainModel> parseToModel(IEnumerable<SimpleRenovation> renovations)
-        {
-            List<SimpleRenovationDomainModel> renovationModels = new List<SimpleRenovationDomainModel>();
-            foreach (var renovation in renovations)
-            {
-                renovationModels.Add(parseToModel(renovation));
-            }
-            return renovationModels;
-        }
-
-        
     }
 }
