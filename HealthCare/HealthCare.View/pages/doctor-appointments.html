@@ -59,10 +59,28 @@
                   <span>Dashboard</span>
                 </a>
               </li>
-              <li class="sidebar__nav--item selected-bcg">
+              <li class="sidebar__nav--item">
+                <a href="doctor-appointments.html" class="sidebar__nav--item-link">
+                  <i class="fa-solid fa-calendar-plus"></i>
+                  <span>Schedule</span>
+                </a>
+              </li>
+              <li class="sidebar__nav--item">
                 <a href="#" class="sidebar__nav--item-link">
-                  <i class="fa-solid fa-calendar-plus selected"></i>
-                  <span class="selected">Appoitments</span>
+                  <i class="fa-solid fa-medkit"></i>
+                  <span>Drugs</span>
+                </a>
+              </li>
+              <li class="sidebar__nav--item sidebar-icon-down">
+                <a href="#" class="sidebar__nav--item-link">
+                  <i class="fa-solid fa-gear"></i>
+                  <span>Settings</span>
+                </a>
+              </li>
+              <li class="sidebar__nav--item">
+                <a href="#" class="sidebar__nav--item-link">
+                  <i class="fa-solid fa-circle-question"></i>
+                  <span>Help</span>
                 </a>
               </li>
           </nav>
@@ -96,6 +114,14 @@
             <button type="submit" id="request-btn" class="startBtn" onclick="requestFreeDays()">Submit</button>
           </div>
           
+        </div>
+        <div class="appointment-box" id="requests-box">
+          <div class="free-days-header">
+            <h4>Your past and current requests:</h4>
+          </div>
+          <div class="examination-select" id="examination-select">
+            
+          </div>
         </div>
       </div>
     <script src="../scripts/doctor-appointments.js"></script>

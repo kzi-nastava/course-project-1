@@ -22,6 +22,14 @@ namespace HealthCareAPI.Controllers
             return Ok(daysOff);
         }
 
+        [HttpGet]
+        [Route("byDoctor/{doctorId}")]
+        public async Task<ActionResult<IEnumerable<DaysOffRequestDomainModel>>> GetAllForDoctor(decimal doctorId)
+        {
+            IEnumerable<DaysOffRequestDomainModel> daysOff = await _daysOffRequestService.GetAllForDoctor(doctorId);
+            return Ok(daysOff);
+        }
+
         [HttpPost]
         [Route("create")]
         public async Task<ActionResult<DaysOffRequestDomainModel>> Create([FromBody] CreateDaysOffRequestDTO daysOffRequest)

@@ -42,6 +42,21 @@ namespace HealthCare.Domain.Services
             return results;
         }
 
+        public async Task<IEnumerable<DaysOffRequestDomainModel>> GetAllForDoctor(decimal id)
+        {
+            IEnumerable<DaysOffRequest> data = await _daysOffRequestRepository.GetAllByDoctorId(id);
+            if (data == null)
+                return new List<DaysOffRequestDomainModel>();
+
+            List<DaysOffRequestDomainModel> results = new List<DaysOffRequestDomainModel>();
+            foreach (DaysOffRequest item in data)
+            {
+                results.Add(ParseToModel(item));
+            }
+
+            return results;
+        }
+
         public async Task<DaysOffRequestDomainModel> Create(CreateDaysOffRequestDTO daysOffRequestDTO)
         {
             await validateRequestData(daysOffRequestDTO);
@@ -131,5 +146,7 @@ namespace HealthCare.Domain.Services
                 default: throw new Exception("Undefined days off request state");
             }
         }
+
+        
     }
 }

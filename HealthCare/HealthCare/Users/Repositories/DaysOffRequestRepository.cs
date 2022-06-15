@@ -16,6 +16,7 @@ namespace HealthCare.Repositories
         public Task<DaysOffRequest> GetById(decimal id);
 
         public DaysOffRequest Update(DaysOffRequest daysOff);
+        Task<IEnumerable<DaysOffRequest>> GetAllByDoctorId(decimal id);
     }
 
     public class DaysOffRequesRepository : IDaysOffRequestRepository
@@ -30,6 +31,11 @@ namespace HealthCare.Repositories
         public async Task<IEnumerable<DaysOffRequest>> GetAll()
         {
             return await _healthCareContext.DaysOffRequests.ToListAsync();
+        }
+
+        public async Task<IEnumerable<DaysOffRequest>> GetAllByDoctorId(decimal id)
+        {
+            return await _healthCareContext.DaysOffRequests.Where(x => x.DoctorId == id).ToListAsync();
         }
 
         public async Task<DaysOffRequest> GetById(decimal id)

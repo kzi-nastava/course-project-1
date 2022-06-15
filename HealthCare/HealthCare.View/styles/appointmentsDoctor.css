@@ -477,10 +477,14 @@ select option {
   grid-template-rows: 14% 86%;
   position: relative;
   left: 26%;
-  top: 12%;
+  top: 15%;
   font-size: 2rem;
   height: 40rem;
   width: 55%;
+}
+
+#requests-box {
+  top: 5.5%;
 }
 
 .free-days-header {

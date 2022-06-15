@@ -13,5 +13,6 @@ namespace HealthCare.Domain.Interfaces
         public Task<DaysOffRequestDomainModel> Create(CreateDaysOffRequestDTO daysOffRequest);
         public Task<Boolean> Approve(decimal id);
         public Task<Boolean> Reject(RejectDaysOffRequestDTO dto);
+        Task<IEnumerable<DaysOffRequestDomainModel>> GetAllForDoctor(decimal doctorId);
     }
 }
