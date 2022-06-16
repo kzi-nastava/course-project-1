@@ -175,18 +175,23 @@ function populateAppointments(appointment)
     let editIcon = document.createElement("i");
     editIcon.classList.add("fa-solid");
     editIcon.classList.add("fa-pencil");
+    editIcon.classList.add("edit-icon");
     //editBtn.innerHTML = editIcon;
-    editBtn.onclick = function() {openModal(appointment)}
-    examinationButtons.appendChild(editBtn);
+    editIcon.onclick = function() {}
+    examinationButtons.appendChild(editIcon);
     
     let deleteBtn = document.createElement("button");
     deleteBtn.classList.add("deleteBtn");
     //deleteBtn.innerHTML = <i class="fa-solid fa-trash"></i>;
     deleteBtn.innerText += "        Delete";
 
-    deleteBtn.onclick = function() {deleteAppointment(appointment.id)};
+    let deleteIcon = document.createElement("i");
+    deleteIcon.classList.add("fa-solid");
+    deleteIcon.classList.add("fa-trash");
+    deleteIcon.classList.add("edit-icon")
+    deleteIcon.onclick = function() {deleteAppointment(appointment.id)};
 
-    examinationButtons.appendChild(deleteBtn);
+    examinationButtons.appendChild(deleteIcon);
     
     examinationBox.appendChild(examinationButtons);
 

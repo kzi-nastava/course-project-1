@@ -1199,6 +1199,17 @@ margin-left: 10px; */
   cursor: pointer;
 }
 
+.edit-icon {
+  color: var(--text-color);
+  border-color: var(--color-primary);
+  outline: none;
+  border: none;
+  border-radius: 50px;
+  transition: 0.3s;
+  margin: 5px;
+  font-size: 1.7rem;
+}
+
 .editBtn,
 .deleteBtn{
   color: var(--color-primary);
