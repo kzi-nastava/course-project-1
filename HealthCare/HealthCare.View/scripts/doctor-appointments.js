@@ -48,6 +48,7 @@ scheduleRequest.onreadystatechange = function (e) {
     if (this.readyState == 4) {
         if (this.status == 200) {
             let appointments = JSON.parse(this.responseText);
+            appointments.sort(sortByProperty("startTime"));
             console.log(appointments);
             for(let i = 0; i < appointments.length; i++)
             {
@@ -62,7 +63,6 @@ scheduleRequest.onreadystatechange = function (e) {
 
 scheduleRequest.open("GET", scheduleUrl.concat("?DoctorId=" + doctorId + "&Date=" + getCurrentDate() + "&ThreeDays=true"));
 scheduleRequest.send();
-
 
 
 function populateAppointments(appointment)
