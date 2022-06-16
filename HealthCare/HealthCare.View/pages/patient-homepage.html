@@ -19,7 +19,7 @@
     <title>Health Care &mdash; Care you deserve</title>
   </head>
   <body>
-    <div class="container">
+    <div class="container" id="container">
       <header class="header">
         <div class="header__date">
           <p class="header__date--day" id="date">Friday,13th March</p>
@@ -194,6 +194,10 @@
           </div>
         </div>
       </div>
+      <div class="rate-hospital">
+        <button class="js-close" id="rate-hospital-btn">Rate hospital</button>
+      </div>
+      
       <div class="news-text">
         <h1 class="heading-news">Latest News</h1>
       </div>
@@ -235,6 +239,54 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="modal js-modal" id="modalQuestion">
+      <h1 id="modal-title">Rate hospital</h1>
+      <p>To dismiss click the button below</p>
+      <div class="questions">
+        <div class="question">
+          <p>How would you rate the quality of service in our hospital?</p>
+          <input type="radio" name="question1" class="radio-priority" value=5 checked>5
+          <input type="radio" name="question1" class="radio-priority" value=4>4
+          <input type="radio" name="question1" class="radio-priority" value=3>3
+          <input type="radio" name="question1" class="radio-priority" value=2>2
+          <input type="radio" name="question1" class="radio-priority" value=1>1
+          <br>
+          <input type="text" class="form-control" id="text1">
+        </div>
+        <div class="question">
+          <p>How would you rate the hygiene of service in our hospital?</p>
+          <input type="radio" name="question2" class="radio-priority" value=5 checked>5
+          <input type="radio" name="question2" class="radio-priority" value=4>4
+          <input type="radio" name="question2" class="radio-priority" value=3>3
+          <input type="radio" name="question2" class="radio-priority" value=2>2
+          <input type="radio" name="question2" class="radio-priority" value=1>1
+          <br>
+          <input type="text" class="form-control" id="text2">
+        </div>
+        <div class="question">
+          <p>Were you satisfied and would you recommend our hospital to your friends?</p>
+          <input type="radio" name="question3" class="radio-priority" value=5 checked>5
+          <input type="radio" name="question3" class="radio-priority" value=4>4
+          <input type="radio" name="question3" class="radio-priority" value=3>3
+          <input type="radio" name="question3" class="radio-priority" value=2>2
+          <input type="radio" name="question3" class="radio-priority" value=1>1
+          <br>
+          <input type="text" class="form-control" id="text3">
+        </div>
+        <div class="question">
+          <p>Do you have any comments about our hospital?</p>
+          <input type="radio" name="question4" class="radio-priority" value=5 checked>5
+          <input type="radio" name="question4" class="radio-priority" value=4>4
+          <input type="radio" name="question4" class="radio-priority" value=3>3
+          <input type="radio" name="question4" class="radio-priority" value=2>2
+          <input type="radio" name="question4" class="radio-priority" value=1>1
+          <br>
+          <input type="text" class="form-control" id="text4">
+        </div>
+      </div>
+      <button class="js-close" id="submit-btn-question">Submit</button>
+      <button class="js-close" id="close-btn-question">Dismiss</button>
     </div>
     <script src="../scripts/scripts.js"></script>
     <script src="../scripts/patient-homepage.js"></script>

@@ -26,7 +26,7 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpGet]
-        [Route("/forDoctor/{id}")]
+        [Route("forDoctor/{id}")]
         public async Task<ActionResult<IEnumerable<AnswerDomainModel>>> GetForDoctor(decimal id)
         {
             IEnumerable<AnswerDomainModel> answers = await _answerService.GetForDoctor(id);
@@ -34,7 +34,7 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpGet]
-        [Route("/forHospital")]
+        [Route("forHospital")]
         public async Task<ActionResult<IEnumerable<AnswerDomainModel>>> GetForHospital()
         {
             IEnumerable<AnswerDomainModel> answers = await _answerService.GetForHospital();
@@ -42,7 +42,7 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpPost]
-        [Route("/rateHospital")]
+        [Route("rateHospital")]
         public async Task<ActionResult<HospitalQuestionDTO>> RateHospital([FromBody] HospitalQuestionDTO dto)
         {
             HospitalQuestionDTO questions = _answerService.RateHospital(dto);
@@ -50,7 +50,7 @@ namespace HealthCareAPI.Controllers
         }
 
         [HttpPost]
-        [Route("/rateDoctor")]
+        [Route("rateDoctor")]
         public async Task<ActionResult<DoctorQuestionDTO>> RateDoctor([FromBody] DoctorQuestionDTO dto)
         {
             DoctorQuestionDTO questions = _answerService.RateDoctor(dto);
