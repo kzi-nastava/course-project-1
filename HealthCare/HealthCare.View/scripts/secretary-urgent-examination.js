@@ -1,7 +1,6 @@
 let specializationUri = "https://localhost:7195/api/Specialization/"
 let patientUri = "https://localhost:7195/api/Patient/"
-let urgentExaminationUri = "https://localhost:7195/api/UrgentExamination/urgentList"
-let urgentOperationUri = "https://localhost:7195/api/UrgentOperation/urgentList"
+let urgentAppointmentUri = "https://localhost:7195/api/UrgentAppointment/urgentList"
 
 /*
 currentTime();
@@ -113,13 +112,14 @@ function appointOperation() {
     let duration = document.getElementById("duration").value
 
     let dto = {
+        "isExamination" : false,
         "patientId" : patientId,
         "specializationId" : specId,
         "duration" : duration,
     }
 
     let appointRequest = new XMLHttpRequest();
-    appointRequest.open('PUT', urgentOperationUri); 
+    appointRequest.open('PUT', urgentAppointmentUri); 
     appointRequest.setRequestHeader('Content-Type', 'application/json');
     appointRequest.onreadystatechange = function () {
         if (this.readyState === 4) {
@@ -139,12 +139,14 @@ function appointExamination() {
     let specId = document.getElementById("spec-id").value
 
     let dto = {
+        "isExamination" : true,
+        "duration" : 15,
         "patientId" : patientId,
         "specializationId" : specId,
     }
 
     let appointRequest = new XMLHttpRequest();
-    appointRequest.open('PUT', urgentExaminationUri); 
+    appointRequest.open('PUT', urgentAppointmentUri); 
     appointRequest.setRequestHeader('Content-Type', 'application/json');
     appointRequest.onreadystatechange = function () {
         if (this.readyState === 4) {

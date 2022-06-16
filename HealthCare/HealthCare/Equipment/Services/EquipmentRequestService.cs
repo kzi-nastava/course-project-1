@@ -92,7 +92,7 @@ public class EquipmentRequestService : IEquipmentRequestService
     {
         EquipmentRequestDomainModel equipmentRequestModel = new EquipmentRequestDomainModel
         {
-            ExecutionTime = removeSeconds(DateTime.Now.AddDays(1)),
+            ExecutionTime = UtilityService.RemoveSeconds(DateTime.Now.AddDays(1)),
             IsExecuted = false,
             Amount = dto.Amount,
             EquipmentId = dto.EquipmentId
@@ -100,18 +100,6 @@ public class EquipmentRequestService : IEquipmentRequestService
         
         return equipmentRequestModel;
     }
-    
-    private static DateTime removeSeconds(DateTime dateTime)
-    {
-        int year = dateTime.Year;
-        int month = dateTime.Month;
-        int day = dateTime.Day;
-        int hour = dateTime.Hour;
-        int minute = dateTime.Minute;
-        int second = 0;
-        return new DateTime(year, month, day, hour, minute, second);
-    }
-
 
     public async Task<IEnumerable<EquipmentRequestDomainModel>> DoAllOrders()
     {
@@ -119,9 +107,10 @@ public class EquipmentRequestService : IEquipmentRequestService
         List<EquipmentRequest> equipmentRequest = 
             (List<EquipmentRequest>) await _equipmentRequestRepository.GetAll();
         List<EquipmentRequestDomainModel> result = new List<EquipmentRequestDomainModel>();
+        DateTime now = DateTime.Now;
         foreach (var item in equipmentRequest)
         {
-            if (item.IsExecuted) continue;
+            if (UtilityService.MinDate(item.ExecutionTime, now) == now || item.IsExecuted) continue;
             ParseRequest(item, storage);
             result.Add(ParseToModel(item));
             item.IsExecuted = true;

@@ -511,6 +511,8 @@ select option {
   margin-left: 10px;
 }
 
+
+
 .examination {
   width: 70rem;
   height: 7rem;
@@ -649,4 +651,12 @@ margin-left: 10px; */
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
   border: none;
   margin: 0 0 40px 300px;
+}
+
+.radio-priority {
+  margin: 0 10px 0 50px;
+}
+
+.question {
+  margin: 50px;
 }
