@@ -17,14 +17,16 @@ namespace HealthCare.Domain.Services
         private IDoctorRepository _doctorRepository;
 
         private IAvailabilityService _availabilityService;
+        private INotificationService _notificationService;
 
         public DaysOffRequestService(IDaysOffRequestRepository daysOffRequestRepository, IDoctorRepository doctorRepository,
-                                     IAvailabilityService availabilityService)
+                                     IAvailabilityService availabilityService, INotificationService notificationService)
         {
             _daysOffRequestRepository = daysOffRequestRepository;
             _doctorRepository = doctorRepository;
 
             _availabilityService = availabilityService;
+            _notificationService = notificationService;
         }
 
         public async Task<IEnumerable<DaysOffRequestDomainModel>> GetAll()
@@ -74,6 +76,8 @@ namespace HealthCare.Domain.Services
             daysOff.State = "approved";
             _ = _daysOffRequestRepository.Update(daysOff);
             _daysOffRequestRepository.Save();
+            SendNotificationDTO notification = MakeNotification(daysOff.DoctorId, true);
+            _ = await _notificationService.Send(notification);
             return true;
         }
 
@@ -85,7 +89,20 @@ namespace HealthCare.Domain.Services
             daysOff.RejectionReason = dto.Comment;
             _ = _daysOffRequestRepository.Update(daysOff);
             _daysOffRequestRepository.Save();
+            SendNotificationDTO notification = MakeNotification(daysOff.DoctorId, false);
+            _ = await _notificationService.Send(notification);
             return true;
+        }
+
+        public SendNotificationDTO MakeNotification(decimal doctorId, bool isApproved)
+        {
+            string content = isApproved ? "Your days off request was approved" : "Your days off request was rejected.";
+            return new SendNotificationDTO
+            {
+                Content = new KeyValuePair<string, string>("Days off request", content),
+                IsPatient = false,
+                PersonId = doctorId
+            };
         }
 
         private async Task ValidateRequestData(CreateDaysOffRequestDTO daysOffRequestDTO)

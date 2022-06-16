@@ -4,12 +4,15 @@ let examinationUri = "https://localhost:7195/api/Examination/create"
 let updateExaminationUri = "https://localhost:7195/api/Examination/update"
 let examinationDeleteUri = "https://localhost:7195/api/Examination/delete"
 let getPatientUri = "https://localhost:7195/api/Patient/patientId=";
+let rateDoctorUri = "https://localhost:7195/api/Answer/rateDoctor"
 
 
 currentTime();
 let user = JSON.parse(sessionStorage.getItem("user"));
 console.log(user);
 setNameOnCorner(user);
+
+let container = document.getElementById("container");
 
 const yearSelect = document.getElementById("yearSelect");
 const monthSelect = document.getElementById("monthSelect");
@@ -359,7 +362,15 @@ function populateAppointments(appointment)
 
     deleteBtn.onclick = function() {deleteAppointment(appointment.id)};
 
+    let rateBtn = document.createElement("button");
+    rateBtn.classList.add("deleteBtn");
+    //deleteBtn.innerHTML = <i class="fa-solid fa-trash"></i>;
+    rateBtn.innerText += "        Rate";
+    rateBtn.onclick = function() {rateAppointment(appointment)}
+
     examinationButtons.appendChild(deleteBtn);
+    examinationButtons.appendChild(rateBtn);
+
     
     examinationBox.appendChild(examinationButtons);
 
@@ -368,6 +379,76 @@ function populateAppointments(appointment)
     
     
 }
+
+let modalRate = document.getElementById("modalRate");
+function rateAppointment(appointment)
+{
+    console.log(modalRate)
+    var today = new Date();
+    var dd = String(today.getDate()).padStart(2, '0');
+    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    var yyyy = today.getFullYear();
+
+    today = yyyy + "-" + mm + "-" + dd; 
+    if(today < appointment.startTime)
+    {
+        alert("Datum mora biti u buducnosti");
+        return;
+    }
+    modalRate.setAttribute("style", "display:block");
+    modalRate.setAttribute("doctorId", appointment.doctorId);
+    container.classList.add("wrapper");
+}
+let btnCloseRate = document.getElementById("close-btn-rate");
+
+btnCloseRate.onclick = (e) => {
+    modalRate.setAttribute("style", "display:none");
+    container.classList.remove("wrapper");
+};
+
+let submitBtnRate = document.getElementById("submit-btn-rate");
+
+submitBtnRate.addEventListener("click", function(e) {
+    let answer1Mark = document.getElementsByName("quality");
+    let answer2Mark = document.getElementsByName("recommend");
+    
+    let answers =  {
+        "answer1": {
+          "id": 0,
+          "answerText": "",
+          "evaluation": answer1Mark[0].checked ? 5 : (answer1Mark[1].checked ? 4 : (answer1Mark[2].checked ? 3 : (answer1Mark[3].checked ? 2 : 1))),
+          "doctorId": modalRate.getAttribute("doctorId"),
+          "patientId": user.id,
+          "questionId": 5
+        },
+        "answer2": {
+          "id": 0,
+          "answerText": "",
+          "evaluation": answer2Mark[0].checked ? 5 : answer2Mark[1].checked ? 4 : answer2Mark[2].checked ? 3 : answer2Mark[3].checked ? 2 : 1,
+          "doctorId": modalRate.getAttribute("doctorId"),
+          "patientId": user.id,
+          "questionId": 6
+        }
+      }
+    console.log(JSON.stringify(answers));
+    
+    let rateDoctorRequest = new XMLHttpRequest();
+    rateDoctorRequest.open('POST', rateDoctorUri); 
+    rateDoctorRequest.setRequestHeader('Content-Type', 'application/json');
+    rateDoctorRequest.onreadystatechange = function () {
+        if (this.readyState === 4) {
+            if (this.status === 200) {
+                
+            } else {
+                alert("Greska prilikom ocenjivanja doktora.")
+            }
+            modalRate.setAttribute("style", "display:none");
+            container.classList.remove("wrapper");
+        }
+    }
+    rateDoctorRequest.send(JSON.stringify(answers));
+});
+
 
 function deleteAppointment(id)
 {
@@ -443,7 +524,7 @@ function formatDate(param)
 }
 
 let modal = document.getElementById("modal");
-let container = document.getElementById("container");
+
 function openModal(examination)
 {
     console.log(examination.id)
