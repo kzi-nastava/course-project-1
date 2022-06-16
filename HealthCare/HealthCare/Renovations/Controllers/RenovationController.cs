@@ -3,6 +3,7 @@ using System.Diagnostics.Eventing.Reader;
 using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
+using HealthCareAPI.Renovations.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HealthCareAPI.Controllers
