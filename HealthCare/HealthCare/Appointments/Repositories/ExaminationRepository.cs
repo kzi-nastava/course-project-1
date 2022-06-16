@@ -71,7 +71,8 @@ namespace HealthCare.Repositories
                 return await _healthCareContext.Examinations
                     .Where(x => x.DoctorId == id)
                     .Where(x => x.IsDeleted == false)
-                    .Where(x => DateTime.Compare(x.StartTime.Date, date.Date) >= 0 && DateTime.Compare(x.StartTime.Date, date.Date.AddDays(14)) <= 0)
+                    .Where(x => DateTime.Compare(x.StartTime, date) >= 0 && DateTime.Compare(x.StartTime, date.AddDays(14)) <= 0)
+                    //.Where(x => DateTime.Compare(x.StartTime.Date, date.Date) >= 0 && DateTime.Compare(x.StartTime.Date, date.Date.AddDays(3)) <= 0)
                     .ToListAsync();
 
             return await _healthCareContext.Examinations

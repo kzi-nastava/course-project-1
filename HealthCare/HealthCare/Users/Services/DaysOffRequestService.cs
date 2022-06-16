@@ -44,9 +44,24 @@ namespace HealthCare.Domain.Services
             return results;
         }
 
+        public async Task<IEnumerable<DaysOffRequestDomainModel>> GetAllForDoctor(decimal id)
+        {
+            IEnumerable<DaysOffRequest> data = await _daysOffRequestRepository.GetAllByDoctorId(id);
+            if (data == null)
+                return new List<DaysOffRequestDomainModel>();
+
+            List<DaysOffRequestDomainModel> results = new List<DaysOffRequestDomainModel>();
+            foreach (DaysOffRequest item in data)
+            {
+                results.Add(ParseToModel(item));
+            }
+
+            return results;
+        }
+
         public async Task<DaysOffRequestDomainModel> Create(CreateDaysOffRequestDTO daysOffRequestDTO)
         {
-            await validateRequestData(daysOffRequestDTO);
+            await ValidateRequestData(daysOffRequestDTO);
 
             DaysOffRequest daysOffRequest = _daysOffRequestRepository.Post(ParseFromDTO(daysOffRequestDTO));
             _daysOffRequestRepository.Save();
@@ -90,11 +105,11 @@ namespace HealthCare.Domain.Services
             };
         }
 
-        private async Task validateRequestData(CreateDaysOffRequestDTO daysOffRequestDTO)
+        private async Task ValidateRequestData(CreateDaysOffRequestDTO daysOffRequestDTO)
         {
             if (!daysOffRequestDTO.IsUrgent)
             {
-                checkIfItsTooLate(daysOffRequestDTO);
+                CheckIfItsTooLate(daysOffRequestDTO);
                 await _availabilityService.IsDoctorFreeOnDateRange(daysOffRequestDTO.From, daysOffRequestDTO.To, daysOffRequestDTO.DoctorId);
             }
             else
@@ -104,7 +119,7 @@ namespace HealthCare.Domain.Services
             }
         }
 
-        private void checkIfItsTooLate(CreateDaysOffRequestDTO daysOffRequestDTO)
+        private void CheckIfItsTooLate(CreateDaysOffRequestDTO daysOffRequestDTO)
         {
             if ((daysOffRequestDTO.From - DateTime.Now).Days < 2)
                 throw new LateForDaysOffRequestException();
@@ -148,5 +163,7 @@ namespace HealthCare.Domain.Services
                 default: throw new Exception("Undefined days off request state");
             }
         }
+
+        
     }
 }

@@ -58,7 +58,8 @@ namespace HealthCare.Repositories
             return await _healthCareContext.Operations
                 .Where(x => x.DoctorId == id)
                 .Where(x => x.IsDeleted == false)
-                .Where(x => x.StartTime.Date >= date.Date && x.StartTime.Date <= date.Date.AddDays(3))
+                .Where(x => x.StartTime >= date && x.StartTime <= date.AddDays(14))
+                //.Where(x => x.StartTime.Date >= date.Date && x.StartTime.Date <= date.Date.AddDays(3))
                 .ToListAsync();
         }
 
