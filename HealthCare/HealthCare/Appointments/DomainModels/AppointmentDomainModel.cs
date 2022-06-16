@@ -29,5 +29,35 @@ namespace HealthCare.Domain.Models
 
         public bool IsDeleted { get; set; }
         public bool IsEmergency { get; set; }
-    }
+
+        public ExaminationDomainModel ToExaminationModel()
+        {
+            return new ExaminationDomainModel
+            {
+                Id = Id,
+                DoctorId = DoctorId,
+                RoomId = RoomId,
+                PatientId = PatientId,
+                StartTime = StartTime,
+                Duration = Duration,
+                IsDeleted = IsDeleted,
+                IsEmergency = IsEmergency
+            };
+        }
+        
+        public OperationDomainModel ToOperationModel()
+        {
+            return new OperationDomainModel
+            {
+                Id = Id,
+                DoctorId = DoctorId,
+                RoomId = RoomId,
+                PatientId = PatientId,
+                StartTime = StartTime,
+                Duration = Duration,
+                IsDeleted = IsDeleted,
+                IsEmergency = IsEmergency
+            };
+        }
+}
 }
