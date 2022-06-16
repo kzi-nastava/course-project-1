@@ -3,6 +3,7 @@ using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Interfaces;
 using HealthCare.Domain.Models;
 using HealthCare.Repositories;
+using HealthCareAPI.Renovations.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;

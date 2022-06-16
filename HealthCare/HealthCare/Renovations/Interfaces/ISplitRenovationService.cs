@@ -1,6 +1,7 @@
 ﻿using HealthCare.Data.Entities;
 using HealthCare.Domain.DTOs;
 using HealthCare.Domain.Models;
+using HealthCareAPI.Renovations.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
