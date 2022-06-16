@@ -82,7 +82,7 @@ namespace HealthCare.Domain.Services
         {
             decimal roomId = await _roomService.GetAvailableRoomId(appointmentModel.StartTime, "operation");
             if (roomId == -1) return false;
-            OperationDomainModel operationModel = (OperationDomainModel)appointmentModel;
+            OperationDomainModel operationModel = appointmentModel.ToOperationModel();
             operationModel.RoomId = roomId;
             Operation operation = OperationService.ParseFromModel(operationModel);
             _ = _operationRepository.Post(operation);
@@ -94,7 +94,7 @@ namespace HealthCare.Domain.Services
         {
             decimal roomId = await _roomService.GetAvailableRoomId(appointmentModel.StartTime, "examination");
             if (roomId == -1) return false;
-            ExaminationDomainModel examinationModel = (ExaminationDomainModel)appointmentModel;
+            ExaminationDomainModel examinationModel = appointmentModel.ToExaminationModel();
             examinationModel.RoomId = roomId;
             Examination examination = ExaminationService.ParseFromModel(examinationModel);
             _ = _examinationRepository.Post(examination);

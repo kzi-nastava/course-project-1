@@ -151,6 +151,12 @@ builder.Services.AddCronJob<CronJobNotifications>(c =>
 });
 
 
+builder.Services.AddCronJob<CronJobBulkDo>(c =>
+{
+    c.TimeZoneInfo = TimeZoneInfo.Local;
+    c.CronExpression = @"0 1-23/2 * * *";
+});
+
 
 var app = builder.Build();
 
