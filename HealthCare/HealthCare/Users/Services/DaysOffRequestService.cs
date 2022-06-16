@@ -59,7 +59,7 @@ namespace HealthCare.Domain.Services
 
         public async Task<DaysOffRequestDomainModel> Create(CreateDaysOffRequestDTO daysOffRequestDTO)
         {
-            await validateRequestData(daysOffRequestDTO);
+            await ValidateRequestData(daysOffRequestDTO);
 
             DaysOffRequest daysOffRequest = _daysOffRequestRepository.Post(ParseFromDTO(daysOffRequestDTO));
             _daysOffRequestRepository.Save();
@@ -88,11 +88,11 @@ namespace HealthCare.Domain.Services
             return true;
         }
 
-        private async Task validateRequestData(CreateDaysOffRequestDTO daysOffRequestDTO)
+        private async Task ValidateRequestData(CreateDaysOffRequestDTO daysOffRequestDTO)
         {
             if (!daysOffRequestDTO.IsUrgent)
             {
-                checkIfItsTooLate(daysOffRequestDTO);
+                CheckIfItsTooLate(daysOffRequestDTO);
                 await _availabilityService.IsDoctorFreeOnDateRange(daysOffRequestDTO.From, daysOffRequestDTO.To, daysOffRequestDTO.DoctorId);
             }
             else
@@ -102,7 +102,7 @@ namespace HealthCare.Domain.Services
             }
         }
 
-        private void checkIfItsTooLate(CreateDaysOffRequestDTO daysOffRequestDTO)
+        private void CheckIfItsTooLate(CreateDaysOffRequestDTO daysOffRequestDTO)
         {
             if ((daysOffRequestDTO.From - DateTime.Now).Days < 2)
                 throw new LateForDaysOffRequestException();

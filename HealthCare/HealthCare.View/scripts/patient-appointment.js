@@ -142,13 +142,13 @@ populateMinutes();
 
 let rooms;
 
-let getRoomsRequest = new XMLHttpRequest();
-getRoomsRequest.open('GET', roomsUri); 
+let getDORequestsRequest = new XMLHttpRequest();
+getDORequestsRequest.open('GET', roomsUri); 
 
-getRoomsRequest.onreadystatechange = function () {
+getDORequestsRequest.onreadystatechange = function () {
     if (this.readyState === 4) {
         if (this.status === 200) {
-            rooms = JSON.parse(getRoomsRequest.responseText);
+            rooms = JSON.parse(getDORequestsRequest.responseText);
             getDoctorsRequest.send();
 
         } else {
@@ -156,7 +156,7 @@ getRoomsRequest.onreadystatechange = function () {
         }
     }
 }
-getRoomsRequest.send();
+getDORequestsRequest.send();
 
 let doctors; 
 

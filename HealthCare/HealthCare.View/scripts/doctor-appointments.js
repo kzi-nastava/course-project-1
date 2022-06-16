@@ -300,17 +300,29 @@ function requestFreeDays()
     let fromDate = document.getElementById("from-date").value;
     let toDate = document.getElementById("to-date").value;
 
-    if (Date.parse(toDate) < Date.parse(fromDate))
+    if (Date.parse(toDate) < Date.parse(fromDate))  
+    {
         alert("Please enter valid date range.");
+        return;
+    }
+        
 
     if (Date.parse(fromDate) < new Date())
+    {
         alert("Dates must be in the future.");
+        return;
+    }
+        
 
     let urgent = document.getElementById("urgent").checked;
     let reason = document.getElementById("reason").value;
 
     if (reason == "" || fromDate == "" || toDate == "")
-        alert("You must fill all input fields.")
+    {
+        alert("You must fill all input fields.");
+        return;
+    }
+        
 
     let daysOffRequest = {
         "comment": reason,
@@ -329,13 +341,14 @@ function requestFreeDays()
                 let approved = urgent ? " and approved" : "";
                 alert("Request successfully sent" + approved + ".");
                 clearDaysOffForm();
+                location.reload();
             } else {
                 alert(this.responseText)
             }
         }
     }
     createDaysOffRequest.send(JSON.stringify(daysOffRequest));
-
+    
 }
 
 function clearDaysOffForm()
